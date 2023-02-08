@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import FileSelector from "./Components/FileSelector";
+import MyMap from "./Components/MyMap";
+import "./App.css";
 
 const App = () => {
   /*
@@ -7,23 +10,14 @@ const App = () => {
   */
   const [files, setFiles] = useState({ shapefile: null, dbase: null });
 
-  const handleSetFile = (e) => {
+  const handleSetFiles = (e) => {
     setFiles({ ...files, [e.target.name]: e.target.value });
   };
 
   return (
     <div>
-      <div>
-        <div>Select a Shapefile</div>
-        <input name="shapefile" type="file" onChange={handleSetFile} />
-        Shapefile selected: {files.shapefile || "None"}
-      </div>
-      <br />
-      <div>
-        <div>Select a dBASE file</div>
-        <input name="dbase" type="file" onChange={handleSetFile} />
-        dBase file selected: {files.dbase || "None"}
-      </div>
+      <FileSelector files={files} handleSetFiles={handleSetFiles} />
+      <MyMap files={files} />
     </div>
   );
 };

@@ -27,28 +27,74 @@ const style = () => {
   });
 }
 export default function ShapefileExample() {
-  const [geodata, setGeodata] = useState(null);
+  const [geodata, setGeodata] = useState([]);
   const handleFile = (e) => {
-  var fc;
-  const reader = new FileReader();
   let file = document.getElementById("inputfile").files[0];
-  reader.onload = (event) => {
-    shapefile
-      .openShp(reader.result)
-      .then((source) =>
-        source.read().then(function log(result) {
-          if (result.done) {
-            
-            return;
-          }
-          fc = result.value;
-          setGeodata({fc})
-          return source.read().then(log);
-        })
-      )
-      .catch((error) => console.error(error.stack));
-  };
-   reader.readAsArrayBuffer(file);
+  if (file) {
+    let ext = getExtension(file.name);
+    switch (ext) {
+      case "geojson":
+        readDataFromGeojsonFile(file);
+        break;
+      case "shp":
+        readDataFromShpFile(file);
+        break;
+      case "zip":
+        readDataFromShpZipFile(file);
+        break;
+      default:
+        alert("Invalid file ");
+    }
+  }
+  }
+  function getExtension(filename) {
+    var parts = filename.split(".");
+    return parts[parts.length - 1];
+  }
+  function readDataFromGeojsonFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const fc = JSON.parse(reader.result.toString());
+      if (fc && fc.features.length > 0) {
+        setGeodata(fc);
+      }
+    };
+    reader.readAsText(file);
+  }
+  function readDataFromShpFile(file) {
+    const reader = new FileReader();
+    var c = 0
+    var data=[]
+    reader.onload = (event) => {
+      shapefile
+        .openShp(reader.result)
+        .then((source) =>
+          source.read().then(function log(result) {
+            if (result.done) {
+              return;
+            }
+            c++;
+            data.push(result.value)
+            // console.log(data);
+            setGeodata(data);
+            return source.read().then(log);
+          })
+        )
+        .catch((error) => console.error(error.stack));
+    };
+    reader.readAsArrayBuffer(file);
+  }
+  
+  function readDataFromShpZipFile(file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      shp(reader.result).then(function (fc) {
+        if (fc.features.length > 0) {
+          setGeodata(fc);
+        }
+      });
+    };
+    reader.readAsArrayBuffer(file);
   }
   return (
     <div>
@@ -61,8 +107,9 @@ export default function ShapefileExample() {
             <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
           </BaseLayer>
         </LayersControl>
-        {geodata && <Overlay checked name='Feature group'>
-          <ShapeFile zipUrl={geodata} />
+        {geodata && 
+        <Overlay checked name='Feature group'>
+          <ShapeFile geodata={geodata} />
         </Overlay>}
       </MapContainer>
 
@@ -71,3 +118,7 @@ export default function ShapefileExample() {
   )
 
 }
+
+
+
+

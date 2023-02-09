@@ -16,7 +16,7 @@ const App = () => {
 
   return (
     <div>
-      <FileSelector files={files} handleSetFiles={handleSetFiles} />
+      {/* <FileSelector files={files} handleSetFiles={handleSetFiles} /> */}
       <MyMap files={files} />
     </div>
   );

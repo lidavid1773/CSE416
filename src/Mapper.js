@@ -2,9 +2,12 @@ import React, { Component, useEffect, useState } from "react";
 import './index.css';
 import 'leaflet/dist/leaflet.css';
 import ShapeFile from "./Shapefile.js";
+import shp from "shpjs";
+import { Buffer } from "buffer";
+
 import { MapContainer, TileLayer, LayersControl } from 'react-leaflet'
 const { BaseLayer, Overlay } = LayersControl;
-
+const shapefile = require('shapefile')
 const onEachFeature = (feature, layer) => {
   if (feature.properties) {
     layer.bindPopup(Object.keys(feature.properties).map(function (k) {
@@ -26,17 +29,31 @@ const style = () => {
 export default function ShapefileExample() {
   const [geodata, setGeodata] = useState(null);
   const handleFile = (e) => {
-    var reader = new FileReader();
-    var file = e.target.files[0];
-    reader.readAsArrayBuffer(file);
-    reader.onload = function (buffer) {
-      setGeodata({ geodata: buffer.target.result })
-    }
+  var fc;
+  const reader = new FileReader();
+  let file = document.getElementById("inputfile").files[0];
+  reader.onload = (event) => {
+    shapefile
+      .openShp(reader.result)
+      .then((source) =>
+        source.read().then(function log(result) {
+          if (result.done) {
+            
+            return;
+          }
+          fc = result.value;
+          setGeodata({fc})
+          return source.read().then(log);
+        })
+      )
+      .catch((error) => console.error(error.stack));
+  };
+   reader.readAsArrayBuffer(file);
   }
   return (
     <div>
       <div >
-        <input type="file" onChange={handleFile} className="inputfile" />
+        <input type="file" onChange={handleFile} id="inputfile" />
       </div>
       <MapContainer center={[42.09618442380296, -71.5045166015625]} zoom={2} zoomControl={true}>
         <LayersControl position='topright'>
@@ -45,11 +62,11 @@ export default function ShapefileExample() {
           </BaseLayer>
         </LayersControl>
         {geodata && <Overlay checked name='Feature group'>
-        <ShapeFile zipUrl={geodata} />
-      </Overlay>}
+          <ShapeFile zipUrl={geodata} />
+        </Overlay>}
       </MapContainer>
-      
-      
+
+
     </div>
   )
 

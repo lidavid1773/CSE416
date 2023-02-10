@@ -1,16 +1,7 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  GeoJSON,
-  useMap
-} from "react-leaflet";
-import L, { Polygon } from "leaflet";
-import mapData from "../Sources/us_states.json";
-import { useState, useEffect } from "react";
+import { GeoJSON, useMap } from "react-leaflet";
+import L from "leaflet";
 
-const MyMap = ({ files }) => {
+const MyMap = ({ geoData }) => {
   let map = useMap();
 
   // Visually select state
@@ -25,6 +16,7 @@ const MyMap = ({ files }) => {
   let onEachState = (state, layer) => {
     let polygon = L.polygon(state.geometry.coordinates);
     let latlng = polygon.getBounds().getCenter();
+    // Put a popup w/ state's name for each state in map*/
     L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
       .setLatLng({ lat: latlng.lng, lng: latlng.lat })
       .setContent(`<p>${state.properties.NAME}</p>`)
@@ -44,10 +36,6 @@ const MyMap = ({ files }) => {
 
     // Set layer event handlers
     layer.on({
-      click: (e) => {
-        // console.log(state);
-        // layer.closePopup();
-      },
       mouseover: (e) => {
         const layer = e.target;
         layer.setStyle({
@@ -82,17 +70,7 @@ const MyMap = ({ files }) => {
 
   return (
     <div>
-      {/* Put a popup w/ state's name for each state in map*/}
-      {/* {mapData.features.forEach((obj) => {
-        let polygon = L.polygon(obj.geometry.coordinates);
-        let latlng = polygon.getBounds().getCenter();
-        L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
-          .setLatLng({ lat: latlng.lng, lng: latlng.lat })
-          .setContent(`<p>${obj.properties.NAME}</p>`)
-          .openOn(map);
-      })} */}
-
-      <GeoJSON data={mapData.features} onEachFeature={onEachState} />
+      <GeoJSON data={geoData.features} onEachFeature={onEachState} />
     </div>
   );
 };

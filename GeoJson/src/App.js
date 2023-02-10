@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 import MyMap from './Components/MyMap';
-import NewMap from './Components/NewMap';
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
@@ -32,7 +31,7 @@ function App() {
           document.querySelector(".infos").innerHTML=`name:${obj.Userinfo.name}interest: ${obj.Userinfo.interest}`
       
    }
-      document.getElementById('file').addEventListener('change', onChange);
+      document.getElementById('GeoJson').addEventListener('change', onChange);
   
   }());
   }
@@ -42,13 +41,22 @@ function App() {
       <header className="App-header">
 
       <div>
-        <input style={style} type="file" id="file" accept="application/JSON" onInput={onInput} required/>
+        <input style={style} type="file" id="GeoJson" accept="application/JSON" onInput={onInput} required/>
       </div>
 
       <br/>
+      {/* {
+        show && (<input id = 'changename' style={{width:'30%'}} value={regionname} onInput={e => setName(e.target.value)} placeholder='Change region name here and press enter!' 
+                onKeyDown={e => {
+                  if(e.key === 'Enter'){
+                    setDone(true);
+                  }
+                }}
+        />)
+      } */}
       <br/>
 
-      <MyMap geodata = {geodata}></MyMap>
+      <MyMap geodata = {geodata} setGeodata = {setGeodata}></MyMap>
       
 
       </header>

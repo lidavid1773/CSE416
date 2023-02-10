@@ -1,40 +1,75 @@
-import "leaflet/dist/leaflet.css";
-import { MapContainer, Marker, Popup, TileLayer, useMap, GeoJSON } from 'react-leaflet';
-import React, { useEffect, useMemo, useState, Component } from 'react';
-import geodata from '../Data/Counties_USA.json';
+import { useEffect } from "react";
+//import PropTypes from "prop-types";
+import { useMap, GeoJSON } from "react-leaflet";
+import L, { geoJSON, layerGroup } from "leaflet";
 
-export default class NewMap extends Component{
-  state = {};
+export default function NewMap({geodata, setGeodata}) {
+  const map = useMap();
+  var highlight = {
+		'fillColor': 'yellow',
+		'weight': 2,
+		'opacity': 1
+	};
 
-  componentDidMount() {
-    console.log(geodata);
-  }
-
-  countyStyle = {
+  var countyStyle = {
     fillColor : 'red',
-    fillOpacity : 1,
+    fillOpacity : 0.8,
     color : 'black',
-    weight : 2
+    weight : 1.5
   };
 
-  render(){
-    return (
-      <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
-            {/* <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            /> */}
-            {/* <Marker position={[51.505, -0.09]}>
-              < Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-            </Marker>  */}
+  var vertexLayer = L.layerGroup();
+  const geo = L.geoJson(
+    { features: [] },
+    {
+      onEachFeature: function popUp(f, l) {
+        if (f.properties)
+          l.bindPopup(f.properties.NAME);
+        l.on("click", function (e) { 
+          l.setStyle(highlight)
+        });
+        l.on("dblclick", function (e) { 
+          let name = prompt("Please enter new region name:");
+          if (name != null && name !== "") {
+            f.properties["NAME_1"] = name;
+            console.log(f.properties["NAME_1"])
+            l.bindPopup(name)
+          }
+        });
 
-        <GeoJSON data = {geodata.features} style={this.countyStyle} />
+        var coords = [];
+        if (f.geometry.type === 'Polygon')
+          coords = f.geometry.coordinates;
+        else if (f.geometry.type === 'MultiPolygon') 
+          f.geometry.coordinates.forEach(c => coords.push(c[0]))
+        
+        // console.log(f.geometry.type)
+        // console.log(f.geometry.coordinates)
+        if (coords.length > 0) {
+          coords.forEach(function(coordsArray) {
+            var vertexArray = L.GeoJSON.coordsToLatLngs(coordsArray);
+            vertexArray.forEach(function(latlng) {
+              L.circleMarker(latlng, 
+                {radius: 2}
+              ).addTo(vertexLayer);
+            });
+          });
+        }
+      }
+    }
+  ).addTo(map);
 
-      </MapContainer>
-    )
-  }
+  //map.addLayer(vertexLayer);
+  useEffect(() => {
 
+    for (let data of geodata) {
+      geo.addData(data);
+      //console.log(data);
+      <GeoJSON data={data.features} style={countyStyle} />
+    }
+  }, [geodata]
 
+  );
+
+  return null;
 }

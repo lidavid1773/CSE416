@@ -43,7 +43,7 @@ export default function ShapefileExample() {
           ShpData = reader.result;
         }
         if (ShpData && DbfData) {
-          shapefile.open(reader.result).then((source) =>
+          shapefile.open(ShpData,DbfData).then((source) =>
             source.read().then(function log(result) {
               if (result.done) {
                 return;
@@ -68,33 +68,10 @@ export default function ShapefileExample() {
       console.log("ready")
     }
   }
-  const readFile = (file) => {
-    const reader = new FileReader();
-    if (file) {
-      let ext = getExtension(file.name);
-
-      reader.onload = () => {
-        if (ext === "dbf") {
-          DbfData = reader.result;
-
-        }
-        else if (ext === "shp") {
-          ShpData = reader.result;
-        }
-        comboIsLoaded()
-
-      }
-
-      reader.readAsArrayBuffer(file);
-    }
-
-  }
   function getExtension(filename) {
     var parts = filename.split(".");
     return parts[parts.length - 1];
   }
-
-
   return (
     <div>
       <div >

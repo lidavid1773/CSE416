@@ -27,6 +27,7 @@ const geo = L.geoJson(
     
     for (let data of FileData.geodata){
       geo.addData(data);
+      console.log(data);
       <GeoJSON data = {data.features} />
     }
   }, [FileData]

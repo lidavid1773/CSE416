@@ -2,3 +2,22 @@
   width: 100vw;
   height: 100vh;
 }
+
+/* Reset popup css */
+.leaflet-popup-content-wrapper {
+  all: unset;
+}
+
+.leaflet-popup-tip-container {
+  /* Unused but know this exists for future*/
+}
+
+/* Hide popup triangle tail */
+.leaflet-popup-tip {
+  background: rgba(0, 0, 0, 0) !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-content {
+  font-weight: bold;
+}

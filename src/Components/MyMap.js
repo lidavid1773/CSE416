@@ -1,65 +1,98 @@
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  GeoJSON,
+  useMap
+} from "react-leaflet";
+import L, { Polygon } from "leaflet";
 import mapData from "../Sources/us_states.json";
 import { useState, useEffect } from "react";
-import { ShapeFile } from "./ShapeFile";
 
 const MyMap = ({ files }) => {
+  let map = useMap();
+
   // Visually select state
-  // let updateColor = (e) => {
-  //   e.target.setStyle({
-  //     color: "red",
-  //     fillColor: "yellow"
-  //   });
-  // };
+  let updateColor = (e) => {
+    e.target.setStyle({
+      color: "#666",
+      fillColor: "#007eff"
+    });
+  };
 
   // Each target is a state bc our json file is for us states. App should be able to work for different types of geojson files, where target.properties.field may vary
-  // let onEachState = (state, layer) => {
-  //   let stateName = state.properties.NAME;
-  //   layer.bindPopup(stateName);
-  //   layer.on({
-  //     click: (e) => {
-  //       // Default:
-  //       //     color: "#3388ff",
-  //       //     fillColor: null
-  //       updateColor(e);
-  //     }
-  //   });
-  // };
+  let onEachState = (state, layer) => {
+    let polygon = L.polygon(state.geometry.coordinates);
+    let latlng = polygon.getBounds().getCenter();
+    L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
+      .setLatLng({ lat: latlng.lng, lng: latlng.lat })
+      .setContent(`<p>${state.properties.NAME}</p>`)
+      .openOn(map);
 
-  const [geodata, setGeodata] = useState(null);
+    // let popup = L.popup({
+    //   closeOnClick: false,
+    //   autoClose: false,
+    //   closeButton: false
+    // })
+    //   .setLatLng({ lat: latlng.lng, lng: latlng.lat })
+    //   .setContent(`<p>${state.properties.NAME}</p>`);
 
-  const handleFile = (e) => {
-    var reader = new FileReader();
-    var file = e.target.files[0];
-    reader.readAsArrayBuffer(file);
-    reader.onload = function (buffer) {
-      console.log("loading data from: ", file.name);
-      setGeodata({ data: buffer.target.result, name: file.name });
-    };
+    // layer.bindPopup(popup).addTo(map);
+    // layer.openPopup();
+    // layer.closePopup();
+
+    // Set layer event handlers
+    layer.on({
+      click: (e) => {
+        // console.log(state);
+        // layer.closePopup();
+      },
+      mouseover: (e) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillOpacity: 1,
+          fillColor: "#007eff"
+        });
+      },
+      mouseout: (e) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillOpacity: 0.25,
+          color: "#3388ff",
+          fillColor: "#3388ff"
+        });
+      },
+      dblclick: (e) => {
+        let name = prompt("Please enter new name:");
+        if (name != null && name !== "") {
+          layer.unbindPopup();
+          polygon = L.polygon(state.geometry.coordinates);
+          latlng = polygon.getBounds().getCenter();
+          // Create popup w/ new name
+          L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
+            .setLatLng({ lat: latlng.lng, lng: latlng.lat })
+            .setContent(`<p>${name}</p>`)
+            .openOn(map);
+        }
+        updateColor(e);
+      }
+    });
   };
 
   return (
     <div>
-      <div>
-        Upload a .zip folder containing a shapefile
-        <br />
-        <input type="file" accept=".zip" onChange={handleFile} />
-      </div>
-      <MapContainer center={[35, -100]} zoom={4.5} scrollWheelZoom={true}>
-        {/* Can put a popup at each feature w/ name of region. Problem with this is that it shows up as a popup, and need a way to calculate position based off of 
-        // data's coordinates, which we probably need an API for. Maybe we can get away with displaying region through popups with styling?? */}
-        {/* {mapData.features.map((obj) => (
-          <Marker
-            key={obj.properties.NAME}
-            position={[Math.random() * 100, Math.random() * 100]}
-          >
-            <Popup>{obj.properties.NAME}</Popup>
-          </Marker>
-        ))} */}
+      {/* Put a popup w/ state's name for each state in map*/}
+      {/* {mapData.features.forEach((obj) => {
+        let polygon = L.polygon(obj.geometry.coordinates);
+        let latlng = polygon.getBounds().getCenter();
+        L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
+          .setLatLng({ lat: latlng.lng, lng: latlng.lat })
+          .setContent(`<p>${obj.properties.NAME}</p>`)
+          .openOn(map);
+      })} */}
 
-        {/* <GeoJSON data={mapData.features} onEachFeature={onEachState} /> */}
-        {geodata && <ShapeFile data={geodata.data} />}
-      </MapContainer>
+      <GeoJSON data={mapData.features} onEachFeature={onEachState} />
     </div>
   );
 };

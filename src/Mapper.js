@@ -8,24 +8,7 @@ import { Buffer } from "buffer";
 import { MapContainer, TileLayer, LayersControl } from 'react-leaflet'
 const { BaseLayer, Overlay } = LayersControl;
 const shapefile = require('shapefile')
-const onEachFeature = (feature, layer) => {
-  if (feature.properties) {
-    layer.bindPopup(Object.keys(feature.properties).map(function (k) {
-      return k + ": " + feature.properties[k];
-    }).join("<br />"), {
-      maxHeight: 200
-    });
-  }
-}
-const style = () => {
-  return ({
-    weight: 2,
-    opacity: 1,
-    color: "blue",
-    dashArray: "3",
-    fillOpacity: 0.7
-  });
-}
+
 export default function ShapefileExample() {
   const [geodata, setGeodata] = useState([]);
   var ShpData = null, DbfData = null;
@@ -63,11 +46,7 @@ export default function ShapefileExample() {
     }
 
   }
-  const comboIsLoaded = () => {
-    if (DbfData && ShpData) {
-      console.log("ready")
-    }
-  }
+
   function getExtension(filename) {
     var parts = filename.split(".");
     return parts[parts.length - 1];

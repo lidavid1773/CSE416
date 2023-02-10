@@ -14,9 +14,7 @@ const geo = L.geoJson(
     onEachFeature: function popUp(f, l) {
       var out = [];
       if (f.properties) {
-        for (var key in f.properties) {
-          out.push(key + ": " + f.properties[key]);
-        }
+        out.push(" " + f.properties["NAME_1"]);
         l.bindPopup(out.join("<br />"));
       }
     }

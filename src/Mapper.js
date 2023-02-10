@@ -28,89 +28,91 @@ const style = () => {
 }
 export default function ShapefileExample() {
   const [geodata, setGeodata] = useState([]);
+  var ShpData = null, DbfData = null;
   const handleFile = (e) => {
-  let file = document.getElementById("inputfile").files[0];
-  if (file) {
-    let ext = getExtension(file.name);
-    switch (ext) {
-      case "geojson":
-        readDataFromGeojsonFile(file);
-        break;
-      case "shp":
-        readDataFromShpFile(file);
-        break;
-      case "zip":
-        readDataFromShpZipFile(file);
-        break;
-      default:
-        alert("Invalid file ");
+    for (let file of e.currentTarget.files) {
+      let reader = new FileReader();
+      let ext = getExtension(file.name);
+      var data=[]
+      // eslint-disable-next-line no-loop-func
+      reader.onload = () => {
+        if (ext === "dbf") {
+          DbfData = reader.result;
+        }
+        else if (ext === "shp") {
+          ShpData = reader.result;
+        }
+        if (ShpData && DbfData) {
+          shapefile.open(reader.result).then((source) =>
+            source.read().then(function log(result) {
+              if (result.done) {
+                return;
+              }
+              data.push(result.value)
+              
+              setGeodata(data);
+              return source.read().then(log);
+            })
+          )
+            .catch((error) => console.error(error.stack));
+        }
+      }
+      reader.readAsArrayBuffer(file);
+
+
+    }
+
+  }
+  const comboIsLoaded = () => {
+    if (DbfData && ShpData) {
+      console.log("ready")
     }
   }
+  const readFile = (file) => {
+    const reader = new FileReader();
+    if (file) {
+      let ext = getExtension(file.name);
+
+      reader.onload = () => {
+        if (ext === "dbf") {
+          DbfData = reader.result;
+
+        }
+        else if (ext === "shp") {
+          ShpData = reader.result;
+        }
+        comboIsLoaded()
+
+      }
+
+      reader.readAsArrayBuffer(file);
+    }
+
   }
   function getExtension(filename) {
     var parts = filename.split(".");
     return parts[parts.length - 1];
   }
-  function readDataFromGeojsonFile(file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const fc = JSON.parse(reader.result.toString());
-      if (fc && fc.features.length > 0) {
-        setGeodata(fc);
-      }
-    };
-    reader.readAsText(file);
-  }
-  function readDataFromShpFile(file) {
-    const reader = new FileReader();
-    var c = 0
-    var data=[]
-    reader.onload = (event) => {
-      shapefile
-        .openShp(reader.result)
-        .then((source) =>
-          source.read().then(function log(result) {
-            if (result.done) {
-              return;
-            }
-            c++;
-            data.push(result.value)
-            // console.log(data);
-            setGeodata(data);
-            return source.read().then(log);
-          })
-        )
-        .catch((error) => console.error(error.stack));
-    };
-    reader.readAsArrayBuffer(file);
-  }
-  
-  function readDataFromShpZipFile(file) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      shp(reader.result).then(function (fc) {
-        if (fc.features.length > 0) {
-          setGeodata(fc);
-        }
-      });
-    };
-    reader.readAsArrayBuffer(file);
-  }
+
+
   return (
     <div>
       <div >
-        <input type="file" onChange={handleFile} id="inputfile" />
+        <input type="file" accept=".shp , .dbf" onChange={handleFile} id="files" multiple />
+        upload shapefile and dbf file together
       </div>
+      {/* <input type="file" accept=".dbf" onChange={handleDbfFile} id="dbffile" />
+      Choose a bdf file */}
       <MapContainer center={[42.09618442380296, -71.5045166015625]} zoom={2} zoomControl={true}>
         <LayersControl position='topright'>
           <BaseLayer checked name='OpenStreetMap.Mapnik'>
-            <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
+            {/* <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" /> */}
           </BaseLayer>
         </LayersControl>
-        {geodata && 
-        <Overlay checked name='Feature group'>
-          <ShapeFile geodata={geodata} />
-        </Overlay>}
+        {geodata.length !== 0 &&
+          <Overlay checked name='Feature group'>
+            <ShapeFile geodata={geodata} />
+          </Overlay>}
       </MapContainer>
 
 

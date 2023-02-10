@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useMap } from "react-leaflet";
+import { useMap,GeoJSON } from "react-leaflet";
 import L, { geoJSON } from "leaflet";
 
  function Shapefile( FileData ) {
@@ -22,14 +22,15 @@ const geo = L.geoJson(
     }
   }
 ).addTo(map);
-console.log(FileData)
+
   useEffect(() => {
     
     for (let data of FileData.geodata){
-    
       geo.addData(data);
+      <GeoJSON data = {data.features} />
     }
   }, [FileData]
+
   );
  
   return null;

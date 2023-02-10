@@ -8,6 +8,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 function App() {
 
   const [geodata, setGeodata] = useState(null);
+  const [show, setShow] = useState(true);
 
   var style = {
     backgroundColor:'white',
@@ -28,6 +29,7 @@ function App() {
       function onReaderLoad(event){
           var obj = JSON.parse(event.target.result);
           setGeodata(obj);
+          setShow(false);
           document.querySelector(".infos").innerHTML=`name:${obj.Userinfo.name}interest: ${obj.Userinfo.interest}`
       
    }
@@ -43,20 +45,10 @@ function App() {
       <div>
         <input style={style} type="file" id="GeoJson" accept="application/JSON" onInput={onInput} required/>
       </div>
-
-      <br/>
-      {/* {
-        show && (<input id = 'changename' style={{width:'30%'}} value={regionname} onInput={e => setName(e.target.value)} placeholder='Change region name here and press enter!' 
-                onKeyDown={e => {
-                  if(e.key === 'Enter'){
-                    setDone(true);
-                  }
-                }}
-        />)
-      } */}
+      {show && <p>Please choose a GeoJson file!</p>}
       <br/>
 
-      <MyMap geodata = {geodata} setGeodata = {setGeodata}></MyMap>
+      <MyMap geodata = {geodata}></MyMap>
       
 
       </header>

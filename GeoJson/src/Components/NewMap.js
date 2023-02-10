@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useMap, GeoJSON } from "react-leaflet";
 import L, { geoJSON, layerGroup } from "leaflet";
 
-export default function NewMap({geodata, setGeodata}) {
+export default function NewMap({geodata}) {
   const map = useMap();
   var highlight = {
 		'fillColor': 'yellow',

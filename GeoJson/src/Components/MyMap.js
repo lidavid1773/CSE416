@@ -5,8 +5,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 export default function MyMap({geodata}){
 
   const [show, setShow] = useState(false);
-  // const [text, setText] = useState("");
-  // const [regname, setName] = useState("");
 
   var countyStyle = {
     fillColor : 'red',
@@ -24,37 +22,24 @@ export default function MyMap({geodata}){
   const onEachCounty = (county,layer) => {
     const county_name = county.properties.NAME;
     layer.draggable = true;
+    if(county_name){
+      layer.bindPopup(county_name).openPopup();
+    }
         layer.on({
-      click: (e) => {
-        if(county_name){
-          layer.bindPopup(county_name).openPopup();
-        }
-      },
-      dblclick: (e) => {
-        layer.setStyle(highlight)
-        let name = prompt("Please Enter a new region name!");
-        if(name != null && name != ""){
-          county.properties.NAME = name;
-          layer.bindPopup(name).openPopup();
-        }
-      },
+          dblclick: (e) => {
+            layer.setStyle(highlight)
+            let name = prompt("Please Enter a new region name!");
+            if(name != null && name != ""){
+              county.properties.NAME = name;
+              layer.bindPopup(name).openPopup();
+            }
+          },
     });    
   }
 
   return (
 
     <div style={{width : '100%'}}>
-        {/* {
-          show && <input id = 'changename' style={{width:'30%'}} value={text} onInput={e => setText(e.target.value)} placeholder='Change region name here and press enter!' 
-                onKeyDown={e => {
-                  if(e.key === 'Enter'){
-                    changeName(text,regname);                    
-                  }
-                }}
-                />
-        } */}
-        <br/>
-        <br/>
         {
           ( geodata && <MapContainer center = {[45, -100.4173]} zoom = {4} scrollWheelZoom = {true} doubleClickZoom = {false}>
             <TileLayer

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-
-import { useMap, GeoJSON } from "react-leaflet";
-import L, { geoJSON } from "leaflet";
-
-function Shapefile(FileData) {
+import { useMap, } from "react-leaflet";
+import L from "leaflet";
+export default function Shapefile(FileData) {
   var dissolve = require("geojson-dissolve");
   const [region, setRegion] = useState([]);
   const [mapData, setmapData] = useState(FileData);
@@ -14,8 +12,6 @@ function Shapefile(FileData) {
     opacity: 1
   };
   var count = 0;
-
-
   const geo = L.geoJson(
     {
       features: []
@@ -26,6 +22,8 @@ function Shapefile(FileData) {
         if (features.properties) {
           out.push(" " + features.properties["NAME_1"]);
           layer.bindPopup(out.join("<br />"));
+          // layer.bindTooltip("my tooltip text").openTooltip();
+          layer.setTooltipContent("my tooltip text")
           layer.on("click", function (e) {
             if (!e["sourceTarget"]["options"]["fillColor"] !== "yellow") {
               region[count] = features;
@@ -47,8 +45,6 @@ function Shapefile(FileData) {
               newFiledata.geodata.push(newRegion);
               geo.remove(region[0])
               geo.remove(region[1])
-              // console.log(region)
-              
               for(let geodata of mapData.geodata){
                 if(geodata !== region[0] && geodata !== region[1]){
                   newFiledata.geodata.push(geodata);
@@ -58,9 +54,6 @@ function Shapefile(FileData) {
               console.log(newFiledata)
               setmapData(newFiledata);
               setRegion([]);
-              // if (map !== undefined) { 
-              //   console.log("new map");
-              //   map.remove(); } 
             }
           });
           var coords = [];
@@ -76,7 +69,6 @@ function Shapefile(FileData) {
                   { radius: 3 }
                 )
                 marker.addEventListener("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
-
               });
             });
           }
@@ -84,7 +76,6 @@ function Shapefile(FileData) {
       }
     }
   ).addTo(map);
-
   var vertexLayer = L.layerGroup(({
     features: [
     ]
@@ -93,19 +84,14 @@ function Shapefile(FileData) {
       console.log(l)
     }
   }
-
   ));
-
   map.addLayer(vertexLayer);
   const removeVertex = function (latlng, features,marker) {
     return () => {
-
       console.log(features)
       if (features.geometry.type === 'Polygon')
         console.log("polyon")
       if (checkCoodinates(features.geometry.coordinates,latlng,marker)) {
-        
-        
         return
       }
       else
@@ -114,20 +100,14 @@ function Shapefile(FileData) {
           for (let position of coordinates) {
             console.log(position)
             if (checkCoodinates(position, latlng,marker)) {
-             
-              
               return
             }
           }
-
         }
     }
-
   }
   const checkCoodinates = (position, latlng,marker) => {
-
     console.log(position.length)
-
     for (let i in position) {
       if (latlng.lat === position[i][1] && latlng.lng === position[i][0]) {
         position.splice(i, 1)
@@ -142,20 +122,12 @@ function Shapefile(FileData) {
   }
   useEffect(() => {
     console.log("render");
-    
     console.log(mapData)
     for (let data of mapData.geodata) {
       geo.addData(data);
-      
-      // <GeoJSON data={data.features} />
+
     }
   }, [mapData]);
-
   return null;
 }
 
-// Shapefile.propTypes = {
-//   zipUrl: PropTypes.string.isRequired
-// };
-
-export default Shapefile;

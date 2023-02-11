@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import MyMap from "./Components/MyMap";
+import "./App.css";
+import { MapContainer } from "react-leaflet";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+const App = () => {
+  const [geoData, setGeoData] = useState(null);
+
+  let handleSetFile = (e) => {
+    const reader = new FileReader();
+    reader.readAsText(e.target.files[0]);
+    reader.onload = (e) => {
+      setGeoData(e.target.result);
+    };
+  };
+
+  return !geoData ? (
+    <div>
+      <div>Select a geojson file</div>
+      <input type="file" onChange={handleSetFile} />
     </div>
+  ) : (
+    <MapContainer center={[35, -100]} zoom={4.5} scrollWheelZoom={true}>
+      <MyMap geoData={JSON.parse(geoData)} />
+    </MapContainer>
   );
-}
+};
 
 export default App;

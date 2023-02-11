@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+
 import { useMap, GeoJSON } from "react-leaflet";
 import L, { geoJSON } from "leaflet";
-import {turf} from "turf-union"
+
 function Shapefile(FileData) {
   var dissolve = require("geojson-dissolve");
   const [region, setRegion] = useState([]);
@@ -36,6 +36,7 @@ function Shapefile(FileData) {
               var newFiledata={
                 geodata:[]
               }
+              let name = prompt("Enter a new region name!");
               var union = dissolve(region[0], region[1]);
               var newRegion ={};
               newRegion.type = "Feature";

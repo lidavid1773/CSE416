@@ -23,7 +23,7 @@ export default function Shapefile(FileData) {
           out.push(" " + features.properties["NAME_1"]);
           layer.bindPopup(out.join("<br />"));
           // layer.bindTooltip("my tooltip text").openTooltip();
-          layer.setTooltipContent("my tooltip text")
+          // layer.setTooltipContent("my tooltip text")
           layer.on("click", function (e) {
             if (!e["sourceTarget"]["options"]["fillColor"] !== "yellow") {
               region[count] = features;

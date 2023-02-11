@@ -17,34 +17,21 @@ const MyMap = ({ geoData }) => {
     let polygon = L.polygon(state.geometry.coordinates);
     let latlng = polygon.getBounds().getCenter();
     // Put a popup w/ state's name for each state in map*/
+    // .ADMIN or .NAME is hardcoded. After prototype, find a way to work for all
     L.popup({ closeOnClick: false, autoClose: false, closeButton: false })
       .setLatLng({ lat: latlng.lng, lng: latlng.lat })
-      .setContent(`<p>${state.properties.NAME}</p>`)
+      .setContent(`<p>${state.properties.ADMIN || state.properties.NAME}</p>`)
       .openOn(map);
-
-    // let popup = L.popup({
-    //   closeOnClick: false,
-    //   autoClose: false,
-    //   closeButton: false
-    // })
-    //   .setLatLng({ lat: latlng.lng, lng: latlng.lat })
-    //   .setContent(`<p>${state.properties.NAME}</p>`);
-
-    // layer.bindPopup(popup).addTo(map);
-    // layer.openPopup();
-    // layer.closePopup();
 
     // Set layer event handlers
     layer.on({
-      mouseover: (e) => {
-        const layer = e.target;
+      mouseover: () => {
         layer.setStyle({
           fillOpacity: 1,
           fillColor: "#007eff"
         });
       },
-      mouseout: (e) => {
-        const layer = e.target;
+      mouseout: () => {
         layer.setStyle({
           fillOpacity: 0.25,
           color: "#3388ff",

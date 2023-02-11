@@ -6,6 +6,7 @@ import {turf} from "turf-union"
 function Shapefile(FileData) {
   var dissolve = require('geojson-dissolve')
   const [region, setRegion] = useState([])
+  const [mapData, setmapData] = useState(FileData);
   const map = useMap();
   var highlight = {
     'fillColor': 'yellow',
@@ -13,23 +14,11 @@ function Shapefile(FileData) {
     'opacity': 1
   };
   var count = 0;
-  
-  // console.log(arrayBufferToGeoJSON(zipUrl.geodata));
   const geo = L.geoJson(
     {
       features: [
-
       ]
     },
-    // {
-    //   style: function (feature) { // Style option
-    //     return {
-    //         'weight': 1,
-    //         'color': 'black',
-    //         'fillColor': 'blue'
-    //     }
-    // }
-    // },
     {
       onEachFeature: function popUp(features, layer) {
         var out = [];
@@ -43,9 +32,31 @@ function Shapefile(FileData) {
               count++;
             }
             if(count === 2){
-              console.log(region);
+              var newFiledata={
+                geodata:[]
+              }
               var union = dissolve(region[0], region[1]);
-              console.log(union);
+              var newRegion ={};
+              newRegion.type = "Feature";
+              newRegion.properties = region[0].properties;
+              newRegion.geometry = union;
+              console.log(newRegion)
+              // newFiledata.geodata.push(union);
+              newFiledata.geodata.push(newRegion);
+              geo.remove(region[0])
+              geo.remove(region[1])
+              for(let geodata of FileData.geodata){
+                if(geodata !== region[0] && geodata !== region[1]){
+                  newFiledata.geodata.push(geodata);
+                  
+                }
+                
+              }
+              count =0;
+              setmapData(newFiledata);
+              // if (map !== undefined) { 
+              //   console.log("new map");
+              //   map.remove(); } 
             }
           });
         }
@@ -60,13 +71,15 @@ function Shapefile(FileData) {
   //   })
   // }}).addTo(map);
   useEffect(() => {
-
-    for (let data of FileData.geodata) {
+    console.log("render");
+    
+    console.log(mapData)
+    for (let data of mapData.geodata) {
       geo.addData(data);
       
-      <GeoJSON data={data.features} />
+      // <GeoJSON data={data.features} />
     }
-  }, [FileData]
+  }, [mapData]
 
   );
 

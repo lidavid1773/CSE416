@@ -40,20 +40,22 @@ function Shapefile(FileData) {
               newRegion.type = "Feature";
               newRegion.properties = region[0].properties;
               newRegion.geometry = union;
-              console.log(newRegion)
+              // console.log(newRegion)
               // newFiledata.geodata.push(union);
               newFiledata.geodata.push(newRegion);
               geo.remove(region[0])
               geo.remove(region[1])
-              for(let geodata of FileData.geodata){
+              // console.log(region)
+              
+              for(let geodata of mapData.geodata){
                 if(geodata !== region[0] && geodata !== region[1]){
                   newFiledata.geodata.push(geodata);
-                  
                 }
-                
               }
               count =0;
+              console.log(newFiledata)
               setmapData(newFiledata);
+              setRegion([]);
               // if (map !== undefined) { 
               //   console.log("new map");
               //   map.remove(); } 

@@ -4,10 +4,13 @@ import L from "leaflet";
 export default function Shapefile(FileData) {
   const dissolve = require("geojson-dissolve");
   const [region, setRegion] = useState([]);
+  const [regionLayer, setRegionLayer] = useState([]);
+  
   const [mapData, setmapData] = useState(FileData);
   const [removeMode, setRemoveMode] = useState(false);
   const [reRender,setReRender] = useState(false);
   const map = useMap();
+
   const style = {
     default: {
       "color": "#3388ff",
@@ -25,55 +28,43 @@ export default function Shapefile(FileData) {
     { features: [] },
     {
       onEachFeature: function popUp(features, layer) {
-        
         if (features.properties) {
           const admLevel = checkAdmLevel(features)
           admName = "NAME_" + admLevel
           layer.bindPopup(features.properties[admName]);
-          layer.on("click", function (e) {
-            if (e["sourceTarget"]["options"]["color"] !== "red") {
-              region[count] = features;
-              layer.setStyle(style.click)
-              count++;
-            }
-            else{
-              layer.setStyle(style.default)
-              region[count] = null;
-              count--;
-            }
-            if(count === 2){
-               mergeRegions(layer);
-            }
-            else if (count <0){
-              count = 0 ;
-            }
-          });
-          // vertexDisplay(features);
+          // layer.on("click", function (e) {
+          //   if (e["sourceTarget"]["options"]["color"] !== "red") {
+          //     region[count] = features;
+          //     regionLayer[count]=layer;
+          //     layer.setStyle(style.click)
+          //     count++;
+          //   }
+          //   else{
+          //     layer.setStyle(style.default)
+          //     region[count] = null;
+          //     regionLayer[count]=null;
+          //     count--;
+          //   }
+          //   if(count === 2){
+          //     mergeRegions();
+          //   }
+          //   else if (count <0){
+          //     count = 0 ;
+          //   }
+          // });
+          vertexDisplay(features);
         }
       }
     }
   ).addTo(map);
-
-  const vertexLayer = L.layerGroup(
-    ({
-      features: [
-      ]
-    }, {
-      onEachFeature: function popUp(f, l) {
-        console.log(l)
-      }
-    }
-    )
-  );
+  
+  const vertexLayer = L.layerGroup();
   map.addLayer(vertexLayer);
   const checkAdmLevel = (features) => {
     return features.properties["NAME_2"] != null ? 2 :
       features.properties["NAME_1"] != null ? 1 : 0
   }
   const mergeRegions = (layer) => {
-    var newFiledata = {
-      geodata: []
-    }
     var union = dissolve(region[0], region[1]);
     var newRegion = {};
     newRegion.type = "Feature";
@@ -84,26 +75,16 @@ export default function Shapefile(FileData) {
       layer.bindPopup(newName)
     }
     newRegion.geometry = union;
-    newFiledata.geodata.push(newRegion);
-    geo.remove(region[0])
-    geo.remove(region[1])
-   
-    console.log("hi");
-    // geo.addData(newRegion)
-    // for (let geodata of mapData.geodata) {
-    //   if (geodata !== region[0] && geodata !== region[1]) {
-    //     newFiledata.geodata.push(geodata);
-    //   }
-    // }
+    regionLayer[0].remove()
+    regionLayer[1].remove()
+    geo.addData(newRegion)
     count = 0;
-    // console.log(newFiledata)
-    // setmapData(newFiledata);
-    // setRegion([]);
   }
   const removeVertex = function (latlng, features, marker) {
     return () => {
       marker.off("click");
-      map.removeLayer(marker)
+      marker.remove()
+      
     }
     // {
     //   console.log(features)
@@ -132,7 +113,7 @@ export default function Shapefile(FileData) {
         // vertexLayer.removeLayer(marker);
         marker.off("click");
         map.removeLayer(marker)
-        geo.remove(features)
+        geo.remove()
         setReRender(!reRender);
         // setmapData(mapData);
         // 

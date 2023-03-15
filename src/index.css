@@ -27,3 +27,11 @@
   width: 500px;
   height: 5000px;
 }
+.btnWrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+.my-div-icon{
+  width: 250px;
+}

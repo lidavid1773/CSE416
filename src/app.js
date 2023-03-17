@@ -42,7 +42,7 @@ export default function ShapefileExample() {
     var parts = filename.split(".");
     return parts[parts.length - 1];
   }
-  
+  console.log(geodata.length)
   return (
     <div>
       <div >
@@ -55,10 +55,10 @@ export default function ShapefileExample() {
           <BaseLayer checked name='OpenStreetMap.Mapnik'>
           </BaseLayer>
         </LayersControl> */}
-        {geojson.length !== 0 &&
+        {/* {geodata.length === 0 && geojson.length !== 0 &&
           <Overlay checked name='Feature group'>
              <ShapeFile geodata={[geojson]} />
-          </Overlay>}
+          </Overlay>} */}
          {/* {geodata.length !== 0 &&
           <Overlay checked name='Feature group'>
              <ShapeFile geodata={geodata} />

@@ -16,7 +16,9 @@ export default function Shapefile(FileData) {
   const [removeMode, setRemoveMode] = useState(false);
   const [reRender, setReRender] = useState(false);
   var map = useMap();
+  var admName;
   var count = 0;
+  var geojson ;
   const style = {
     default: {
       "color": "#3388ff",
@@ -56,11 +58,9 @@ export default function Shapefile(FileData) {
 
     }
   }
-  var admName;
-  var geo = L.geoJson(
-    { features: [] },
-    { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } }
-  ).addTo(map);
+ 
+  
+
 
   const vertexLayer = L.layerGroup();
   map.addLayer(vertexLayer);
@@ -82,7 +82,7 @@ export default function Shapefile(FileData) {
     newRegion.geometry = union;
     regionLayer[0].remove()
     regionLayer[1].remove()
-    geo.addData(newRegion)
+    geojson.addData(newRegion)
     count = 0;
   }
   const removeVertex = function (latlng, features, marker) {
@@ -116,22 +116,38 @@ export default function Shapefile(FileData) {
   }
   const makerDraggingMovement = (funct, marker, coordinates) => {
     marker.on('click', function (e) {
-      console.log(coordinates);
-      console.log(marker.index);
+      // console.log(coordinates);
       // console.log(marker.index);
-      console.log(coordinates[marker.index])
+      // console.log(marker.index);
+      // console.log(coordinates[marker.index])
+      // geojson.eachLayer(layer => {
+      //   // Check if the layer is a polyline or polygon
+      //   if (layer instanceof L.Polyline) {
+      //     // Get the layer's coordinates
+      //     const coords = layer.getLatLngs();
+      //     // coords.splice(marker.index)
+      //     console.log(coords)
+      //   }
+      // });
 
     })
     marker.on('drag', function (e) {
       var latlng = e.target.getLatLng();
       marker.setPopupContent(showLatLng(latlng))
       marker.openPopup()
-      // console.log(marker.index);
-
       const newLatLng = [latlng.lng, latlng.lat]
       coordinates[marker.index] = newLatLng
       console.log(coordinates[marker.index])
-
+      geojson.eachLayer(layer => {
+        // Check if the layer is a polyline or polygon
+        if (layer instanceof L.Polyline) {
+          // Get the layer's coordinates
+          const coords = layer.getLatLngs();
+          coords[0][marker.index]=(e.target.getLatLng())
+          layer.setLatLngs(coords)
+          return 
+        }
+      });
     })
     marker.on('dragstart', function (e) {
       map.off('click', funct);
@@ -140,14 +156,6 @@ export default function Shapefile(FileData) {
       console.log('marker dragend event');
       console.log(marker.index);
       console.log(coordinates[marker.index]);
-      setReRender(!reRender);
-      // console.log(vertexLayer.getlayers())
-      map.eachLayer(function(layer) {
-        if (!!layer.toGeoJSON) {
-          map.removeLayer(layer);
-        }
-      });
-    
     });
   }
   const insertVertex = (e) => {
@@ -179,7 +187,7 @@ export default function Shapefile(FileData) {
         vertexArray.forEach(function (latlng) {
           var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer)
           marker.bindPopup(showLatLng(latlng))
-          // marker.addEventListener("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
+          // marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
           // dragVertex(marker);
 
           makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
@@ -188,7 +196,7 @@ export default function Shapefile(FileData) {
           // console.log(marker)
           markerIndex++
           // marker.markerIndex++;
-
+          // console.log(marker)
         });
       });
     }
@@ -196,10 +204,19 @@ export default function Shapefile(FileData) {
   // map.on('click', insertVertex);
   // map.off('click',insertVertex);
   useEffect(() => {
+    console.log("only once")
+    
+   geojson = L.geoJson(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+    .addTo(map);
+   
+  }, []);
+  useEffect(() => {
     console.log(mapData.geodata)
     
-    L.geoJson(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
-    .addTo(map);
+
+    
+  //   L.polygon(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+  //  .addTo(map);
     
   }, [reRender]);
   return (<div >

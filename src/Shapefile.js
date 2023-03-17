@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { MapContainer, Marker, useMap, } from "react-leaflet";
-import L, { marker } from "leaflet";
-
+import L, { marker, polygon } from "leaflet";
 import { saveAs } from 'file-saver';
 import Editbutton from "./exportButton";
 import ExportButton from "./exportButton";
 import { markerIcon } from "./Icon";
 import { featureGroup } from "leaflet";
+import { difference, lineSplit, lineString, lineStringToPolygon, lineToPolygon } from "@turf/turf"
+// import { lineToPolygon } from "@turf/turf/dist/js";
+// import { turf } from "@turf/turf"
 export default function Shapefile(FileData) {
   const dissolve = require("geojson-dissolve");
+  // const turf = require("turf/turf");
   const [region, setRegion] = useState([]);
   const [regionLayer, setRegionLayer] = useState([]);
 
@@ -18,7 +21,7 @@ export default function Shapefile(FileData) {
   var map = useMap();
   var admName;
   var count = 0;
-  var geojson ;
+  var geojson;
   const style = {
     default: {
       "color": "#3388ff",
@@ -33,7 +36,7 @@ export default function Shapefile(FileData) {
     if (features.properties) {
       const admLevel = checkAdmLevel(features)
       admName = "NAME_" + admLevel
-      layer.bindPopup(features.properties[admName]);
+      // layer.bindPopup(features.properties[admName]);
       // layer.on("click", function (e) {
       //   if (e["sourceTarget"]["options"]["color"] !== "red") {
       //     region[count] = features;
@@ -58,13 +61,8 @@ export default function Shapefile(FileData) {
 
     }
   }
- 
-  
-
-
   const vertexLayer = L.layerGroup();
   map.addLayer(vertexLayer);
-
   const checkAdmLevel = (features) => {
     return features.properties["NAME_2"] != null ? 2 :
       features.properties["NAME_1"] != null ? 1 : 0
@@ -104,80 +102,107 @@ export default function Shapefile(FileData) {
         }
     }
   }
-  const regluarSearch2D = (arr2D, obj) => {
-    
-    for(let i in arr2D){
+  const markerIndexSearch = (arr2D, obj) => {
+    for (let i in arr2D) {
       var latlng = arr2D[i];
-      if(latlng.lng === obj.lng && latlng.lat === obj.lat){
-
+      if (latlng.lng === obj.lng && latlng.lat === obj.lat) {
         return i;
       }
     }
     return -1; // if obj is not found in the 2D array
   };
-  
   const removeCoodinates = (position, latlng, marker, features) => {
-    
+
+    // geojson.eachLayer(polyLineLayer => {
+    //   // Check if the layer is a polyline or polygon
+    //   if (polyLineLayer instanceof L.Polyline) {
+    //     // Get the layer's coordinates
+
+    //     return
+    //   }
+    // });
+    const polyLineLayer = getPolyLineLayer();
+    const coords = polyLineLayer.getLatLngs()[0];
+    var index = markerIndexSearch(coords, latlng)
+    if (index === 0 || index === coords[0].length - 1)
+      coords.splice(index, 1)
+    coords.splice(index, 1)
+    marker.remove()
+    polyLineLayer.setLatLngs(coords)
+  }
+  const getPolyLineLayer = () => {
+    const polylineLayer = [];
     geojson.eachLayer(layer => {
-      // Check if the layer is a polyline or polygon
       if (layer instanceof L.Polyline) {
-        // Get the layer's coordinates
-        const coords = layer.getLatLngs()[0];
-        var index = regluarSearch2D(coords,latlng)
-        if(index  === 0 || index === coords[0].length)
-            coords.splice(index,1)
-        coords.splice(index,1)
-        marker.remove()
-        layer.setLatLngs(coords)
-        return 
+        polylineLayer.push(layer);
       }
     });
-   
-   
+    return polylineLayer[0];
   }
   const makerDraggingMovement = (funct, marker, coordinates) => {
-    marker.on('click', function (e) {
-      // console.log(coordinates);
-      // console.log(marker.index);
-      // console.log(marker.index);
-      // console.log(coordinates[marker.index])
-      // geojson.eachLayer(layer => {
-      //   // Check if the layer is a polyline or polygon
-      //   if (layer instanceof L.Polyline) {
-      //     // Get the layer's coordinates
-      //     const coords = layer.getLatLngs();
-      //     // coords.splice(marker.index)
-      //     console.log(coords)
-      //   }
-      // });
-
+    var index;
+    var PolyLineLayer;
+    var coords;
+    var latlng;
+    marker.on('mousedown', function (e) {
+      latlng = e.target.getLatLng();
+      PolyLineLayer = getPolyLineLayer();
+      coords = PolyLineLayer.getLatLngs()[0];
+      index = markerIndexSearch(coords, latlng)
     })
     marker.on('drag', function (e) {
-      var latlng = e.target.getLatLng();
+      latlng = e.target.getLatLng();
       marker.setPopupContent(showLatLng(latlng))
       marker.openPopup()
-      const newLatLng = [latlng.lng, latlng.lat]
-      coordinates[marker.index] = newLatLng
-      console.log(coordinates[marker.index])
-      geojson.eachLayer(layer => {
-        // Check if the layer is a polyline or polygon
-        if (layer instanceof L.Polyline) {
-          // Get the layer's coordinates
-          const coords = layer.getLatLngs();
-          coords[0][marker.index]=(e.target.getLatLng())
-          layer.setLatLngs(coords)
-          return 
-        }
-      });
+      coords[index] = (e.target.getLatLng())
+      PolyLineLayer.setLatLngs(coords)
     })
     marker.on('dragstart', function (e) {
       map.off('click', funct);
     });
     marker.on('dragend', function (e) {
       console.log('marker dragend event');
-      console.log(marker.index);
-      console.log(coordinates[marker.index]);
     });
+  }
+  var c = 0;
+  var splitarr = []
+  const split = (marker, features) => {
+    marker.on("click", () => {
+      c++;
+      var latlng = [marker.getLatLng().lat, marker.getLatLng().lng]
+      splitarr.push(latlng)
+      console.log(c)
+
+      if (c === 2) {
+        // console.log(splitarr,geojson);
+        var l1 = lineString(splitarr);
+        // console.log(linestring1)
+        // var p1 =  lineToPolygon(l1)
+        // console.log("bug")
+        geojson.eachLayer(layer => {
+          // Check if the layer is a polyline or polygon
+          if (layer instanceof L.Polyline) {
+            // Get the layer's coordinates
+            const coords = layer.getLatLngs()[0];
+
+            var l2 = coords.map(function (latlng) {
+              return [latlng.lat, latlng.lng];
+            });
+            // l2 = lineString(l2)
+            console.log(features)
+            // var p2 = lineToPolygon(lineString(l2))
+            // var region =  difference(p1,p2)
+            // console.log(region)
+            console.log(lineSplit(l1, features))
+
+            return
+          }
+        });
+      }
+    })
+
+
+
   }
   const insertVertex = (e) => {
     var latlng = e.latlng;
@@ -201,7 +226,7 @@ export default function Shapefile(FileData) {
       coords = features.geometry.coordinates;
     else if (features.geometry.type === 'MultiPolygon')
       features.geometry.coordinates.forEach(c => coords.push(c[0]))
-    var markerIndex = 0
+
     if (coords.length > 0) {
       coords.forEach(function (coordsArray) {
         var vertexArray = L.GeoJSON.coordsToLatLngs(coordsArray);
@@ -210,12 +235,12 @@ export default function Shapefile(FileData) {
           marker.bindPopup(showLatLng(latlng))
           marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
           // dragVertex(marker);
-
+          // marker.on("click", split);
+          // split(marker, features);
           // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
           // console.log(markerIndex)
-          marker.index = markerIndex
           // console.log(marker)
-          markerIndex++
+
           // marker.markerIndex++;
           // console.log(marker)
         });
@@ -226,19 +251,19 @@ export default function Shapefile(FileData) {
   // map.off('click',insertVertex);
   useEffect(() => {
     console.log("only once")
-    
-   geojson = L.geoJson(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
-    .addTo(map);
-   
+
+    geojson = L.geoJson(mapData.geodata, { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+      .addTo(map);
+
   }, []);
   useEffect(() => {
     console.log(mapData.geodata)
-    
 
-    
-  //   L.polygon(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
-  //  .addTo(map);
-    
+
+
+    //   L.polygon(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+    //  .addTo(map);
+
   }, [reRender]);
   return (<div >
     <ExportButton L={L} map={map} mapData={mapData}></ExportButton>

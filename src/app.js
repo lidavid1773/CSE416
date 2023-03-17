@@ -51,7 +51,7 @@ export default function ShapefileExample() {
         upload shapefile and dbf file together
       </div>
     
-      <MapContainer center={[55, 33]} zoom={5} zoomControl={true}>
+      <MapContainer center={[48, 28]} zoom={6} zoomControl={true}>
         {/* <LayersControl position='topleft'>
           <BaseLayer checked name='OpenStreetMap.Mapnik'>
           </BaseLayer>

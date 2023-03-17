@@ -89,7 +89,7 @@ export default function Shapefile(FileData) {
     return () => {
       console.log(features.geometry.type)
       if (features.geometry.type === 'Polygon') {
-        if (checkCoodinates(features.geometry.coordinates, latlng, marker, features)) {
+        if (removeCoodinates(features.geometry.coordinates, latlng, marker, features)) {
           return
         }
       }
@@ -97,22 +97,43 @@ export default function Shapefile(FileData) {
         for (let coordinates of features.geometry.coordinates) {
           console.log("Multipolyon")
           for (let position of coordinates) {
-            if (checkCoodinates(position, latlng, marker, features)) {
+            if (removeCoodinates(position, latlng, marker, features)) {
               return
             }
           }
         }
     }
   }
-  const checkCoodinates = (position, latlng, marker, features) => {
-    for (let i in position) {
-      if (latlng.lat === position[i][1] && latlng.lng === position[i][0]) {
-        position.splice(i, 1)
-        setReRender(!reRender);
-        return true
+  const regluarSearch2D = (arr2D, obj) => {
+    
+    for(let i in arr2D){
+      var latlng = arr2D[i];
+      if(latlng.lng === obj.lng && latlng.lat === obj.lat){
+
+        return i;
       }
     }
-    return false
+    return -1; // if obj is not found in the 2D array
+  };
+  
+  const removeCoodinates = (position, latlng, marker, features) => {
+    
+    geojson.eachLayer(layer => {
+      // Check if the layer is a polyline or polygon
+      if (layer instanceof L.Polyline) {
+        // Get the layer's coordinates
+        const coords = layer.getLatLngs()[0];
+        var index = regluarSearch2D(coords,latlng)
+        if(index  === 0 || index === coords[0].length)
+            coords.splice(index,1)
+        coords.splice(index,1)
+        marker.remove()
+        layer.setLatLngs(coords)
+        return 
+      }
+    });
+   
+   
   }
   const makerDraggingMovement = (funct, marker, coordinates) => {
     marker.on('click', function (e) {
@@ -187,10 +208,10 @@ export default function Shapefile(FileData) {
         vertexArray.forEach(function (latlng) {
           var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer)
           marker.bindPopup(showLatLng(latlng))
-          // marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
+          marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
           // dragVertex(marker);
 
-          makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
+          // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
           // console.log(markerIndex)
           marker.index = markerIndex
           // console.log(marker)

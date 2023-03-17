@@ -3,7 +3,7 @@ import './index.css';
 import 'leaflet/dist/leaflet.css';
 import ShapeFile from "./shapeFile.js";
 import { MapContainer, LayersControl } from 'react-leaflet'
-import geojson from "./geojson (8).json"
+import geojson from "./geojson (1).json"
 const { BaseLayer, Overlay } = LayersControl;
 const shapefile = require('shapefile')
 export default function ShapefileExample() {
@@ -14,6 +14,7 @@ export default function ShapefileExample() {
       let reader = new FileReader();
       let ext = getExtension(file.name);
       var data=[]
+      // console.log('working')
       // eslint-disable-next-line no-loop-func
       reader.onload = () => {
         if (ext === "dbf") {
@@ -42,7 +43,7 @@ export default function ShapefileExample() {
     var parts = filename.split(".");
     return parts[parts.length - 1];
   }
-  console.log(geodata.length)
+  
   return (
     <div>
       <div >
@@ -50,15 +51,15 @@ export default function ShapefileExample() {
         upload shapefile and dbf file together
       </div>
     
-      <MapContainer center={[51, 35]} zoom={5} zoomControl={true}>
+      <MapContainer center={[55, 33]} zoom={5} zoomControl={true}>
         {/* <LayersControl position='topleft'>
           <BaseLayer checked name='OpenStreetMap.Mapnik'>
           </BaseLayer>
         </LayersControl> */}
-        {/* {geodata.length === 0 && geojson.length !== 0 &&
+        {geodata.length === 0 && geojson.length !== 0 &&
           <Overlay checked name='Feature group'>
              <ShapeFile geodata={[geojson]} />
-          </Overlay>} */}
+          </Overlay>}
          {/* {geodata.length !== 0 &&
           <Overlay checked name='Feature group'>
              <ShapeFile geodata={geodata} />

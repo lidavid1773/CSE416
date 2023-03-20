@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import { MapContainer, Marker, useMap, } from "react-leaflet";
+import { useContext, useEffect, useState } from "react";
+import { MapContainer, Marker, useMap, FeatureGroup,useMapEvents} from "react-leaflet";
 import L, { marker, polygon } from "leaflet";
-import { saveAs } from 'file-saver';
-import Editbutton from "./exportButton";
+
 import ExportButton from "./exportButton";
 import { markerIcon } from "./Icon";
-import { featureGroup } from "leaflet";
-import { difference, lineSplit, lineString, lineStringToPolygon, lineToPolygon } from "@turf/turf"
+import SimplificationButton from "./simplificationButton";
+import  {GlobalGeoJsonContext }from "./App"
+
+import { difference, lineSplit, lineString, lineStringToPolygon, lineToPolygon,simplify } from "@turf/turf"
+import RightClickMenu from "./ContextMenu";
 // import { lineToPolygon } from "@turf/turf/dist/js";
 // import { turf } from "@turf/turf"
 export default function Shapefile(FileData) {
@@ -14,14 +16,12 @@ export default function Shapefile(FileData) {
   // const turf = require("turf/turf");
   const [region, setRegion] = useState([]);
   const [regionLayer, setRegionLayer] = useState([]);
-
-  const [mapData, setmapData] = useState(FileData);
-  const [removeMode, setRemoveMode] = useState(false);
-  const [reRender, setReRender] = useState(false);
-  var map = useMap();
+  const [geojson, setgeojson] = useContext(GlobalGeoJsonContext)
+  var map = useMap(); 
   var admName;
   var count = 0;
-  var geojson;
+  var geojsonLayer;
+ 
   const style = {
     default: {
       "color": "#3388ff",
@@ -58,7 +58,6 @@ export default function Shapefile(FileData) {
       //   }
       // });
       vertexDisplay(features);
-
     }
   }
   const vertexLayer = L.layerGroup();
@@ -80,8 +79,11 @@ export default function Shapefile(FileData) {
     newRegion.geometry = union;
     regionLayer[0].remove()
     regionLayer[1].remove()
-    geojson.addData(newRegion)
+    geojsonLayer.addData(newRegion)
     count = 0;
+  }
+  function showCoordinates (e) {
+    alert(e.latlng);
   }
   const removeVertex = function (latlng, features, marker) {
     return () => {
@@ -112,15 +114,6 @@ export default function Shapefile(FileData) {
     return -1; // if obj is not found in the 2D array
   };
   const removeCoodinates = (position, latlng, marker, features) => {
-
-    // geojson.eachLayer(polyLineLayer => {
-    //   // Check if the layer is a polyline or polygon
-    //   if (polyLineLayer instanceof L.Polyline) {
-    //     // Get the layer's coordinates
-
-    //     return
-    //   }
-    // });
     const polyLineLayer = getPolyLineLayer();
     const coords = polyLineLayer.getLatLngs()[0];
     var index = markerIndexSearch(coords, latlng)
@@ -132,7 +125,7 @@ export default function Shapefile(FileData) {
   }
   const getPolyLineLayer = () => {
     const polylineLayer = [];
-    geojson.eachLayer(layer => {
+    geojsonLayer.eachLayer(layer => {
       if (layer instanceof L.Polyline) {
         polylineLayer.push(layer);
       }
@@ -179,7 +172,7 @@ export default function Shapefile(FileData) {
         // console.log(linestring1)
         // var p1 =  lineToPolygon(l1)
         // console.log("bug")
-        geojson.eachLayer(layer => {
+        geojsonLayer.eachLayer(layer => {
           // Check if the layer is a polyline or polygon
           if (layer instanceof L.Polyline) {
             // Get the layer's coordinates
@@ -226,7 +219,6 @@ export default function Shapefile(FileData) {
       coords = features.geometry.coordinates;
     else if (features.geometry.type === 'MultiPolygon')
       features.geometry.coordinates.forEach(c => coords.push(c[0]))
-
     if (coords.length > 0) {
       coords.forEach(function (coordsArray) {
         var vertexArray = L.GeoJSON.coordsToLatLngs(coordsArray);
@@ -234,39 +226,47 @@ export default function Shapefile(FileData) {
           var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer)
           marker.bindPopup(showLatLng(latlng))
           marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
-          // dragVertex(marker);
           // marker.on("click", split);
           // split(marker, features);
           // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
-          // console.log(markerIndex)
-          // console.log(marker)
-
-          // marker.markerIndex++;
-          // console.log(marker)
+          
         });
       });
     }
   }
+  
   // map.on('click', insertVertex);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+// new L.Control.Draw({})
+// Initialize the draw control and pass it the FeatureGroup of editable layers
+// var drawControl = new L.Control.Draw({
+//     edit: {
+//         featureGroup: drawnItems
+//     }
+// });
+// map.addControl(drawControl);
   // map.off('click',insertVertex);
   useEffect(() => {
     console.log("only once")
-
-    geojson = L.geoJson(mapData.geodata, { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+    geojsonLayer = L.geoJson(geojson, { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
       .addTo(map);
-
-  }, []);
-  useEffect(() => {
-    console.log(mapData.geodata)
-
-
-
-    //   L.polygon(mapData.geodata,{ onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
-    //  .addTo(map);
-
-  }, [reRender]);
+    if(geojsonLayer.getBounds().isValid()){
+      map.fitBounds(geojsonLayer.getBounds());
+    }
+    
+    // map.fitBounds(geojsonLayer.getBounds())
+  }, [geojson]);
+  
   return (<div >
-    <ExportButton L={L} map={map} mapData={mapData}></ExportButton>
+    {/* <RightClickMenu></RightClickMenu> */}{
+      geojson.type !== undefined
+    }
+    <ExportButton  map={map} mapData={geojson}></ExportButton>
+    <SimplificationButton  map={map} mapData={geojson}></SimplificationButton>
   </div>);
 }
 

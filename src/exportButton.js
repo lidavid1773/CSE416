@@ -1,13 +1,18 @@
 import { useEffect } from "react";
-import { saveAs } from 'file-saver';
 import shpwrite from 'shp-write';
 import process from 'process';
+import { addButton } from "./addButton";
+import { GlobalGeoJsonContext,App } from "./App";
+import { useContext } from "react";
 const FileSaver = require('file-saver');
 
-export default function ExportButton(api) {
-  var [L, map, mapData] = [api.L, api.map, api.mapData];
+export default function ExportButton(props) {
+  const [map] = [props.map]
+  const [geojson, setgeojson] = useContext(GlobalGeoJsonContext);
+
   const handleGeoJSONExport = () => {
-    const json = JSON.stringify(mapData.geodata[0], null, 2);
+    console.log(geojson)
+    const json = JSON.stringify(geojson, null, 2);
     var fileToSave = new Blob([json], {
       type: 'application/json'
     });
@@ -16,35 +21,14 @@ export default function ExportButton(api) {
   // console.log(process) 
   const handleSHPExport = () => {
     console.log(process)
-    shpwrite.download(mapData.geodata[0])
+    shpwrite.download(geojson)
   }
-  const addButton = (name, handleMethod) => {
-    L.Control.Button = L.Control.extend({
-      options: {
-        position: 'topleft'
-      },
-      onAdd: function (map) {
-        var container = L.DomUtil.create('button', 'leaflet-bar leaflet-control');
-        var button = L.DomUtil.create('a', 'leaflet-control-button', container);
-        L.DomEvent.disableClickPropagation(button);
-        L.DomEvent.on(container, 'click', function () {
-          handleMethod()
-        });
-        const buttonElement = `<div >Export as ${name}</div>`;
-        container.innerHTML = buttonElement;
-        return container;
-      },
-      onRemove: function (map) { },
-    });
-    var control = new L.Control.Button()
-    control.addTo(map);
+  if (!Array.isArray(geojson)) {
+    addButton("Export as GeoJSON", handleGeoJSONExport, map)
+    addButton("Export as SHP/DBF", handleSHPExport, map)
   }
   useEffect(() => {
-    if (!map) return;
-    addButton("GeoJSON", handleGeoJSONExport)
-    addButton("SHP/DBF", handleSHPExport)
-  }, []);
-
-
+  
+  }, [geojson]);
   return null;
 }

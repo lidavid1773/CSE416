@@ -1,14 +1,15 @@
 import React, { Component, useEffect, useState, createContext } from "react";
 import './index.css';
 import 'leaflet/dist/leaflet.css';
-import ShapeFile from "./shapeFile.js";
+import ShapeFile from "./ShapeFile.js";
 import { MapContainer, LayersControl } from 'react-leaflet'
-import localgeojson from "./geojson (19).json"
+import localgeojson from "./geojson (1).json"
 import SimplificationButton from "./simplificationButton";
 import{useGeoJson,useLocalGeoJson} from "./geojsonHooks"
 import {ContextMenu} from "./ContextMenu";
 import "leaflet-contextmenu";
 import "leaflet-contextmenu/dist/leaflet.contextmenu.css";
+import StrengthBar from "./StrengthBar";
 const { BaseLayer, Overlay } = LayersControl;
 const shapefile = require('shapefile')
 const GlobalGeoJsonContext = createContext({});
@@ -64,33 +65,9 @@ function App() {
       }
     }
     return count;
-  }
- 
-  
-  // const updateGeoJson = (geojson, setgeojson, setnumOfVertices) => {
-  //   if (geojson?.length) {
-  //     setgeojson(prevGeoJson => {
-  //       const newGeoJson = [...prevGeoJson, ...geojson];
-  //       setnumOfVertices(countCoordinates(newGeoJson));
-  //       return newGeoJson;
-  //     });
-  //   }
-  // };
-  // const useLocalGeoJson = (localgeojson, setgeojson, setnumOfVertices) => {
-  //   useEffect(() => {
-  //     if (localgeojson) {
-  //       setgeojson(localgeojson);
-  //       setnumOfVertices(countCoordinates(localgeojson));
-  //     }
-  //   }, [localgeojson, setgeojson, setnumOfVertices]);
-  // };
-  // const useGeoJson = (geojson, setgeojson, setnumOfVertices) => {
-  //   useEffect(() => {
-  //     updateGeoJson(geojson, setgeojson, setnumOfVertices);
-  //   }, [geojson, setgeojson, setnumOfVertices]);
-  // };
-  
+  } 
   useGeoJson(geojson, setgeojson, setnumOfVertices);
+  
   useLocalGeoJson(localgeojson, setgeojson, setnumOfVertices);
   return (
     <div>
@@ -103,6 +80,7 @@ function App() {
 
           <div>Number of vertices: {numOfVertices}</div>
           {/* <SimplificationButton></SimplificationButton> */}
+          {/* <StrengthBar number={numOfVertices}></StrengthBar> */}
           <MapContainer zoomControl={true} contextmenu={true}
         contextmenuItems={ContextMenu} >
 

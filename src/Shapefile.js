@@ -82,9 +82,7 @@ export default function Shapefile(FileData) {
     geojsonLayer.addData(newRegion)
     count = 0;
   }
-  function showCoordinates (e) {
-    alert(e.latlng);
-  }
+
   const removeVertex = function (latlng, features, marker) {
     return () => {
       console.log(features.geometry.type)
@@ -225,10 +223,10 @@ export default function Shapefile(FileData) {
         vertexArray.forEach(function (latlng) {
           var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer)
           marker.bindPopup(showLatLng(latlng))
-          marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
+          // marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
           // marker.on("click", split);
           // split(marker, features);
-          // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
+          makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
           
         });
       });

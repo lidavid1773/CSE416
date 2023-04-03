@@ -31,11 +31,11 @@ export const ContextMenu = [
   {
     separator: true,
   },
- { SelectRegions,
+  SelectRegions,
   AddRegions,
   MergeRegions,
   SpiltRegions,
-  DeleteRegions,},
+  DeleteRegions,
   {
     separator: true,
   },

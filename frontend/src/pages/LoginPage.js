@@ -1,4 +1,4 @@
-import myImage from "../icons/img.jpg";
+import globeImage from "../assets/globe.jpg";
 
 const LoginPage = () => {
   return (
@@ -23,7 +23,7 @@ const LoginPage = () => {
         <div>I forgot my password</div>
       </form>
       <div>
-        <img src={myImage} alt="globe" />
+        <img src={globeImage} alt="globe" />
       </div>
     </div>
   );

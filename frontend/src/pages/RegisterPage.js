@@ -1,4 +1,4 @@
-import myImage from "../icons/img.jpg";
+import globeImage from "../assets/globe.jpg";
 
 const RegisterPage = () => {
   return (
@@ -22,7 +22,7 @@ const RegisterPage = () => {
         </div>
       </form>
       <div>
-        <img src={myImage} alt="globe" />
+        <img src={globeImage} alt="globe" />
       </div>
     </div>
   );

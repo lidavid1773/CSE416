@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HamburgerIcon } from "../assets/index";
-import BannerModal from "./BannerModal";
+import BannerModal from "./Modals/BannerModal";
 
 const Banner = () => {
   const [openModal, setOpenModal] = useState(false);

@@ -1,25 +1,35 @@
-import { XMark } from "../assets/index";
+import { XMarkIcon } from "../assets/index";
+import EditNameModal from "./Modals/EditNameModal";
+import { useState } from "react";
 
 const ToolBar = () => {
+  const [tempState, setTempState] = useState(false);
   return (
     <div>
       <div>
         <button>
-          <XMark />
+          <XMarkIcon />
         </button>
       </div>
       <div>
-        <div>Edit Name</div>
-        <div>View Properties</div>
+        <button
+          onClick={() => {
+            setTempState(!tempState);
+          }}
+        >
+          Edit Name
+        </button>
+        {tempState && <EditNameModal />}
+        <button>View Properties</button>
       </div>
       <div>
-        <div>Merge Region</div>
-        <div>Split Region</div>
-        <div>Delete Region</div>
+        <button>Merge Region</button>
+        <button>Split Region</button>
+        <button>Delete Region</button>
       </div>
       <div>
-        <div>Select Vertices</div>
-        <div>Insert Vertices</div>
+        <button>Select Vertices</button>
+        <button>Insert Vertices</button>
       </div>
     </div>
   );

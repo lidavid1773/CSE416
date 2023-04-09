@@ -11,7 +11,9 @@ const LoginPage = () => {
           <input type="text" placeholder="Password" />
         </div>
         <div>
-          <button>Log in</button>
+          <Link to="/home" state={{ isGuest: false }}>
+            <button>Log in</button>
+          </Link>
         </div>
         {/* dashed lines need to be replaced w/ css*/}
         <div>------ OR ------</div>

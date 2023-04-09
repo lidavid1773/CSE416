@@ -2,7 +2,7 @@ import { useState } from "react";
 import { HamburgerIcon } from "../assets/index";
 import BannerModal from "./Modals/BannerModal";
 
-const Banner = () => {
+const Banner = ({ isGuest }) => {
   const [openModal, setOpenModal] = useState(false);
   return (
     <div>
@@ -13,7 +13,7 @@ const Banner = () => {
           <HamburgerIcon />
         </button>
       </div>
-      {openModal && <BannerModal />}
+      {openModal && <BannerModal isGuest={isGuest} />}
     </div>
   );
 };

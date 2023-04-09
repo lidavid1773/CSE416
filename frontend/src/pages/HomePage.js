@@ -3,13 +3,16 @@ import Banner from "../components/Banner";
 import FileUploader from "../components/FileUploader";
 import ProjectControls from "../components/ProjectControls";
 import EditMapPage from "./EditMapPage.js";
+import { useLocation } from "react-router-dom";
 
 const HomePage = () => {
+  const location = useLocation();
+
   const [fileUploaded, setFileUploaded] = useState(false);
 
   return (
     <div>
-      <Banner />
+      <Banner isGuest={location.state.isGuest} />
 
       {!fileUploaded && (
         <button onClick={() => setFileUploaded(true)}>

@@ -1,18 +1,28 @@
 import { Link } from "react-router-dom";
 
-const BannerModal = () => {
+const BannerModal = ({ isGuest }) => {
   return (
     <div>
-      <div>
-        <Link to="/login">
-          <button>Log in</button>
-        </Link>
-      </div>
-      <div>
-        <Link to="/register">
-          <button>Sign up</button>
-        </Link>
-      </div>
+      {isGuest ? (
+        <div>
+          <div>
+            <Link to="/login">
+              <button>Log in</button>
+            </Link>
+          </div>
+          <div>
+            <Link to="/register">
+              <button>Sign up</button>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <Link to="/home/profile">
+            <button>Visit profile</button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

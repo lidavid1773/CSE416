@@ -13,7 +13,9 @@ const WelcomePage = () => {
         </Link>
       </div>
       <div>
-        <Link to="/home">Continue as guest</Link>
+        <Link to="/home" state={{ isGuest: true }}>
+          Continue as guest
+        </Link>
       </div>
     </div>
   );

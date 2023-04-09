@@ -1,11 +1,10 @@
 import "./index.css";
-import { useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import RecoverPasswordPage from "./pages/RecoverPasswordPage";
 import WelcomePage from "./pages/WelcomePage";
-import ProfilePage from "./pages/ProfilePage";
 import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
 import { Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -14,10 +13,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="recover-password" element={<RecoverPasswordPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="home" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/recover-password" element={<RecoverPasswordPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/home/profile" element={<ProfilePage />} />
       </Routes>
     </div>
   );

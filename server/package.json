@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "npm": "6.x",
     "node": "18.x"
   },
   "keywords": [
@@ -28,8 +27,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "expire": "^0.4.5",
-    "mongoose": "^7.0.3",
     "express": "^4.18.2",
+    "mongoose": "^7.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -40,12 +39,10 @@
       "required": true
     }
   },
-  "homepage": ".",
   "scripts": {
-    "start": "node server/index.js",
-    "build": "react-scripts build",
-    "client": "cd client && npm start",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "start": "node index.js",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [

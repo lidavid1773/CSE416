@@ -7,11 +7,15 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import { Route, Routes } from "react-router-dom";
+import MyButton from "./components/mui-button-test";
 
 const App = () => {
   return (
     <div>
-      <Routes>
+      <MyButton onClick={() => console.log("Button clicked!")}>
+        Click me
+      </MyButton>
+      {/* <Routes>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -21,7 +25,7 @@ const App = () => {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="search-results" element={<SearchResultsPage />} />
         </Route>
-      </Routes>
+      </Routes> */}
     </div>
   );
 };

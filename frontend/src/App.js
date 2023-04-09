@@ -5,6 +5,7 @@ import RecoverPasswordPage from "./pages/RecoverPasswordPage";
 import WelcomePage from "./pages/WelcomePage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 import { Route, Routes } from "react-router-dom";
 
 const App = () => {
@@ -15,8 +16,11 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/recover-password" element={<RecoverPasswordPage />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/home/profile" element={<ProfilePage />} />
+        <Route path="/home">
+          <Route index element={<HomePage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="search-results" element={<SearchResultsPage />} />
+        </Route>
       </Routes>
     </div>
   );

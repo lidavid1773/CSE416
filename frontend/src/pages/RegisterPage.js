@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import globeImage from "../assets/globe.jpg";
 
 const RegisterPage = () => {
@@ -17,8 +18,9 @@ const RegisterPage = () => {
         <div>------ OR ------</div>
         <div>
           <span>Have an account?</span>
-          {/* Log in will be a link*/}
-          <span> Log in</span>
+          <span>
+            <Link to="/login">Log in</Link>
+          </span>
         </div>
       </form>
       <div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Banner from "../components/Banner";
 import FileUploader from "../components/FileUploader";
 import ProjectControls from "../components/ProjectControls";
-import ViewMapPage from "./ViewMapPage.js";
+import EditMapPage from "./EditMapPage.js";
 
 const HomePage = () => {
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -19,7 +19,7 @@ const HomePage = () => {
 
       {!fileUploaded ? <FileUploader /> : <ProjectControls />}
 
-      {fileUploaded && <ViewMapPage />}
+      {fileUploaded && <EditMapPage />}
     </div>
   );
 };

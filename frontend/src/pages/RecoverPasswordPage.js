@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import globeImage from "../assets/globe.jpg";
 
 const RecoverPasswordPage = () => {
@@ -16,8 +17,9 @@ const RecoverPasswordPage = () => {
         <div>------ OR ------</div>
         <div>
           <span>Remember your account?</span>
-          {/* Log in will be a link*/}
-          <span> Log in</span>
+          <span>
+            <Link to="/login">Log In</Link>
+          </span>
         </div>
       </form>
       <div>

@@ -1,13 +1,20 @@
+import { Link } from "react-router-dom";
+
 const WelcomePage = () => {
   return (
     <div>
       <div>MapWorkshop</div>
       <div>
-        <button>Log in</button>
-        <button>Sign Up</button>
+        <Link to="/login">
+          <button>Log in</button>
+        </Link>
+        <Link to="/register">
+          <button>Sign Up</button>
+        </Link>
       </div>
-      {/* Continue as guest will be a link*/}
-      <div>Continue as guest</div>
+      <div>
+        <Link to="/home">Continue as guest</Link>
+      </div>
     </div>
   );
 };

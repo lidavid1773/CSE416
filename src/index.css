@@ -22,4 +22,19 @@
 .static-map {
   width: 250px;
   height: 250px;
+<<<<<<< HEAD
+=======
+}
+.leaflet-marker-icon :hover{
+  width: 500px;
+  height: 5000px;
+}
+.btnWrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+.my-div-icon{
+  width: 250px;
+>>>>>>> hongzhong-discovery
 }

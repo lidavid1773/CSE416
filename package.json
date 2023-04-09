@@ -3,18 +3,55 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@geoman-io/leaflet-geoman-free": "^2.14.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+<<<<<<< HEAD
     "leaflet": "^1.9.3",
     "node-polyfill-webpack-plugin": "^2.0.1",
+=======
+    "@turf/line-split": "^6.5.0",
+    "@turf/turf": "^6.5.0",
+    "assert": "^2.0.0",
+    "browserify": "^17.0.0",
+    "buffer": "^6.0.3",
+    "envify": "^4.1.0",
+    "eslint-plugin-react-hooks": "^5.0.0-next-47cf4e578-20230315",
+    "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
+    "geojson-dissolve": "^3.1.0",
+    "geojson2shp": "^0.5.0",
+    "gulp": "^4.0.2",
+    "html-webpack-plugin": "^5.5.0",
+    "insert": "^1.0.1",
+    "leaflet": "^1.9.3",
+    "leaflet-contextmenu": "^1.4.0",
+    "leaflet-draw": "^1.0.4",
+    "leaflet-easybutton": "^2.4.0",
+    "leaflet-toolbar": "^0.4.0-alpha.2",
+    "process": "^0.11.10",
+>>>>>>> hongzhong-discovery
     "react": "^18.2.0",
+    "react-contexify": "^6.0.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.0",
+<<<<<<< HEAD
     "react-scripts": "5.0.1",
     "shapefile": "^0.6.6",
     "shpjs": "^4.0.4",
     "web-vitals": "^2.1.4"
+=======
+    "react-leaflet-draw": "^0.20.4",
+    "react-scripts": "5.0.1",
+    "shapefile": "^0.6.6",
+    "shp-write": "^0.3.2",
+    "shpjs": "^4.0.4",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5",
+    "web-vitals": "^2.1.4",
+    "webpack": "^5.75.0"
+>>>>>>> hongzhong-discovery
   },
   "scripts": {
     "start": "react-scripts start",
@@ -28,6 +65,7 @@
       "react-app/jest"
     ]
   },
+  "process": "0.11.10",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -41,6 +79,15 @@
     ]
   },
   "devDependencies": {
+<<<<<<< HEAD
     "buffer": "^6.0.3"
+=======
+    "@babel/core": "^7.21.0",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "babel-loader": "^9.1.2",
+    "dotenv-webpack": "^8.0.1",
+    "webpack-cli": "^5.0.1"
+>>>>>>> hongzhong-discovery
   }
 }

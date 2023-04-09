@@ -7,26 +7,20 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import { Route, Routes } from "react-router-dom";
-import MyButton from "./components/mui-button-test";
 
 const App = () => {
   return (
-    <div>
-      <MyButton onClick={() => console.log("Button clicked!")}>
-        Click me
-      </MyButton>
-      {/* <Routes>
-        <Route path="/" element={<WelcomePage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/recover-password" element={<RecoverPasswordPage />} />
-        <Route path="/home">
-          <Route index element={<HomePage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="search-results" element={<SearchResultsPage />} />
-        </Route>
-      </Routes> */}
-    </div>
+    <Routes>
+      <Route path="/" element={<WelcomePage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/recover-password" element={<RecoverPasswordPage />} />
+      <Route path="/home">
+        <Route index element={<HomePage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="search-results" element={<SearchResultsPage />} />
+      </Route>
+    </Routes>
   );
 };
 

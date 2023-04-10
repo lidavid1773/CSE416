@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -47,7 +48,7 @@ export default function WelcomePage() {
           </Link>
         </div>
         <div className={classes.options}>
-          <Link className={classes.guest_link} underline='always' href="/home" state={{ isGuest: true }}>
+          <Link component={RouterLink} className={classes.guest_link} underline='always' to="/home" state={{ isGuest: false }}>
             Continue as guest
           </Link>
         </div>

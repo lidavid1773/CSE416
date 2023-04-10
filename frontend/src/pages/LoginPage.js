@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -102,7 +103,9 @@ export default function LoginPage() {
                 fullWidth
                 variant="contained"
                 color="primary"
-                href='/home'
+                component={RouterLink}
+                to='/home'
+                state={{ isGuest: false }}
                 className={classes.submit}
               >
                 Log In

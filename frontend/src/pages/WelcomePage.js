@@ -23,16 +23,13 @@ const useStyles = makeStyles((theme) => ({
   options: {
     paddingTop: theme.spacing(15),
   },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
   title: {
     fontSize: 70, 
     fontFamily: 'calibri',
   }
 }));
 
-const WelcomePage = () => {
+export default function WelcomePage() {
   const classes = useStyles();
 
   return (
@@ -58,5 +55,3 @@ const WelcomePage = () => {
     </Container>
   );
 };
-
-export default WelcomePage;

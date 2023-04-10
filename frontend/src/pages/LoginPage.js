@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     marginTop: theme.spacing(5),
-    fontSize: 30, 
+    fontSize: 40, 
     fontFamily: 'calibri',
     textAlign: 'center',
   },
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SignInSide() {
+export default function LoginPage() {
   const classes = useStyles();
 
   return (
@@ -102,6 +102,7 @@ export default function SignInSide() {
                 fullWidth
                 variant="contained"
                 color="primary"
+                href='/home'
                 className={classes.submit}
               >
                 Log In

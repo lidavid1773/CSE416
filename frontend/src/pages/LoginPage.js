@@ -123,6 +123,11 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </Grid>
+              <Grid item className={classes.link}>
+                <Link component={RouterLink} to='/home' state={{ isGuest: true }} variant="body2">
+                  Continue as guest
+                </Link>
+              </Grid>
             </form>
           </Box>
         </Grid>

@@ -10,7 +10,7 @@ import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
 import MenuIcon from '@mui/icons-material/Menu';
 
-export default function BannerModal(isGuest) {
+export default function BannerModal({isGuest}) {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
@@ -76,7 +76,7 @@ export default function BannerModal(isGuest) {
             >
               <Paper>
                 <ClickAwayListener onClickAway={handleClose}>
-                  {isGuest ? (
+                  {isGuest.isGuest ? (
                     <MenuList
                       autoFocusItem={open}
                       id="composition-menu"

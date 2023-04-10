@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
+import Link from '@mui/material/Link';
 import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -31,6 +31,7 @@ const SearchBar = ({setSearchQuery}) => (
 
 const useStyles = makeStyles((theme) => ({
   paper: {
+    marginTop: theme.spacing(2),
     padding: theme.spacing(2),
     display: 'flex',
     flexDirection: 'row',
@@ -40,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '100%',
   },
   title: {
+    underline: 'none',
     margin: theme.spacing(2),
     fontSize: 30, 
     fontFamily: 'calibri',
@@ -52,9 +54,14 @@ export default function Banner(isGuest)  {
 
   return (
     <Grid container className={classes.paper}>
-      <Typography className={classes.title}>
+      <Link href='/' className={classes.title} sx={{
+        textDecoration: 'none',
+        color: 'black',
+        fontSize: 40, 
+        fontFamily: 'calibri',}}
+      >
         MapWorkshop
-      </Typography>
+      </Link>
       <SearchBar/>
       <BannerModal isGuest={isGuest}/>
       {/* <div>

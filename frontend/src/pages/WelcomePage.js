@@ -48,7 +48,7 @@ export default function WelcomePage() {
           </Link>
         </div>
         <div className={classes.options}>
-          <Link component={RouterLink} className={classes.guest_link} underline='always' to="/home" state={{ isGuest: false }}>
+          <Link component={RouterLink} className={classes.guest_link} underline='always' to="/home" state={{ isGuest: true }}>
             Continue as guest
           </Link>
         </div>

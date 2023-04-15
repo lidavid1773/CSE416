@@ -116,7 +116,7 @@ forgetPass = async (req,res) => {
             {expiresIn: '10m'}
         );
 
-        const link = `http://localhost:8000/MapWorkShop/users/resetpass/${existinguser._id}/${new_Token}`;
+        const link = `https://map-work-shop.herokuapp.com/MapWorkShop/users/resetpass/${existinguser._id}/${new_Token}`;
         sendingEmail(email, link);
         console.log(link);
         res.status(201).send({
@@ -166,6 +166,17 @@ resetPass = async (req,res) => {
 
 }
 
+deleteUser = async (req,res) => {
+    const { email } = req.body;
+
+    try{
+        await User.deleteOne({ email });
+        return res.status(201).send({});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     signin,
     signup,
@@ -173,4 +184,5 @@ module.exports = {
     getme,
     forgetPass,
     resetPass,
+    deleteUser
 }

@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/MapWorkShop/users/allcomments',requireLogin,validateRequest,commentControllers.getAllComments);
 router.post('/MapWorkShop/users/postcomment/:mapid',requireLogin,validateRequest,commentControllers.postComment);
 router.post('/MapWorkShop/users/replycomment/:mapid/:commentid',requireLogin,validateRequest,commentControllers.replyComment);
-//router.post('/MapWorkShop/users/upvoteforcomment/:commentid',requireLogin,validateRequest,commentControllers.upvote);
-//router.post('/MapWorkShop/users/downvoteforcomm/:commentid',requireLogin,validateRequest,commentControllers.downvote);
+router.post('/MapWorkShop/users/upvoteforcomment/:commentid',requireLogin,validateRequest,commentControllers.upvote);
+router.post('/MapWorkShop/users/downvoteforcomment/:commentid',requireLogin,validateRequest,commentControllers.downvote);
 
 module.exports = router;

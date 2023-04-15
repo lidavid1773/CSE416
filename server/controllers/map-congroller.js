@@ -102,7 +102,89 @@ downloadMap = async (req,res) => {
     await map.save();
 
     res.status(201).send({
-        map: map.toObject()
+        downloads: map.downloads
+    });
+
+}
+
+allMapsByUsername = async (req,res) => {
+    const { username } = req.body;
+
+    try{
+        res.status(201).send({
+            maps: await Map.find({ username })
+        });
+    } catch(error) {
+        console.log(error);
+        res.status(201).send({
+            error: true,
+            message: "Failed to get maps!"
+        });
+    }
+}
+
+upvote = async (req,res) => {
+    const { user } = req.body;
+    const { mapid } = req.params;
+
+    const map = await Map.findById(mapid);
+    if(!map){
+        return res.status(406).send("The map does not exist!");
+    }
+
+    const vote = map.votes.find(u => u.vote_by.toString() === user._id.toString());
+    if(vote){
+        map.votes.splice(map.votes.indexOf(vote), 1);
+        if(!vote.vote_up){
+            map.votes.push({
+                vote_up: true,
+                vote_by: user._id,
+            });
+        }
+    } else {
+        map.votes.push({
+            vote_up: true,
+            vote_by: user._id,
+        });
+    }
+
+    await map.save();
+
+    res.status(201).send({
+        votes: map.votes
+    });
+
+}
+
+downvote = async (req,res) => {
+    const { user } = req.body;
+    const { mapid } = req.params;
+
+    const map = await Map.findById(mapid);
+    if(!map){
+        return res.status(406).send("The map does not exist!");
+    }
+
+    const vote = map.votes.find(u => u.vote_by.toString() === user._id.toString());
+    if(vote){
+        map.votes.splice(map.votes.indexOf(vote), 1);
+        if(vote.vote_up){
+            map.votes.push({
+                vote_up: false,
+                vote_by: user._id,
+            });
+        }
+    } else {
+        map.votes.push({
+            vote_up: false,
+            vote_by: user._id,
+        });
+    }
+
+    await map.save();
+
+    res.status(201).send({
+        votes: map.votes
     });
 
 }
@@ -114,5 +196,8 @@ module.exports = {
     createMap,
     updateMap,
     viewMap,
-    downloadMap
+    downloadMap,
+    allMapsByUsername,
+    upvote,
+    downvote
 }

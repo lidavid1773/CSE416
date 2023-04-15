@@ -22,7 +22,8 @@ app.use(session({
                   saveUninitialized: true, 
                   store: MongoStore.create({
                   mongoUrl: process.env.MONGODB_URI,
-}) }));
+                }) 
+}));
 
 //  connect MongoDB
 const start = async () => {
@@ -31,6 +32,7 @@ const start = async () => {
   }
 
   try {
+    
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true

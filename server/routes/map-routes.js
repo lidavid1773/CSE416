@@ -9,9 +9,10 @@ router.post('/MapWorkShop/users/singleMap/:mapid',validateRequest,mapControllers
 router.post('/MapWorkShop/users/newMap',validateRequest,mapControllers.createMap);
 router.post('/MapWorkShop/users/searchMaps',validateRequest,mapControllers.searchMaps);
 router.post('/MapWorkShop/users/updateMap/:mapid',validateRequest,mapControllers.updateMap);
-//router.post('/MapWorkShop/users/upvoteformap/:mapid',requireLogin,validateRequest,mapControllers.upvote);
-//router.post('/MapWorkShop/users/downvoteformap/:mapid',requireLogin,validateRequest,mapControllers.downvote);
+router.post('/MapWorkShop/users/upvoteformap/:mapid',requireLogin,validateRequest,mapControllers.upvote);
+router.post('/MapWorkShop/users/downvoteformap/:mapid',requireLogin,validateRequest,mapControllers.downvote);
 router.post('/MapWorkShop/users/download/:mapid',requireLogin,validateRequest,mapControllers.downloadMap);
+router.post('/MapWorkShop/users/profile',requireLogin,validateRequest,mapControllers.allMapsByUsername);
 
 
 module.exports = router;

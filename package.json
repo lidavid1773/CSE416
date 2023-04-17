@@ -23,6 +23,7 @@
   "homepage": "https://github.com/lidavid1773/CSE416#readme",
   "devDependencies": {
     "concurrently": "^8.0.1",
+    "cypress": "^12.10.0",
     "nodemon": "^2.0.22"
   },
   "dependencies": {

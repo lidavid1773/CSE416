@@ -3,12 +3,12 @@ on: [push]
 jobs:
   Cypress-Test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./tests
     steps:
       - name: Checkout GitCode
         uses: actions/checkout@v2
-
-      - name: Switch to Test Folder
-        run: cd tests
         
       - name: Run Cypress Test
         uses: cypress-io/github-action@v4

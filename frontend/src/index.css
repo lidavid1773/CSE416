@@ -1,0 +1,133 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 70%;
+  margin: auto;
+  text-align: center;
+}
+
+body {
+  font-family: sans-serif;
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+.mapworkshop {
+  font-size: 20px;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e6e6e6;
+  margin-bottom: 50px;
+}
+
+.banner ul {
+  display: flex;
+  align-items: center;
+}
+
+.banner ul li {
+  margin-left: 15px;
+}
+
+.banner ul li a {
+  display: flex;
+  align-items: center;
+}
+
+.banner ul li a:hover {
+  color: gray;
+}
+
+.banner ul li a svg {
+  margin: 5px;
+}
+
+.header {
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: black;
+}
+
+.maps {
+  display: grid;
+  gap: 10px;
+}
+
+.map-item {
+  background-color: #f4f4f4;
+  margin: 10px 0;
+  padding: 20px 0 10px;
+  width: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.delete-btn {
+  border: none;
+  background: none;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
+.form {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-item {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e6e6e6;
+  border-radius: 7px;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+
+.btn {
+  background: #000;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border: 2px solid #000;
+  border-radius: 7px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.btn-container {
+  width: 100%;
+  margin-bottom: 20px;
+}

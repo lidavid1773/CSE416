@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Make sure to set REACT_APP_API_URL as a config var in heroku
 const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 const API_URL = `${baseURL}/api/users/`;
 

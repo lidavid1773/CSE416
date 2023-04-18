@@ -35,3 +35,31 @@
 .my-div-icon{
   width: 250px;
 }
+
+
+.props-container {
+  position: relative;
+  height: 200px;
+  overflow: auto;
+}
+
+.add-props-btn {
+  position: fixed;
+  margin-bottom: auto;
+  height: 30px;
+  top:5%;
+  color: #2980b9;
+  z-index: 1;
+  border-width: 0;
+  /* background-color: transparent; */
+}
+.add-props-btn:hover {
+  color: #55aaff;
+  cursor: pointer;
+}
+
+.props-table {
+  margin-top: 30px;
+  overflow: auto;
+
+}

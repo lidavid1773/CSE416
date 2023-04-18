@@ -1,27 +1,76 @@
 import { useContext, useEffect, useState } from "react";
-import { MapContainer, Marker, useMap, FeatureGroup,useMapEvents} from "react-leaflet";
+import { MapContainer, Marker, useMap, FeatureGroup, useMapEvents } from "react-leaflet";
+import { useContextMenu } from "react-contexify";
 import L, { marker, polygon } from "leaflet";
 
 import ExportButton from "./exportButton";
 import { markerIcon } from "./Icon";
 import SimplificationButton from "./simplificationButton";
-import  {GlobalGeoJsonContext }from "./App"
+import { GlobalGeoJsonContext } from "./App"
 
-import { difference, lineSplit, lineString, lineStringToPolygon, lineToPolygon,simplify } from "@turf/turf"
-import RightClickMenu from "./ContextMenu";
+import { difference, lineSplit, lineString, lineStringToPolygon, lineToPolygon, simplify } from "@turf/turf"
 // import { lineToPolygon } from "@turf/turf/dist/js";
 // import { turf } from "@turf/turf"
-export default function Shapefile(FileData) {
+
+const ViewProperties = (properties, layer) => {
+  const container = L.DomUtil.create('div', 'props-container');
+  let propsTable = L.DomUtil.create('table', 'div', container);
+  const propsRow = propsTable.insertRow();
+  propsRow.insertCell().innerHTML = `<button class="add-props-btn">+add properties</button>`;
+  propsRow.addEventListener("click",()=>{
+    const newRow = propsTable.insertRow(0);
+    newRow.insertCell().innerHTML = `<input value="name:"></input>`;
+    newRow.insertCell().innerHTML = `<input value="value"></input>`;
+  });
+  propsTable = L.DomUtil.create('table', 'props-table', container);
+  for (const key of Object.keys(properties)) {
+    const propsRow = propsTable.insertRow();
+    propsRow.insertCell().innerHTML = `<input value="${key}"></input>`;
+    propsRow.insertCell().innerHTML = `<input value="${properties[key]}"></input>`;
+  }
+
+  L.DomEvent.on(layer, 'click', (event) => {
+    L.DomEvent.preventDefault(event);
+    layer.bindPopup(container, {
+      className: 'popup-content'
+    }).openPopup();
+  });
+};
+export default function Shapefile( {onContextMenu} ) {
   const dissolve = require("geojson-dissolve");
   // const turf = require("turf/turf");
   const [region, setRegion] = useState([]);
   const [regionLayer, setRegionLayer] = useState([]);
   const [geojson, setgeojson] = useContext(GlobalGeoJsonContext)
-  var map = useMap(); 
+  const { show } = useContextMenu();
+  let properties ;
+  // useMapEvents({
+  //   contextmenu: (event) => {
+  //     // Prevent the default context menu from showing up
+  //     event.preventDefault();
+
+  //     // Show the context menu at the mouse position
+  //     show(event.latlng);
+  //   }
+  // });
+  // useMapEvents({
+    
+  //   contextmenu: (event) => {
+  //     show(event.latlng);
+  //   },
+  // });
+  useMapEvents({
+    contextmenu: (event) => {
+      console.log('Context menu event:', event);
+      event.properties = properties;
+    }
+  });
+  var map = useMap();
+  
   var admName;
   var count = 0;
   var geojsonLayer;
- 
+
   const style = {
     default: {
       "color": "#3388ff",
@@ -32,10 +81,18 @@ export default function Shapefile(FileData) {
       'opacity': 1
     }
   }
-  const customizePopUp = (features, layer) => {
+  
+ 
+  
+  
+  
+  const customizePopUp = (features, layer, event) => {
+    console.log(features)
     if (features.properties) {
       const admLevel = checkAdmLevel(features)
       admName = "NAME_" + admLevel
+      ViewProperties(features.properties, layer)
+      properties = features.properties;
       // layer.bindPopup(features.properties[admName]);
       // layer.on("click", function (e) {
       //   if (e["sourceTarget"]["options"]["color"] !== "red") {
@@ -226,45 +283,47 @@ export default function Shapefile(FileData) {
           // marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
           // marker.on("click", split);
           // split(marker, features);
-          makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
-          
+          // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
+
         });
       });
     }
   }
-  
+
   // map.on('click', insertVertex);
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-var drawnItems = new L.FeatureGroup();
-map.addLayer(drawnItems);
-// new L.Control.Draw({})
-// Initialize the draw control and pass it the FeatureGroup of editable layers
-// var drawControl = new L.Control.Draw({
-//     edit: {
-//         featureGroup: drawnItems
-//     }
-// });
-// map.addControl(drawControl);
+  }).addTo(map);
+  var drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+  // new L.Control.Draw({})
+  // Initialize the draw control and pass it the FeatureGroup of editable layers
+  // var drawControl = new L.Control.Draw({
+  //     edit: {
+  //         featureGroup: drawnItems
+  //     }
+  // });
+  // map.addControl(drawControl);
   // map.off('click',insertVertex);
   useEffect(() => {
     console.log("only once")
-    geojsonLayer = L.geoJson(geojson, { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } })
+    geojsonLayer = L.geoJson(geojson, 
+      { onEachFeature: function popUp(features, layer) { customizePopUp(features, layer); } }
+      )
       .addTo(map);
-    if(geojsonLayer.getBounds().isValid()){
+    if (geojsonLayer.getBounds().isValid()) {
       map.fitBounds(geojsonLayer.getBounds());
     }
-    
+
     // map.fitBounds(geojsonLayer.getBounds())
   }, [geojson]);
-  
+
   return (<div >
     {/* <RightClickMenu></RightClickMenu> */}{
       geojson.type !== undefined
     }
-    <ExportButton  map={map} mapData={geojson}></ExportButton>
-    <SimplificationButton  map={map} mapData={geojson}></SimplificationButton>
+    {/* <ExportButton map={map} mapData={geojson}></ExportButton>
+    <SimplificationButton map={map} mapData={geojson}></SimplificationButton> */}
   </div>);
 }
 

@@ -5,8 +5,8 @@ import ShapeFile from "./ShapeFile.js";
 import { MapContainer, LayersControl } from 'react-leaflet'
 import localgeojson from "./geojson (1).json"
 import SimplificationButton from "./simplificationButton";
-import{useGeoJson,useLocalGeoJson} from "./geojsonHooks"
-import {ContextMenu} from "./ContextMenu";
+import { useGeoJson, useLocalGeoJson } from "./geojsonHooks"
+import { ContextMenu } from "./ContextMenu";
 import "leaflet-contextmenu";
 import "leaflet-contextmenu/dist/leaflet.contextmenu.css";
 import StrengthBar from "./StrengthBar";
@@ -65,9 +65,9 @@ function App() {
       }
     }
     return count;
-  } 
+  }
+ 
   useGeoJson(geojson, setgeojson, setnumOfVertices);
-  
   useLocalGeoJson(localgeojson, setgeojson, setnumOfVertices);
   return (
     <div>
@@ -75,24 +75,28 @@ function App() {
         <input type="file" accept=".shp , .dbf" onChange={handleFile} id="files" multiple />
         upload shapefile and dbf file together
       </div>
-      
-        {<GlobalGeoJsonContext.Provider value={[geojson, setgeojson]}>
 
-          <div>Number of vertices: {numOfVertices}</div>
-          {/* <SimplificationButton></SimplificationButton> */}
-          {/* <StrengthBar number={numOfVertices}></StrengthBar> */}
-          <MapContainer zoomControl={true} contextmenu={true}
-        contextmenuItems={ContextMenu} >
+      {<GlobalGeoJsonContext.Provider value={[geojson, setgeojson]}>
 
-            {geojson && <Overlay checked name='Feature group'>
-            <ShapeFile />
+        <div>Number of vertices: {numOfVertices}</div>
+        {/* <SimplificationButton></SimplificationButton> */}
+        {/* <StrengthBar number={numOfVertices}></StrengthBar> */}
+       
+       
+        <MapContainer zoomControl={true} 
+          contextmenu={true}
+          contextmenuItems={ContextMenu} 
+          >
+         
+         
+         
+          {geojson && <Overlay checked name='Feature group'>
+            <ShapeFile  />
           </Overlay>}
-          
+        </MapContainer >
+        {/* <ShapeFile  /> */}
+      </GlobalGeoJsonContext.Provider>}
 
-          </MapContainer >
-
-        </GlobalGeoJsonContext.Provider>}
-    
     </div>
 
 

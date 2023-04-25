@@ -18,7 +18,7 @@ describe("Testing Map", () => {
         await request(baseURL).delete('/MapWorkShop/users/deleteuser').send(user);
     });
 
-    it("Create Map", async () => {
+    it("Create Map", async () => {      // able to create map, but geodata could not be so large, otherwise the request will bump.
         const response = await request(baseURL).post('/MapWorkShop/users/newMap').send({
             username: "test",
             title: "test",
@@ -53,6 +53,7 @@ describe("Testing Map", () => {
 
         expect(response.status).toBe(201);
         //expect(response.body.downloads).toEqual(1);
+
     });
 
     it("upvoteformap", async () => {

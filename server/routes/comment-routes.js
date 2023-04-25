@@ -9,5 +9,6 @@ router.post('/MapWorkShop/users/postcomment/:mapid',requireLogin,validateRequest
 router.post('/MapWorkShop/users/replycomment/:mapid/:commentid',requireLogin,validateRequest,commentControllers.replyComment);
 router.post('/MapWorkShop/users/upvoteforcomment/:commentid',requireLogin,validateRequest,commentControllers.upvote);
 router.post('/MapWorkShop/users/downvoteforcomment/:commentid',requireLogin,validateRequest,commentControllers.downvote);
+router.delete('/MapWorkShop/users/deletecomment',validateRequest,commentControllers.deleteComment);
 
 module.exports = router;

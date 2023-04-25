@@ -145,10 +145,22 @@ downvote = async (req,res) => {
 
 }
 
+deleteComment = async (req,res) => {
+    const { text } = req.body;
+
+    try{
+        await Comment.deleteOne({ text });
+        return res.status(201).send({});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     getAllComments,
     postComment,
     replyComment,
     upvote,
-    downvote
+    downvote,
+    deleteComment
 }

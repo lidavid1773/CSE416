@@ -7,15 +7,14 @@ searchMaps = async (req,res) => {
 }
 
 createMap = async (req,res) => {
-    const { username, title, visibility, data } = req.body;
+    const { username, title, visibility, geodata } = req.body;
 
     try{
         const newmap = new Map({
             username: username,
             title: title,
             visibility: visibility,
-            data: data,
-            downloads: [],
+            geodata: geodata,
             comments: [],
             votes: []
         });
@@ -37,10 +36,10 @@ createMap = async (req,res) => {
 
 updateMap = async (req,res) => {
     const { mapid } = req.params;
-    const { data } = req.body;
+    const { geodata } = req.body;
     
     try{
-        await Map.findByIdAndUpdate(mapid, { data: data });
+        await Map.findByIdAndUpdate(mapid, { geodata: geodata });
         res.status(201).send({
             message: "Updated map!"
         });
@@ -70,7 +69,7 @@ viewMap = async (req,res) => {
     }
     map.comments = post_comments;
 
-    res.status(201).send(map.comments[0].replies);
+    res.status(201).send(map);
 
 }
 
@@ -90,20 +89,20 @@ getMapById = async (req,res) => {
     }
 }
 
-downloadMap = async (req,res) => {
-    const { user } = req.body;
+NumofdownloadMap = async (req,res) => {
     const { mapid } = req.params;
-    const map = await Map.findById(mapid);
-    if (!map) {
-        return res.status(406).send("Map is not exist!");
+
+    try{
+        const map = await Map.findByIdAndUpdate(mapid,{ $inc: { downloads: 1 } });
+        await map.save();
+
+        res.status(201).send({
+            downloads: map.downloads
+        });
+    } catch(error){
+        console.log(error);
     }
 
-    map.downloads.push(user._id);
-    await map.save();
-
-    res.status(201).send({
-        downloads: map.downloads
-    });
 
 }
 
@@ -132,10 +131,10 @@ upvote = async (req,res) => {
         return res.status(406).send("The map does not exist!");
     }
 
-    const vote = map.votes.find(u => u.vote_by.toString() === user._id.toString());
-    if(vote){
-        map.votes.splice(map.votes.indexOf(vote), 1);
-        if(!vote.vote_up){
+    const voted = map.votes.find(u => u.vote_by.toString() === user._id.toString());
+    if(voted){
+        map.votes.splice(map.votes.indexOf(voted), 1);
+        if(!voted.vote_up){
             map.votes.push({
                 vote_up: true,
                 vote_by: user._id,
@@ -165,10 +164,10 @@ downvote = async (req,res) => {
         return res.status(406).send("The map does not exist!");
     }
 
-    const vote = map.votes.find(u => u.vote_by.toString() === user._id.toString());
-    if(vote){
-        map.votes.splice(map.votes.indexOf(vote), 1);
-        if(vote.vote_up){
+    const voted = map.votes.find(u => u.vote_by.toString() === user._id.toString());
+    if(voted){
+        map.votes.splice(map.votes.indexOf(voted), 1);
+        if(voted.vote_up){
             map.votes.push({
                 vote_up: false,
                 vote_by: user._id,
@@ -189,6 +188,16 @@ downvote = async (req,res) => {
 
 }
 
+deleteMap = async (req,res) => {
+    const { mapid } = req.params;
+
+    try{
+        await Map.findByIdAndDelete(mapid);
+        res.status(200).send("Delete Successfully!")
+    } catch(error){
+        console.log(error);
+    }
+}
 
 module.exports = {
     getMapById,
@@ -196,8 +205,9 @@ module.exports = {
     createMap,
     updateMap,
     viewMap,
-    downloadMap,
+    NumofdownloadMap,
     allMapsByUsername,
     upvote,
-    downvote
+    downvote,
+    deleteMap
 }

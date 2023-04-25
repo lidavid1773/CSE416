@@ -19,14 +19,14 @@ const MapSchema = new Schema({
         type: Boolean,
         required: true
     },
-    data: {
+    geodata: {
         type: Schema.Types.Mixed,
         required: true
     },
-    downloads: [{
-        type: Schema.Types.ObjectId,
-        ref: "UserS"
-      }],  
+    downloads: {
+        type: Number,
+        default: 0
+      },  
     comments: [{
         type: Schema.Types.ObjectId,
         ref: "Comment"

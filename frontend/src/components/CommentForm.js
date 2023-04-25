@@ -10,7 +10,7 @@ function CommentForm() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch(addComment({ content, parentComment }));
+    dispatch(addComment({ content, parentComment })); // meed to add mapId here
     setContent("");
   };
 
@@ -27,7 +27,7 @@ function CommentForm() {
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div>
+        <div onClick={onSubmit}>
           <button>Add Comment</button>
         </div>
       </form>

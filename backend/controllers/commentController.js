@@ -38,7 +38,7 @@ const addComment = asyncHandler(async (req, res) => {
   });
 
   // Store comment into database
-  const comment = commentObj.save();
+  const comment = await commentObj.save();
 
   if (parentComment) {
     const targetComment = await Comment.findById(parentComment);

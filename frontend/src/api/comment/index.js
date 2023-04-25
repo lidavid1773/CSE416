@@ -9,14 +9,18 @@ const getComments = async (id) => {
   return response.data;
 };
 
-const addComment = async (id, token) => {
+const addComment = async (commentData, id, token) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`
     }
   };
 
-  const response = await axios.get(`${API_URL}${id}/comments`, config);
+  const response = await axios.get(
+    `${API_URL}${id}/comments`,
+    commentData,
+    config
+  );
 
   return response.data;
 };

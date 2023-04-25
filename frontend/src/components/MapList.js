@@ -1,7 +1,23 @@
 import { useDispatch } from "react-redux";
 import { deleteMap } from "../features/maps/mapSlice";
 
-function MapItem({ map }) {
+const MapList = ({ maps }) => {
+  return (
+    <div>
+      {maps.length > 0 ? (
+        <div className="maps">
+          {maps.map((map) => (
+            <MapItem key={map._id} map={map} />
+          ))}
+        </div>
+      ) : (
+        <h3>You have no maps</h3>
+      )}
+    </div>
+  );
+};
+
+const MapItem = ({ map }) => {
   const dispatch = useDispatch();
 
   return (
@@ -16,6 +32,6 @@ function MapItem({ map }) {
       </button>
     </div>
   );
-}
+};
 
-export default MapItem;
+export default MapList;

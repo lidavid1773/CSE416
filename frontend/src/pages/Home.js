@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMaps, resetState } from "../features/maps/mapSlice";
-import MapItem from "../components/MapItem";
+import MapList from "../components/MapList";
 
 function Home() {
   const dispatch = useDispatch();
@@ -32,17 +32,7 @@ function Home() {
             <h1>Welcome back, {user.username}!</h1>
             <h1>Maps Owned</h1>
           </div>
-          <div>
-            {maps.length > 0 ? (
-              <div className="maps">
-                {maps.map((map) => (
-                  <MapItem key={map._id} map={map} />
-                ))}
-              </div>
-            ) : (
-              <h3>You have no maps</h3>
-            )}
-          </div>
+          <MapList maps={maps} />
         </div>
       ) : (
         <div>

@@ -5,14 +5,14 @@ const {
   getMaps,
   setMap,
   updateMap,
-  deleteMap,
+  deleteMap
 } = require("../controllers/mapController");
 
 const { protect } = require("../middleware/authMiddleware");
 
 router.get("/", protect, getMaps);
 router.post("/", protect, setMap);
-router.put("/:id", protect, updateMap);
-router.delete("/:id", protect, deleteMap);
+router.put("/:mapId", protect, updateMap);
+router.delete("/:mapId", protect, deleteMap);
 
 module.exports = router;

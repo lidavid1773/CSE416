@@ -10,7 +10,7 @@ let token = null;
 describe("Testing Map", () => {
 
     beforeAll(async () => {
-        const response = await request(baseURL).post('/MapWorkShop/users/signup').send(user);
+        const response = await request(baseURL).post('/MapWorkShop/users/signin').send(user);
         token = response.body.token;
     });
 

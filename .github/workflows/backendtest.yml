@@ -20,6 +20,5 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Run Tests
-        run: |
-          npm install 
-          npm test
+        run: | 
+          npx test

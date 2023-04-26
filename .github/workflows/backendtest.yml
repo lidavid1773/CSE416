@@ -1,0 +1,23 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - [frank-discovery,dev]
+  pull_request:
+    branches: [frank-discovery,dev]
+
+jobs:
+  Jest:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Tests
+        run: |
+          npm install 
+          npm test

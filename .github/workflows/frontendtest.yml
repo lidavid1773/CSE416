@@ -6,7 +6,7 @@ on:
       - frank-discovery
   pull_request:
     branches:
-      - [frank-discovery,dev]
+      - [frank-discovery]
 
 jobs:
   build-and-test:

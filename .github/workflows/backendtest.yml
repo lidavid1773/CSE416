@@ -5,7 +5,7 @@ on:
     branches:
       - frank-discovery
   pull_request:
-    branches: [frank-discovery,dev]
+    branches: [frank-discovery]
 
 jobs:
   Jest:
@@ -16,7 +16,7 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: Node.js 16: actions/checkout@v2
       - name: Run Tests
         run: |
           npm install 

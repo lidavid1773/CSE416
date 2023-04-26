@@ -19,6 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run Tests
-        run: | 
-          npx jest
+      - name: Set Jest execute permissions
+        run: npm run pretest
+
+      - name: Run tests
+        run: npm test

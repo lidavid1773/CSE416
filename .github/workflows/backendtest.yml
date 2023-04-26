@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - frank-discovery
+      - dev
   pull_request:
     branches: [frank-discovery]
 

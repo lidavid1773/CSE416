@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - frank-discovery
+      - dev
   pull_request:
-    branches:
-      - [frank-discovery]
+    branches: [frank-discovery]
 
 jobs:
   build-and-test:

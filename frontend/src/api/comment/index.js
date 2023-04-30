@@ -12,11 +12,11 @@ const getComments = async (id) => {
 const addComment = async (commentData, id, token) => {
   const config = {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   };
 
-  const response = await axios.get(
+  const response = await axios.post(
     `${API_URL}${id}/comments`,
     commentData,
     config

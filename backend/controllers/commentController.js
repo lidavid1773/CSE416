@@ -4,13 +4,12 @@ const asyncHandler = require("express-async-handler");
 
 const Comment = require("../models/commentModel");
 const Map = require("../models/mapModel");
-const User = require("../models/userModel");
 
 // GET /api/maps/:mapId/comments
 const getComments = asyncHandler(async (req, res) => {
   const comments = await Comment.find({
     map: req.params.mapId,
-    parentComment: null
+    parentComment: null,
   })
     .populate("user")
     .populate({ path: "replies", populate: { path: "user" } });
@@ -34,7 +33,7 @@ const addComment = asyncHandler(async (req, res) => {
     content: content,
     user: req.user,
     map: mapId,
-    parentComment: parentComment || null
+    parentComment: parentComment || null,
   });
 
   // Store comment into database
@@ -63,5 +62,5 @@ module.exports = {
   getComments,
   addComment,
   updateComment,
-  deleteComment
+  deleteComment,
 };

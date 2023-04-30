@@ -1,38 +1,15 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { getMaps, resetState } from "../features/maps/mapSlice";
-import MapList from "../components/MapList";
+import { useSelector } from "react-redux";
 
 function Home() {
-  const dispatch = useDispatch();
-
   // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
-  const { maps, isError, message } = useSelector((state) => state.maps);
-
-  useEffect(() => {
-    if (isError) {
-      console.log(message);
-    }
-
-    if (user) {
-      dispatch(getMaps());
-    }
-
-    return () => {
-      dispatch(resetState());
-    };
-  }, [user, dispatch, isError, message]);
 
   return (
     <div>
       {user ? (
         <div>
-          <div className="header">
-            <h1>Welcome back, {user.username}!</h1>
-            <h1>Maps Owned</h1>
-          </div>
-          <MapList maps={maps} />
+          <div>Home Page</div>
+          <div>Welcome back, {user.username}!</div>
         </div>
       ) : (
         <div>

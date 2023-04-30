@@ -10,7 +10,7 @@ function CommentForm() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch(addComment({ content, parentComment })); // meed to add mapId here
+    dispatch(addComment({ content, parentComment }, parentComment));
     setContent("");
   };
 

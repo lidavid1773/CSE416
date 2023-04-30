@@ -1,18 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
-import { SignInIcon, SignOutIcon, UserIcon } from "../assets";
+import { Link } from "react-router-dom";
+import { SignInIcon, SignOutIcon, UserIcon, ProfileIcon } from "../assets";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, resetState } from "../features/users/userSlice";
 
 function Banner() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);
 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(resetState());
-    navigate("/");
   };
 
   return (
@@ -25,21 +23,28 @@ function Banner() {
 
       <ul>
         {user ? (
-          <li>
-            <button className="btn" onClick={handleLogout}>
-              <SignOutIcon /> Logout
-            </button>
-          </li>
-        ) : (
           <>
             <li>
-              <Link to="/login">
-                <SignInIcon /> Login
+              <Link to={`/profile/${user.username}`}>
+                <ProfileIcon /> Profile
               </Link>
             </li>
             <li>
+              <Link to="/" onClick={handleLogout}>
+                <SignOutIcon /> Logout
+              </Link>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
               <Link to="/register">
                 <UserIcon /> Register
+              </Link>
+            </li>
+            <li>
+              <Link to="/login">
+                <SignInIcon /> Login
               </Link>
             </li>
           </>

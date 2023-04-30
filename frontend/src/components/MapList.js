@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import { deleteMap } from "../features/maps/mapSlice";
+import { useNavigate } from "react-router-dom";
 
 const MapList = ({ maps }) => {
   return (
@@ -19,6 +20,7 @@ const MapList = ({ maps }) => {
 
 const MapItem = ({ map }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <div className="map-item">
@@ -29,6 +31,9 @@ const MapItem = ({ map }) => {
         className="delete-btn"
       >
         X
+      </button>
+      <button onClick={() => navigate(`/viewmap/${map._id}`)}>
+        View details
       </button>
     </div>
   );

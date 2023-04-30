@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import localgeojson from "./geojson (2).json"
+import 'leaflet-editable';
+import localgeojson from "./maps/ukraine.json";
 import { markerIcon } from "./Icon";
+
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
   var map,geojsonLayer,vertexLayer;
-  
  
   useEffect(() => {
     const fetchData = async () => {
@@ -22,6 +23,7 @@ function Map() {
   useEffect(() => {
     if (geojson) {
       map = L.map('map', {
+        editable: true,
         contextmenu: true,
         contextmenuWidth: 140,
         contextmenuItems: [
@@ -43,19 +45,31 @@ function Map() {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       }).addTo(map);
-      geojsonLayer = L.geoJson(geojson).addTo(map);
-      const bounds = geojsonLayer.getBounds();
-      map.fitBounds(bounds);
-      vertexLayer = L.layerGroup();
-      map.addLayer(vertexLayer);
-
+      // geojsonLayer = L.geoJson(geojson).addTo(map);
+      // geojsonLayer.eachLayer(layer => {
+      //   if (layer instanceof L.Polyline) {
+      //     layer.enableEdit();
+      //   }
+      // });
+      // geojsonLayer = L.geoJson(geojson, { 
+      //                           onEachFeature: function popUp(features, layer) { selectVerticesMode(features, layer); } 
+      //                         }).addTo(map);
+      geojson.features.forEach(function(currentFeature){
+          var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(currentFeature.geometry.coordinates[0])).addTo(map);
+          polygon.enableEdit();
+          map.fitBounds(polygon.getBounds());
+      });
+      // const bounds = geojsonLayer.getBounds();
+      // map.fitBounds(bounds);
+      // vertexLayer = L.layerGroup();
+      // map.addLayer(vertexLayer);
     }
   }, [geojson]);
 
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);
     geojsonLayer = L.geoJson(geojson, 
-      { onEachFeature: function popUp(features, layer) { selectVerticesMode(features, layer); } }
+      { onEachFeature: function highlight(features, layer) { vertexDisplay(features, layer); } }
       )
       .addTo(map);
   }
@@ -77,44 +91,75 @@ function Map() {
       coords.forEach(function (coordsArray) {
         var vertexArray = L.GeoJSON.coordsToLatLngs(coordsArray);
         vertexArray.forEach(function (latlng) {
-          var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer)
+          var marker = L.marker(latlng, { draggable: true, icon: markerIcon }).addTo(vertexLayer);
           marker.bindPopup(showLatLng(latlng))
           marker.on("click", removeVertex(latlng, features, marker)).addTo(vertexLayer);
-          
-          // makerDraggingMovement(makerDraggingMovement, marker, features.geometry.coordinates[0])
+          markerDraggingMovement(markerDraggingMovement, marker, features.geometry.coordinates[0])
         });
       });
     }
   }
+
   const removeVertex = function (latlng, features, marker) {
     return () => {
-      console.log(features.geometry.type)
       if (features.geometry.type === 'Polygon') {
-        if (removeCoodinates(features.geometry.coordinates, latlng, marker, features)) {
-          return
+        for (let position of features.geometry.coordinates) {
+          if (removeCoordinates(position, latlng, marker, features)) {
+            return
+          }
         }
-      }
-      else
-        for (let coordinates of features.geometry.coordinates) {
-          console.log("Multipolyon")
-          for (let position of coordinates) {
-            if (removeCoodinates(position, latlng, marker, features)) {
+      } else {
+        for (let polygon of features.geometry.coordinates) {
+          for (let position of polygon) {
+            if (removeCoordinates(position, latlng, marker, features)) {
               return
             }
           }
         }
+      }
     }
   }
-  const removeCoodinates = (position, latlng, marker, features) => {
+
+  const removeCoordinates = (position, latlng, marker, features) => {
     const polyLineLayer = getPolyLineLayer();
-    const coords = polyLineLayer.getLatLngs()[0];
+    const coords = L.GeoJSON.coordsToLatLngs(position);
+    //const coords = polyLineLayer.getLatLngs()[0];
     var index = markerIndexSearch(coords, latlng)
+    if (index === -1) {
+      return false;
+    }
     if (index === 0 || index === coords[0].length - 1)
       coords.splice(index, 1)
     coords.splice(index, 1)
     marker.remove()
     polyLineLayer.setLatLngs(coords)
+    return true;
   }
+
+  const markerDraggingMovement = (funct, marker, coordinates) => {
+    var index;
+    var PolyLineLayer;
+    var coords;
+    var latlng;
+    marker.on('mousedown', function (e) {
+      latlng = e.target.getLatLng();
+      PolyLineLayer = getPolyLineLayer();
+      coords = PolyLineLayer.getLatLngs()[0];
+      index = markerIndexSearch(coords, latlng)
+    })
+    marker.on('drag', function (e) {
+      latlng = e.target.getLatLng();
+      coords[index] = (e.target.getLatLng())
+      PolyLineLayer.setLatLngs(coords)
+    })
+    marker.on('dragstart', function (e) {
+      map.off('click', funct);
+    });
+    marker.on('dragend', function (e) {
+      console.log('marker dragend event');
+    });
+  }
+
   const getPolyLineLayer = () => {
     const polylineLayer = [];
     geojsonLayer.eachLayer(layer => {
@@ -133,6 +178,11 @@ function Map() {
     }
     return -1; // if obj is not found in the 2D array
   };
+
+  const findCoordinate = (latlng) => {
+
+  }
+
   const showLatLng = (latlng) => {
     return `lng: ${latlng.lng} </br>
     lat: ${latlng.lat} `

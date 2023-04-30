@@ -1,15 +1,16 @@
 import React, { Component, useEffect, useState, createContext } from "react";
 import './index.css';
 import 'leaflet/dist/leaflet.css';
-import ShapeFile from "./ShapeFile.js";
+import ShapeFile from './Shapefile';
 import { MapContainer, LayersControl } from 'react-leaflet'
-import localgeojson from "./geojson (1).json"
+import localgeojson from "./maps/north_america.json"
 import SimplificationButton from "./simplificationButton";
 import { useGeoJson, useLocalGeoJson } from "./geojsonHooks"
 import { ContextMenu } from "./ContextMenu";
 import "leaflet-contextmenu";
 import "leaflet-contextmenu/dist/leaflet.contextmenu.css";
 import StrengthBar from "./StrengthBar";
+
 const { BaseLayer, Overlay } = LayersControl;
 const shapefile = require('shapefile')
 const GlobalGeoJsonContext = createContext({});

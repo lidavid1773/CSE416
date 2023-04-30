@@ -131,3 +131,7 @@ li {
   width: 100%;
   margin-bottom: 20px;
 }
+
+.comment {
+  border: black 1px solid;
+}

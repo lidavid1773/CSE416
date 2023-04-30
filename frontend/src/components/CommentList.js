@@ -20,24 +20,19 @@ const CommentList = () => {
     };
   }, [dispatch, isError, message, mapId]);
 
-  console.log(comments);
-
   return (
     <div>
-      {comments.length > 0 ? (
-        comments.map((comment) => (
-          <Comment key={comment._id} comment={comment} />
-        ))
-      ) : (
-        <h3>No comments</h3>
-      )}
+      <p>{comments.length} comments</p>
+      {comments.map((comment) => (
+        <Comment key={comment._id} comment={comment} />
+      ))}
     </div>
   );
 };
 
 const Comment = ({ comment }) => {
   return (
-    <div>
+    <div className="comment">
       <div>{comment.user.username}</div>
       <div>{comment.content}</div>
       <div>{new Date(comment.createdAt).toLocaleString("en-US")}</div>

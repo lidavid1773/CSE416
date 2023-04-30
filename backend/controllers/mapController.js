@@ -3,6 +3,21 @@
 const asyncHandler = require("express-async-handler");
 
 const Map = require("../models/mapModel");
+const { ObjectId } = require("mongodb");
+
+// GET /api/maps/getOne/:mapId
+const getMap = asyncHandler(async (req, res) => {
+  const map = await Map.findOne({
+    _id: new ObjectId(req.params.mapId),
+  }).populate("user");
+
+  if (!map) {
+    res.status(400);
+    throw new Error("Map not found");
+  }
+
+  res.status(200).json(map);
+});
 
 // GET /api/maps
 const getMaps = asyncHandler(async (req, res) => {
@@ -45,7 +60,7 @@ const updateMap = asyncHandler(async (req, res) => {
   }
 
   const updatedMap = await Map.findByIdAndUpdate(req.params.mapId, req.body, {
-    new: true
+    new: true,
   });
 
   res.status(200).json(updatedMap);
@@ -80,8 +95,9 @@ const deleteMap = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getMap,
   getMaps,
   setMap,
   updateMap,
-  deleteMap
+  deleteMap,
 };

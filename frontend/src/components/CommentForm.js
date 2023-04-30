@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addComment } from "../features/comments/commentSlice";
 
-function CommentForm() {
+function CommentForm({ mapId }) {
   const [content, setContent] = useState("");
   const parentComment = useState(null); // Need to add code to change the parentParent into an id if a user wants to reply to another comment.
 
@@ -10,7 +10,7 @@ function CommentForm() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    dispatch(addComment({ content, parentComment }, parentComment));
+    dispatch(addComment({ content, parentComment }, mapId));
     setContent("");
   };
 

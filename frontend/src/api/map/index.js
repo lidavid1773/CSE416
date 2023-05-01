@@ -3,6 +3,18 @@ import axios from "axios";
 const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 const API_URL = `${baseURL}/api/maps/`;
 
+const getMap = async (id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.get(`${API_URL}getOne/${id}`, config);
+
+  return response.data;
+};
+
 const getMaps = async (token) => {
   const config = {
     headers: {
@@ -27,6 +39,6 @@ const deleteMap = async (id, token) => {
   return response.data;
 };
 
-const api = { getMaps, deleteMap };
+const api = { getMap, getMaps, deleteMap };
 
 export default api;

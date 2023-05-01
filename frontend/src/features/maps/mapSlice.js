@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/map";
 
 const initialState = {
+  map: null,
   maps: [],
   isError: false,
   isSuccess: false,
@@ -15,6 +16,16 @@ const getMessage = (error) => {
     error.toString()
   );
 };
+
+export const getMap = createAsyncThunk("maps/getOne", async (id, thunkAPI) => {
+  try {
+    const token = thunkAPI.getState().user.user.token;
+    return await api.getMap(id, token);
+  } catch (error) {
+    // send error message as payload
+    return thunkAPI.rejectWithValue(getMessage(error));
+  }
+});
 
 export const getMaps = createAsyncThunk("maps/getAll", async (_, thunkAPI) => {
   try {
@@ -47,6 +58,14 @@ export const mapSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getMap.fulfilled, (state, action) => {
+        state.isSuccess = true;
+        state.map = action.payload;
+      })
+      .addCase(getMap.rejected, (state, action) => {
+        state.isError = true;
+        state.message = action.payload;
+      })
       .addCase(getMaps.fulfilled, (state, action) => {
         state.isSuccess = true;
         state.maps = action.payload;

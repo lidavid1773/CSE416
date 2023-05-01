@@ -3,6 +3,21 @@
 const asyncHandler = require("express-async-handler");
 
 const Map = require("../models/mapModel");
+const { ObjectId } = require("mongodb");
+
+// GET /api/maps/getOne/:mapId
+const getMap = asyncHandler(async (req, res) => {
+  const map = await Map.findOne({
+    _id: new ObjectId(req.params.mapId),
+  }).populate("user");
+
+  if (!map) {
+    res.status(400);
+    throw new Error("Map not found");
+  }
+
+  res.status(200).json(map);
+});
 
 // GET /api/maps
 const getMaps = asyncHandler(async (req, res) => {
@@ -21,9 +36,9 @@ const setMap = asyncHandler(async (req, res) => {
   res.status(200).json(map);
 });
 
-// PUT /api/maps/:id
+// PUT /api/maps/:mapId
 const updateMap = asyncHandler(async (req, res) => {
-  const map = await Map.findById(req.params.id);
+  const map = await Map.findById(req.params.mapId);
 
   if (!map) {
     res.status(400);
@@ -44,16 +59,16 @@ const updateMap = asyncHandler(async (req, res) => {
     throw new Error("User not authorized");
   }
 
-  const updatedMap = await Map.findByIdAndUpdate(req.params.id, req.body, {
+  const updatedMap = await Map.findByIdAndUpdate(req.params.mapId, req.body, {
     new: true,
   });
 
   res.status(200).json(updatedMap);
 });
 
-// DEL /api/maps/:id
+// DEL /api/maps/:mapId
 const deleteMap = asyncHandler(async (req, res) => {
-  const map = await Map.findById(req.params.id);
+  const map = await Map.findById(req.params.mapId);
 
   if (!map) {
     res.status(400);
@@ -76,10 +91,11 @@ const deleteMap = asyncHandler(async (req, res) => {
 
   await map.deleteOne();
 
-  res.status(200).json({ id: req.params.id });
+  res.status(200).json({ mapId: req.params.mapId });
 });
 
 module.exports = {
+  getMap,
   getMaps,
   setMap,
   updateMap,

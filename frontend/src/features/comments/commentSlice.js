@@ -5,7 +5,7 @@ const initialState = {
   comments: [],
   isError: false,
   isSuccess: false,
-  message: ""
+  message: "",
 };
 
 const getMessage = (error) => {
@@ -45,7 +45,7 @@ export const commentSlice = createSlice({
   name: "comment",
   initialState,
   reducers: {
-    resetState: () => initialState
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -58,14 +58,16 @@ export const commentSlice = createSlice({
         state.message = action.payload;
       })
       .addCase(addComment.fulfilled, (state, action) => {
+        console.log(action);
         state.isSuccess = true;
         state.comments.push(action.payload);
       })
       .addCase(addComment.rejected, (state, action) => {
+        console.log(action);
         state.isError = true;
         state.message = action.payload;
       });
-  }
+  },
 });
 
 export const { resetState } = commentSlice.actions;

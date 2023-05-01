@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import EditMap from "../components/EditMap";
 
 function Home() {
   // if user is null, user is a guest.
@@ -13,6 +14,7 @@ function Home() {
           <button>Import map from profile</button>
           <button>Upload Shapefile</button>
           <button>Upload GeoJSON</button>
+          <EditMap/>
         </div>
       ) : (
         <div>
@@ -20,6 +22,7 @@ function Home() {
           <div>You are browsing as a guest</div>
           <button>Upload Shapefile</button>
           <button>Upload GeoJSON</button>
+          <EditMap/>
         </div>
       )}
     </div>

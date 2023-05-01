@@ -68,7 +68,8 @@ const CommentList = () => {
 
 const Comment = ({ comment, isReply }) => {
   const dispatch = useDispatch();
-  const [content, setContent] = useState("working");
+  const [content, setContent] = useState("");
+  const [toggleReplyInput, setToggleReplyInput] = useState(false);
   const { mapId } = useParams();
 
   const replyToComment = (id) => {
@@ -77,6 +78,7 @@ const Comment = ({ comment, isReply }) => {
       parentComment: id,
     };
     dispatch(addComment({ commentData, id: mapId }));
+    setContent("");
   };
 
   return (
@@ -102,7 +104,7 @@ const Comment = ({ comment, isReply }) => {
           <div className="comment-content">{comment.content}</div>
           <div className="reply-button-container">
             <button
-              onClick={() => replyToComment(comment._id)}
+              onClick={() => setToggleReplyInput(!toggleReplyInput)}
               className="reply-button"
             >
               Reply
@@ -111,6 +113,17 @@ const Comment = ({ comment, isReply }) => {
               {comment.replies.length} replies
             </span>
           </div>
+          {toggleReplyInput ? (
+            <div>
+              <input
+                type="text"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Reply..."
+              />
+              <button onClick={() => replyToComment(comment._id)}>Reply</button>
+            </div>
+          ) : null}
         </div>
       )}
     </>

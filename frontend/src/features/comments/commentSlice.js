@@ -64,7 +64,7 @@ export const commentSlice = createSlice({
           const commentIdx = state.comments.findIndex(
             (comment) => comment._id === action.payload.parentComment
           );
-          if (commentIdx != -1) {
+          if (commentIdx !== -1) {
             state.comments[commentIdx].replies.push(action.payload);
           }
         } else {

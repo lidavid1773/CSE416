@@ -24,4 +24,6 @@ jobs:
       #   run: npm run pretest
 
       - name: Run tests
-        run: npx jest
+        run: |
+        npm install
+        npx jest

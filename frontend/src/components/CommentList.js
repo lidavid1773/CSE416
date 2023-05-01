@@ -27,7 +27,7 @@ const CommentList = () => {
 
   const leaveComment = () => {
     const commentData = {
-      content: content,
+      content,
     };
     dispatch(addComment({ commentData, id: mapId }));
     setContent("");
@@ -35,7 +35,8 @@ const CommentList = () => {
 
   return (
     <div>
-      <p>{comments.length} Comment Section</p>
+      <p>Comment Section</p>
+      <p>{comments.length} comments</p>
 
       <input
         type="text"
@@ -66,8 +67,16 @@ const CommentList = () => {
 };
 
 const Comment = ({ comment, isReply }) => {
+  const dispatch = useDispatch();
+  const [content, setContent] = useState("working");
+  const { mapId } = useParams();
+
   const replyToComment = (id) => {
-    console.log(`Replying to comment... ${id}`);
+    const commentData = {
+      content,
+      parentComment: id,
+    };
+    dispatch(addComment({ commentData, id: mapId }));
   };
 
   return (

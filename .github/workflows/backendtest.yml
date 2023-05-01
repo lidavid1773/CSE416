@@ -5,6 +5,7 @@ on:
     branches:
       - frank-discovery
       - dev
+      - add-tests
   pull_request:
     branches: [frank-discovery]
 

@@ -1,0 +1,26 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - frank-discovery
+      - dev
+  pull_request:
+    branches: [frank-discovery]
+
+jobs:
+  Jest:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set Jest execute permissions
+        run: npm run pretest
+
+      - name: Run tests
+        run: npm test

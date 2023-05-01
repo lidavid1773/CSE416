@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-editable';
+import 'leaflet-draw';
+import "leaflet-draw/dist/leaflet.draw-src.css";
 import localgeojson from "./maps/ukraine.json";
 import { markerIcon } from "./Icon";
 
@@ -23,7 +24,7 @@ function Map() {
   useEffect(() => {
     if (geojson) {
       map = L.map('map', {
-        editable: true,
+        // drawControl: true,
         contextmenu: true,
         contextmenuWidth: 140,
         contextmenuItems: [
@@ -54,11 +55,21 @@ function Map() {
       // geojsonLayer = L.geoJson(geojson, { 
       //                           onEachFeature: function popUp(features, layer) { selectVerticesMode(features, layer); } 
       //                         }).addTo(map);
+      var drawnItems = new L.FeatureGroup();
       geojson.features.forEach(function(currentFeature){
           var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(currentFeature.geometry.coordinates[0])).addTo(map);
           // polygon.enableEdit();
           map.fitBounds(polygon.getBounds());
+          drawnItems.addLayer(polygon);
       });
+      map.addLayer(drawnItems); 
+      var drawControl = new L.Control.Draw({
+        draw: false,
+        edit: {
+            featureGroup: drawnItems
+        }
+      });;
+      map.addControl(drawControl);
       // const bounds = geojsonLayer.getBounds();
       // map.fitBounds(bounds);
       // vertexLayer = L.layerGroup();

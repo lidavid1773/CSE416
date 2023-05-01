@@ -56,7 +56,7 @@ function Map() {
       //                         }).addTo(map);
       geojson.features.forEach(function(currentFeature){
           var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(currentFeature.geometry.coordinates[0])).addTo(map);
-          polygon.enableEdit();
+          // polygon.enableEdit();
           map.fitBounds(polygon.getBounds());
       });
       // const bounds = geojsonLayer.getBounds();

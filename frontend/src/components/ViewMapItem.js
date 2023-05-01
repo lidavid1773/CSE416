@@ -27,6 +27,7 @@ const ViewMapItem = () => {
 
   return (
     <div>
+      <button>View Map</button>
       <button>Make a Copy</button>
       <button>Export Map</button>
       <h3>Map Item Details</h3>

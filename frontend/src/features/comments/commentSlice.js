@@ -30,7 +30,7 @@ export const getComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
   "comments/add",
-  async (commentData, id, thunkAPI) => {
+  async ({ commentData, id }, thunkAPI) => {
     try {
       const token = thunkAPI.getState().user.user.token;
       return await api.addComment(commentData, id, token);
@@ -58,12 +58,10 @@ export const commentSlice = createSlice({
         state.message = action.payload;
       })
       .addCase(addComment.fulfilled, (state, action) => {
-        console.log(action);
         state.isSuccess = true;
-        state.comments.push(action.payload);
+        state.comments.unshift(action.payload);
       })
       .addCase(addComment.rejected, (state, action) => {
-        console.log(action);
         state.isError = true;
         state.message = action.payload;
       });

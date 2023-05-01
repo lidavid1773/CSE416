@@ -27,10 +27,10 @@ const CommentList = () => {
 
   const leaveComment = () => {
     const commentData = {
-      content,
-      parentComment: null,
+      content: content,
     };
-    dispatch(addComment(commentData, mapId));
+    dispatch(addComment({ commentData, id: mapId }));
+    setContent("");
   };
 
   return (

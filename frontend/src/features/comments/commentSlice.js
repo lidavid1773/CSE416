@@ -5,7 +5,7 @@ const initialState = {
   comments: [],
   isError: false,
   isSuccess: false,
-  message: ""
+  message: "",
 };
 
 const getMessage = (error) => {
@@ -30,7 +30,7 @@ export const getComments = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
   "comments/add",
-  async (commentData, id, thunkAPI) => {
+  async ({ commentData, id }, thunkAPI) => {
     try {
       const token = thunkAPI.getState().user.user.token;
       return await api.addComment(commentData, id, token);
@@ -45,7 +45,7 @@ export const commentSlice = createSlice({
   name: "comment",
   initialState,
   reducers: {
-    resetState: () => initialState
+    resetState: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -59,13 +59,23 @@ export const commentSlice = createSlice({
       })
       .addCase(addComment.fulfilled, (state, action) => {
         state.isSuccess = true;
-        state.comments.push(action.payload);
+        // add the comment in the right place. either list or comments or in a comment's replies
+        if (action.payload.parentComment) {
+          const commentIdx = state.comments.findIndex(
+            (comment) => comment._id === action.payload.parentComment
+          );
+          if (commentIdx !== -1) {
+            state.comments[commentIdx].replies.push(action.payload);
+          }
+        } else {
+          state.comments.push(action.payload);
+        }
       })
       .addCase(addComment.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
       });
-  }
+  },
 });
 
 export const { resetState } = commentSlice.actions;

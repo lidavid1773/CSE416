@@ -21,6 +21,8 @@ const addComment = asyncHandler(async (req, res) => {
   const { content, parentComment } = req.body;
   const mapId = req.params.mapId;
 
+  console.log(mapId);
+
   const map = await Map.findById(mapId);
 
   if (!map) {

@@ -1,11 +1,32 @@
 import React, { useState } from 'react';
+export function getBorderDashArray(borderStyle) {
+  switch (borderStyle) {
+    case 'dashed':
+      return '5, 5';
+    case 'dotted':
+      return '1, 5';
+    case 'double':
+      return '5, 1';
+    case 'groove':
+      return '10, 5, 2, 5';
+    case 'ridge':
+      return '5, 2, 10, 5';
+    case 'inset':
+      return '5, 1';
+    case 'outset':
+      return '5, 5';
+    default:
+      return 'solid';
+  }
+}
 
-const DropdownMenuType = {
+export const DropdownMenuType = {
   FONT_SIZE: 'fontSize',
   FONT_FAMILY: 'fontFamily',
   BACKGROUND_COLOR: 'backgroundColor',
   BORDER_STYLE: 'borderStyle',
-  BORDER_COLOR: 'borderColor'
+  BORDER_COLOR: 'borderColor',
+  BORDER_WEIGHT: 'weight',
 };
 export const InitState={
   borderStyle: 'solid',
@@ -13,19 +34,12 @@ export const InitState={
   fontFamily:'Arial',
   fontSize:12,
   backgroundColor:"#FFFFFF",
+  weight:1,
 }
 const fontFamily = ['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Lucida Console'];
 const fontSizes = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96];
-const borderStyles = [
-  'Solid',
-  'Dashed',
-  'Dotted',
-  'Double',
-  'Groove',
-  'Ridge',
-  'Inset',
-  'Outset'
-];
+const weightSizes = [1,2,3,4,5,6];
+const borderStyles = ["solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
 
 const Dropdown = ({ onStyleChange, colorSelection }) => {
   const [selectedStyle, setSelectedStyle] = useState({});
@@ -63,11 +77,14 @@ const Dropdown = ({ onStyleChange, colorSelection }) => {
           case DropdownMenuType.FONT_FAMILY:
             return createDropdown(menuType, fontFamily);
           case DropdownMenuType.BACKGROUND_COLOR:
-            return createDropdown(menuType, colorSelection.reverse() );
+            return createDropdown(menuType, colorSelection );
           case DropdownMenuType.BORDER_STYLE:
             return createDropdown(menuType, borderStyles);
           case DropdownMenuType.BORDER_COLOR:
             return createDropdown(menuType, colorSelection );
+          case DropdownMenuType.BORDER_WEIGHT:
+            return createDropdown(menuType, weightSizes );
+
           default:
             return null;
         }

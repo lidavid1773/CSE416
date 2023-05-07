@@ -11,14 +11,15 @@ import { SketchPicker } from 'react-color'
 
 import ColorLegend from './GrgphicEditor/ColorLegend';
 import ImageUploader from './GrgphicEditor/ImageUploader';
-import Dropdown from './GrgphicEditor/Dropdown';
+import Dropdown, { DropdownMenuType } from './GrgphicEditor/Dropdown';
 import { InitState } from './GrgphicEditor/Dropdown';
+import { getBorderDashArray } from './GrgphicEditor/Dropdown';
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState('#fff');
   const [style,setStyle] = useState(null);
-  const selectedRef = useRef(InitState);
+  const graphicRef = useRef(InitState);
   const [hasSelectedColors, setHasSelectedColors] = useState([]);
   const [images, setImages] = useState([]);
 
@@ -31,19 +32,17 @@ function Map() {
   const handleImageUpload = (uploadedImages) => {
     setImages((prevImages) => [...prevImages, ...uploadedImages]);
   };
-
-
-  
   const handleStyleChange = (menuType,style) => {
-    selectedRef.current[menuType] = style
+    graphicRef.current[menuType] = style
     setStyle(style);
   };
   
   const handleChangeComplete = (color) => {
     setBackgroundColor(color.rgb);
     const newColorString = rgbaToString(color.rgb);
-    selectedRef.current.backgroundColor = newColorString ;
-    setHasSelectedColors(hasSelectedColors.concat(color.hex));
+    graphicRef.current.backgroundColor = newColorString ;
+    
+    setHasSelectedColors((prevColor) => [newColorString,...prevColor]);
 
   };
   var map, geojsonLayer, vertexLayer;
@@ -64,6 +63,8 @@ function Map() {
       map = L.map('map', {
         // drawControl: true,
         contextmenu: true,
+        zoomSnap: 1,
+
         contextmenuWidth: 140,
         contextmenuItems: [
           {
@@ -122,8 +123,19 @@ function Map() {
   const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
 
   const applyNewStyle = (polygon) => {
-    console.log(selectedRef)
-    polygon.setStyle({ fillColor: selectedRef.backgroundColor });
+    
+    polygon.setStyle({
+      weight:graphicRef.current.weight,
+      fillColor:graphicRef.current.backgroundColor,
+      color:graphicRef.current.borderColor,
+      dashArray:getBorderDashArray(graphicRef.current.borderStyle),
+    })
+    
+    // polygon.setStyle({
+    //   color: 'red',   // New border color
+    //   weight: 4,      // New border width
+    //   fillOpacity: 0, // New fill opacity
+    // });
   }
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);
@@ -265,10 +277,11 @@ function Map() {
         onChangeComplete={handleChangeComplete} />
       <ColorLegend colors={hasSelectedColors} />
       <h1 style={{ 
-    fontSize: `${selectedRef.current.fontSize}px`, 
-    fontFamily: `${selectedRef.current.fontFamily}`, 
-    border: `${selectedRef.current.borderStyle} ${selectedRef.current.borderColor}`, 
-    background:`${selectedRef.current.backgroundColor}` 
+    fontSize: `${graphicRef.current.fontSize}px`, 
+    fontFamily: `${graphicRef.current.fontFamily}`, 
+    border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`, 
+    background:`${graphicRef.current.backgroundColor}`,
+    
 }}>
     Hello World
 </h1>

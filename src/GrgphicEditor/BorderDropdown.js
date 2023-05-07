@@ -23,7 +23,6 @@ const BorderDropdown = ({ selectedStyle, onStyleChange }) => {
                 {Object.keys(borderStyles).map((style) => (
                     <option key={style} value={style} style={{borderStyle:`${borderStyles[style]}`}}>
                         {borderStyles[style]}
-                        <div > </div>
                     </option>
                 ))}
             </select>

@@ -11,10 +11,13 @@ import { SketchPicker } from 'react-color'
 import ColorLegend from './GrgphicEditor/ColorLegend';
 import ImageUploader from './GrgphicEditor/ImageUploader';
 import Dropdown, { InitState, getBorderDashArray, Uploaded } from './GrgphicEditor/Dropdown';
+import {SimpleMapScreenshoter} from 'leaflet-simple-map-screenshoter'
+
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState('#fff');
+  const mapRef = useRef(null);
   const [style, setStyle] = useState(null);
   const graphicRef = useRef(InitState);
   const [hasSelectedColors, setHasSelectedColors] = useState([]);
@@ -23,16 +26,15 @@ function Map() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(initImageIndex);
 
   const handleImageClick = (index) => {
-    if(graphicRef.current[Uploaded.IMAGE]){
+    if (graphicRef.current[Uploaded.IMAGE]) {
       graphicRef.current[Uploaded.IMAGE] = undefined
       setSelectedImageIndex(initImageIndex);
     }
-    else{
+    else {
       graphicRef.current[Uploaded.IMAGE] = images[index];
       setSelectedImageIndex(index);
-
     }
-   
+
   };
 
   const handleImageUpload = (uploadedImages) => {
@@ -65,52 +67,31 @@ function Map() {
 
   useEffect(() => {
     if (geojson) {
-      if (!map)
-        map = L.map('map', {
-          // drawControl: true,
-          contextmenu: true,
-          zoomSnap: 1,
+      if (!mapRef.current) {
+        map = L.map('map', { 
+          renderer: L.canvas(),
+          preferCanvas: true});
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+        }).addTo(map);
+        mapRef.current = map;
+        new SimpleMapScreenshoter().addTo(map)
 
-          contextmenuWidth: 140,
-          contextmenuItems: [
-            {
-              text: 'View Properties',
-              callback: () => console.log('View Properties'),
-              hideOnSelect: true,
-            },
-            {
-              text: 'Select Vertices',
-              callback: () => enableSelectVerticesMode(),
-              hideOnSelect: true,
-            },
-
-          ],
-
+        setStyle(1)
+        var drawnItems = new L.FeatureGroup();
+        geojson.features.forEach(function (currentFeature) {
+          if (currentFeature.geometry.type === "MultiPolygon") {
+            currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
+              currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
+            })
+          } else {
+            currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
+          }
         });
+        map.fitBounds(L.geoJson(geojson).getBounds());
+        map.addLayer(drawnItems);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-      }).addTo(map);
-
-      var drawnItems = new L.FeatureGroup();
-      geojson.features.forEach(function (currentFeature) {
-        if (currentFeature.geometry.type === "MultiPolygon") {
-          currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
-            currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
-          })
-        } else {
-          currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
-        }
-      });
-      map.fitBounds(L.geoJson(geojson).getBounds());
-      map.addLayer(drawnItems);
-      // var drawControl = new L.Control.Draw({
-      //   draw: false,
-      //   edit: {
-      //       featureGroup: drawnItems
-      //   }
-      // });;
-      // map.addControl(drawControl);
+      }
     }
   }, [geojson]);
 
@@ -276,8 +257,10 @@ function Map() {
   }
   return <div className="grid-container">
     <div id="map" style={{ height: '600px' }} />
+
     <div>
-      <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} />
+
+      <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={graphicRef}/>
       <div>
         {images.map((imageUrl, index) => (
           <img

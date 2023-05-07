@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { Uploaded } from './Dropdown';
 
-const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex }) => {
+const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex,graphicRef }) => {
   const handleImageUpload = (event) => {
     const files = event.target.files;
     const uploadedImages = [];
@@ -13,6 +14,7 @@ const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex }) => {
         uploadedImages.push(e.target.result);
         if (uploadedImages.length === files.length) {
           onImageUpload(uploadedImages);
+          graphicRef.current[Uploaded.IMAGE]=e.target.result;
           onSelectedImageIndex(imageIndex + 1);
         }
       };

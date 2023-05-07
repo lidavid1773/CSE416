@@ -6,13 +6,43 @@ import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
 import localgeojson from "./maps/north_america.json";
 import { markerIcon } from "./Icon";
+import { SketchPicker } from 'react-color'
+import FontSizeDropdown from './GrgphicEditor/FontSizeDropdown';
+import FontFamilyDropdown from './GrgphicEditor/FontFamilyDropdown';
+import BorderDropdown from './GrgphicEditor/BorderDropdown';
+import ColorLegend from './GrgphicEditor/ColorLegend';
+import ImageUploader from './GrgphicEditor/ImageUploader';
 
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
+  const [background, setBackground] = useState('#fff');
+  const [fontSize, setFontSize] = useState(16);
+  const [fontFamily, setfontFamily] = useState('Arial');
+
+  const [borderStyle, setBorderStyle] = useState('solid');
+  const [hasSelectedColors, setHasSelectedColors] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const handleImageUpload = (imageData) => {
+    setSelectedImage(imageData);
+  };
+  const handleBorderStyleChange = (borderStyle) => {
+    setBorderStyle(borderStyle);
+  };
+  const handleStyleChange = (style) => {
+    setfontFamily(style);
+  };
+  const handleFontSizeChange = (newSize) => {
+    setFontSize(newSize);
+  };
+  const handleChangeComplete = (color) => {
+    setBackground(color.hex);
+    setHasSelectedColors(hasSelectedColors.concat(color.hex));
+
+  };
   var map, geojsonLayer, vertexLayer;
   var selectedPolygon = null;
- 
+
   useEffect(() => {
     const fetchData = async () => {
       if (localgeojson) {
@@ -32,34 +62,34 @@ function Map() {
           {
             text: 'View Properties',
             callback: () => console.log('View Properties'),
-            hideOnSelect:true,
+            hideOnSelect: true,
           },
           {
             text: 'Select Vertices',
             callback: () => enableSelectVerticesMode(),
-            hideOnSelect:true,
+            hideOnSelect: true,
           },
-          
+
         ],
-       
+
       });
-     
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       }).addTo(map);
-      
+
       var drawnItems = new L.FeatureGroup();
-      geojson.features.forEach(function(currentFeature) {
-          if (currentFeature.geometry.type === "MultiPolygon") {
-            currentFeature.geometry.coordinates.forEach(function(currentCoordinate) {
-              currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
-            })
-          } else {
-              currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
-          }
+      geojson.features.forEach(function (currentFeature) {
+        if (currentFeature.geometry.type === "MultiPolygon") {
+          currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
+            currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
+          })
+        } else {
+          currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
+        }
       });
       map.fitBounds(L.geoJson(geojson).getBounds());
-      map.addLayer(drawnItems); 
+      map.addLayer(drawnItems);
       // var drawControl = new L.Control.Draw({
       //   draw: false,
       //   edit: {
@@ -74,7 +104,7 @@ function Map() {
   const convertToPolygon = (poly, drawnItems) => {
     var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
     drawnItems.addLayer(polygon);
-    polygon.on('click', function(e){
+    polygon.on('click', function (e) {
       if (selectedPolygon)
         selectedPolygon.editing.disable();
       selectedPolygon = e.target;
@@ -84,16 +114,16 @@ function Map() {
 
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);
-    geojsonLayer = L.geoJson(geojson, 
+    geojsonLayer = L.geoJson(geojson,
       { onEachFeature: function highlight(features, layer) { vertexDisplay(features, layer); } }
-      )
+    )
       .addTo(map);
   }
   const selectVerticesMode = (features, layer) => {
-   
+
     if (features.properties) {
       layer.on("click", (event) => {
-        vertexDisplay (features, layer);
+        vertexDisplay(features, layer);
       });
     }
   }
@@ -203,7 +233,26 @@ function Map() {
     return `lng: ${latlng.lng} </br>
     lat: ${latlng.lat} `
   }
-  return <div id="map" style={{ height: '600px' }} />;
+  return <div className="grid-container">
+    <div id="map" style={{ height: '600px' }} />
+    <div>
+    <ImageUploader onImageUpload={handleImageUpload} />
+
+      <SketchPicker style={{ height: '200px' }} color={background}
+        onChangeComplete={handleChangeComplete} />
+      <ColorLegend colors={hasSelectedColors} />
+
+
+      <h1 style={{ fontSize: `${fontSize}px`, fontFamily: `${fontFamily}`, borderStyle: `${borderStyle}` }}>Hello World</h1>
+      <FontSizeDropdown selectedSize={fontSize} onSizeChange={handleFontSizeChange} />
+      <FontFamilyDropdown fontFamily={fontFamily} onStyleChange={handleStyleChange} />
+      <BorderDropdown onStyleChange={handleBorderStyleChange} />
+
+    </div>
+
+  </div>
+
+
 }
 
 export default Map;

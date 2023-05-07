@@ -4,13 +4,14 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
-import localgeojson from "./maps/ukraine.json";
+import localgeojson from "./maps/north_america.json";
 import { markerIcon } from "./Icon";
 
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
-  var map,geojsonLayer,vertexLayer;
+  var map, geojsonLayer, vertexLayer;
+  var selectedPolygon = null;
  
   useEffect(() => {
     const fetchData = async () => {
@@ -46,36 +47,40 @@ function Map() {
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       }).addTo(map);
-      // geojsonLayer = L.geoJson(geojson).addTo(map);
-      // geojsonLayer.eachLayer(layer => {
-      //   if (layer instanceof L.Polyline) {
-      //     layer.enableEdit();
-      //   }
-      // });
-      // geojsonLayer = L.geoJson(geojson, { 
-      //                           onEachFeature: function popUp(features, layer) { selectVerticesMode(features, layer); } 
-      //                         }).addTo(map);
+      
       var drawnItems = new L.FeatureGroup();
-      geojson.features.forEach(function(currentFeature){
-          var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(currentFeature.geometry.coordinates[0])).addTo(map);
-          // polygon.enableEdit();
-          map.fitBounds(polygon.getBounds());
-          drawnItems.addLayer(polygon);
+      geojson.features.forEach(function(currentFeature) {
+          if (currentFeature.geometry.type === "MultiPolygon") {
+            currentFeature.geometry.coordinates.forEach(function(currentCoordinate) {
+              currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
+            })
+          } else {
+              currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
+          }
       });
+      map.fitBounds(L.geoJson(geojson).getBounds());
       map.addLayer(drawnItems); 
-      var drawControl = new L.Control.Draw({
-        draw: false,
-        edit: {
-            featureGroup: drawnItems
-        }
-      });;
-      map.addControl(drawControl);
-      // const bounds = geojsonLayer.getBounds();
-      // map.fitBounds(bounds);
-      // vertexLayer = L.layerGroup();
-      // map.addLayer(vertexLayer);
+      // var drawControl = new L.Control.Draw({
+      //   draw: false,
+      //   edit: {
+      //       featureGroup: drawnItems
+      //   }
+      // });;
+      // map.addControl(drawControl);
     }
   }, [geojson]);
+
+  //turn coordinates inside a GeoJson feature into a Leaflet Polygon
+  const convertToPolygon = (poly, drawnItems) => {
+    var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
+    drawnItems.addLayer(polygon);
+    polygon.on('click', function(e){
+      if (selectedPolygon)
+        selectedPolygon.editing.disable();
+      selectedPolygon = e.target;
+      e.target.editing.enable();
+    });
+  }
 
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);

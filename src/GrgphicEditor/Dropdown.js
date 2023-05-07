@@ -28,6 +28,9 @@ export const DropdownMenuType = {
   BORDER_COLOR: 'borderColor',
   BORDER_WEIGHT: 'weight',
 };
+export const Uploaded={
+  IMAGE:'image',
+}
 export const InitState={
   borderStyle: 'solid',
   borderColor: '#000000',

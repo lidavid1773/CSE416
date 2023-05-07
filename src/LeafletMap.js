@@ -8,41 +8,47 @@ import "leaflet-draw/dist/leaflet.draw-src.css";
 import localgeojson from "./maps/north_america.json";
 import { markerIcon } from "./Icon";
 import { SketchPicker } from 'react-color'
-
 import ColorLegend from './GrgphicEditor/ColorLegend';
 import ImageUploader from './GrgphicEditor/ImageUploader';
-import Dropdown, { DropdownMenuType } from './GrgphicEditor/Dropdown';
-import { InitState } from './GrgphicEditor/Dropdown';
-import { getBorderDashArray } from './GrgphicEditor/Dropdown';
+import Dropdown, { InitState, getBorderDashArray, Uploaded } from './GrgphicEditor/Dropdown';
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState('#fff');
-  const [style,setStyle] = useState(null);
+  const [style, setStyle] = useState(null);
   const graphicRef = useRef(InitState);
   const [hasSelectedColors, setHasSelectedColors] = useState([]);
   const [images, setImages] = useState([]);
-
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const initImageIndex = -1;
+  const [selectedImageIndex, setSelectedImageIndex] = useState(initImageIndex);
 
   const handleImageClick = (index) => {
-    setSelectedImageIndex(index);
+    if(graphicRef.current[Uploaded.IMAGE]){
+      graphicRef.current[Uploaded.IMAGE] = undefined
+      setSelectedImageIndex(initImageIndex);
+    }
+    else{
+      graphicRef.current[Uploaded.IMAGE] = images[index];
+      setSelectedImageIndex(index);
+
+    }
+   
   };
 
   const handleImageUpload = (uploadedImages) => {
     setImages((prevImages) => [...prevImages, ...uploadedImages]);
   };
-  const handleStyleChange = (menuType,style) => {
+  const handleStyleChange = (menuType, style) => {
     graphicRef.current[menuType] = style
     setStyle(style);
   };
-  
+
   const handleChangeComplete = (color) => {
     setBackgroundColor(color.rgb);
     const newColorString = rgbaToString(color.rgb);
-    graphicRef.current.backgroundColor = newColorString ;
-    
-    setHasSelectedColors((prevColor) => [newColorString,...prevColor]);
+    graphicRef.current.backgroundColor = newColorString;
+
+    setHasSelectedColors((prevColor) => [newColorString, ...prevColor]);
 
   };
   var map, geojsonLayer, vertexLayer;
@@ -59,28 +65,28 @@ function Map() {
 
   useEffect(() => {
     if (geojson) {
-      if(!map)
-      map = L.map('map', {
-        // drawControl: true,
-        contextmenu: true,
-        zoomSnap: 1,
+      if (!map)
+        map = L.map('map', {
+          // drawControl: true,
+          contextmenu: true,
+          zoomSnap: 1,
 
-        contextmenuWidth: 140,
-        contextmenuItems: [
-          {
-            text: 'View Properties',
-            callback: () => console.log('View Properties'),
-            hideOnSelect: true,
-          },
-          {
-            text: 'Select Vertices',
-            callback: () => enableSelectVerticesMode(),
-            hideOnSelect: true,
-          },
+          contextmenuWidth: 140,
+          contextmenuItems: [
+            {
+              text: 'View Properties',
+              callback: () => console.log('View Properties'),
+              hideOnSelect: true,
+            },
+            {
+              text: 'Select Vertices',
+              callback: () => enableSelectVerticesMode(),
+              hideOnSelect: true,
+            },
 
-        ],
+          ],
 
-      });
+        });
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
@@ -117,25 +123,35 @@ function Map() {
         selectedPolygon.editing.disable();
       selectedPolygon = e.target;
       e.target.editing.enable();
-      applyNewStyle(polygon)
+      applyNewStyle(polygon, e)
     });
   }
   const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
 
-  const applyNewStyle = (polygon) => {
-    
+  const applyNewStyle = (polygon, e) => {
+
     polygon.setStyle({
-      weight:graphicRef.current.weight,
-      fillColor:graphicRef.current.backgroundColor,
-      color:graphicRef.current.borderColor,
-      dashArray:getBorderDashArray(graphicRef.current.borderStyle),
+      weight: graphicRef.current.weight,
+      fillColor: graphicRef.current.backgroundColor,
+      color: graphicRef.current.borderColor,
+      dashArray: getBorderDashArray(graphicRef.current.borderStyle),
     })
-    
-    // polygon.setStyle({
-    //   color: 'red',   // New border color
-    //   weight: 4,      // New border width
-    //   fillOpacity: 0, // New fill opacity
-    // });
+    addImageMarker(polygon, e);
+  }
+  const addImageMarker = (polygon, e) => {
+
+    if (graphicRef.current[Uploaded.IMAGE]) {
+      const icon = L.icon({
+        iconUrl: graphicRef.current[Uploaded.IMAGE],
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+      const marker = L.marker(e.latlng, { icon }).addTo(map);
+      if (!polygon.imageMarker) {
+        polygon.imageMarker = []
+      }
+      polygon.imageMarker.push(marker);
+    }
   }
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);
@@ -261,7 +277,7 @@ function Map() {
   return <div className="grid-container">
     <div id="map" style={{ height: '600px' }} />
     <div>
-      <ImageUploader onImageUpload={handleImageUpload} />
+      <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} />
       <div>
         {images.map((imageUrl, index) => (
           <img
@@ -276,16 +292,16 @@ function Map() {
       <SketchPicker style={{ height: '200px' }} color={backgroundColor}
         onChangeComplete={handleChangeComplete} />
       <ColorLegend colors={hasSelectedColors} />
-      <h1 style={{ 
-    fontSize: `${graphicRef.current.fontSize}px`, 
-    fontFamily: `${graphicRef.current.fontFamily}`, 
-    border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`, 
-    background:`${graphicRef.current.backgroundColor}`,
-    
-}}>
-    Hello World
-</h1>
-      <Dropdown onStyleChange ={handleStyleChange } colorSelection = {hasSelectedColors}></Dropdown>
+      <h1 style={{
+        fontSize: `${graphicRef.current.fontSize}px`,
+        fontFamily: `${graphicRef.current.fontFamily}`,
+        border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`,
+        background: `${graphicRef.current.backgroundColor}`,
+
+      }}>
+        Hello World
+      </h1>
+      <Dropdown onStyleChange={handleStyleChange} colorSelection={hasSelectedColors}></Dropdown>
     </div>
 
   </div>

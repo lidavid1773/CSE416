@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ImageUploader = ({ onImageUpload}) => {
+const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex }) => {
   const handleImageUpload = (event) => {
     const files = event.target.files;
     const uploadedImages = [];
@@ -13,6 +13,7 @@ const ImageUploader = ({ onImageUpload}) => {
         uploadedImages.push(e.target.result);
         if (uploadedImages.length === files.length) {
           onImageUpload(uploadedImages);
+          onSelectedImageIndex(imageIndex + 1);
         }
       };
 

@@ -12,16 +12,13 @@ import { SketchPicker } from 'react-color'
 import ColorLegend from './GrgphicEditor/ColorLegend';
 import ImageUploader from './GrgphicEditor/ImageUploader';
 import Dropdown from './GrgphicEditor/Dropdown';
+import { InitState } from './GrgphicEditor/Dropdown';
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
-  const [background, setBackground] = useState('#fff');
-  const [fontSize, setFontSize] = useState(16);
-  const [fontFamily, setfontFamily] = useState('Arial');
+  const [backgroundColor, setBackgroundColor] = useState('#fff');
   const [style,setStyle] = useState(null);
-  const [borderStyle, setBorderStyle] = useState('solid');
-  const selectedRef = useRef(null);
-
+  const selectedRef = useRef(InitState);
   const [hasSelectedColors, setHasSelectedColors] = useState([]);
   const [images, setImages] = useState([]);
 
@@ -38,13 +35,14 @@ function Map() {
 
   
   const handleStyleChange = (menuType,style) => {
-    selectedRef[menuType] = style
-    console.log(selectedRef);
+    selectedRef.current[menuType] = style
+    setStyle(style);
   };
   
   const handleChangeComplete = (color) => {
-    setBackground(color.hex);
-    selectedRef.color = color;
+    setBackgroundColor(color.rgb);
+    const newColorString = rgbaToString(color.rgb);
+    selectedRef.current.backgroundColor = newColorString ;
     setHasSelectedColors(hasSelectedColors.concat(color.hex));
 
   };
@@ -62,6 +60,7 @@ function Map() {
 
   useEffect(() => {
     if (geojson) {
+      if(!map)
       map = L.map('map', {
         // drawControl: true,
         contextmenu: true,
@@ -123,8 +122,8 @@ function Map() {
   const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
 
   const applyNewStyle = (polygon) => {
-    const newColorString = rgbaToString(selectedRef.color.rgb);
-    polygon.setStyle({ fillColor: newColorString });
+    console.log(selectedRef)
+    polygon.setStyle({ fillColor: selectedRef.backgroundColor });
   }
   const enableSelectVerticesMode = () => {
     map.removeLayer(geojsonLayer);
@@ -262,11 +261,17 @@ function Map() {
           />
         ))}
       </div>
-      <SketchPicker style={{ height: '200px' }} color={background}
+      <SketchPicker style={{ height: '200px' }} color={backgroundColor}
         onChangeComplete={handleChangeComplete} />
       <ColorLegend colors={hasSelectedColors} />
-      <h1 style={{ fontSize: `${fontSize}px`, fontFamily: `${fontFamily}`, borderStyle: `${borderStyle}` }}>Hello World</h1>
-
+      <h1 style={{ 
+    fontSize: `${selectedRef.current.fontSize}px`, 
+    fontFamily: `${selectedRef.current.fontFamily}`, 
+    border: `${selectedRef.current.borderStyle} ${selectedRef.current.borderColor}`, 
+    background:`${selectedRef.current.backgroundColor}` 
+}}>
+    Hello World
+</h1>
       <Dropdown onStyleChange ={handleStyleChange } colorSelection = {hasSelectedColors}></Dropdown>
     </div>
 

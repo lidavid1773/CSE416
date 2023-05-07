@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 
 const DropdownMenuType = {
-  FONT_SIZE: 'Font Size',
-  FONT_FAMILY: 'Font Family',
-  BACKGROUND_COLOR: 'Background Color',
-  BORDER_STYLE: 'Border Style',
-  BORDER_COLOR: 'Border Color'
+  FONT_SIZE: 'fontSize',
+  FONT_FAMILY: 'fontFamily',
+  BACKGROUND_COLOR: 'backgroundColor',
+  BORDER_STYLE: 'borderStyle',
+  BORDER_COLOR: 'borderColor'
 };
+export const InitState={
+  borderStyle: 'solid',
+  borderColor: '#000000',
+  fontFamily:'Arial',
+  fontSize:12,
+  backgroundColor:"#FFFFFF",
+}
 const fontFamily = ['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Lucida Console'];
 const fontSizes = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96];
 const borderStyles = [
@@ -39,7 +46,7 @@ const Dropdown = ({ onStyleChange, colorSelection }) => {
         onChange={e => handleChange(e, menuType)}
       >
         {menuList.map((option, index) => (
-          <option key={index} value={option} style={{ backgroundColor: '#ff0000' }}>
+          <option key={index} value={option} >
             {option}
           </option>
         ))}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import shpwrite from 'shp-write';
 import process from 'process';
+import { download } from '@crmackey/shp-write'
+
 const FileSaver = require('file-saver');
 
 export function getBorderDashArray(borderStyle) {
@@ -74,9 +76,9 @@ const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection, dropdownRef
   // console.log(process) 
   const handleSHPExport = (geojson) => {
 
-    shpwrite.download(geojson)
+    download(geojson);
   }
-  const download = () => {
+  const fileExport = () => {
     // console.log(dropdownRef.current[DownloadDropdownMenuType.DOWNLOADING_MODE] )
     console.log(mapRef.current)
     const geojson = mapRef.current.geojson
@@ -108,7 +110,7 @@ const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection, dropdownRef
 
         ))}
       </select>
-      {menuType === DownloadDropdownMenuType.DOWNLOADING_MODE && <button onClick={() => download()}>download</button>}
+      {menuType === DownloadDropdownMenuType.DOWNLOADING_MODE && <button onClick={() => fileExport()}>download</button>}
 
 
     </div>

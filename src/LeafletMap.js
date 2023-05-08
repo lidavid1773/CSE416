@@ -10,8 +10,8 @@ import { markerIcon } from "./Icon";
 import { SketchPicker } from 'react-color'
 import ColorLegend from './GrgphicEditor/ColorLegend';
 import ImageUploader from './GrgphicEditor/ImageUploader';
-import Dropdown, { InitState, getBorderDashArray, Uploaded } from './GrgphicEditor/Dropdown';
-import {SimpleMapScreenshoter} from 'leaflet-simple-map-screenshoter'
+import Dropdown, { InitState, getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType } from './GrgphicEditor/Dropdown';
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 
 function Map() {
   // const [map, setMap] = useState(null);
@@ -42,6 +42,9 @@ function Map() {
   };
   const handleStyleChange = (menuType, style) => {
     graphicRef.current[menuType] = style
+
+    console.log(menuType);
+    console.log(graphicRef.current);
     setStyle(style);
   };
 
@@ -68,9 +71,10 @@ function Map() {
   useEffect(() => {
     if (geojson) {
       if (!mapRef.current) {
-        map = L.map('map', { 
+        map = L.map('map', {
           renderer: L.canvas(),
-          preferCanvas: true});
+          preferCanvas: true
+        });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
         }).addTo(map);
@@ -259,34 +263,35 @@ function Map() {
     <div id="map" style={{ height: '600px' }} />
 
     <div>
+      <Dropdown DropdownMenuType={ModeDropdownMenuType} onStyleChange={handleStyleChange} ></Dropdown>
+      {graphicRef.current["Editing Mode"] === "Graphic Editing" &&
+        <div>
+          <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={graphicRef} />
+          {images.map((imageUrl, index) => (
+            <img
+              key={index}
+              src={imageUrl}
+              alt={`Uploaded image ${index}`}
+              style={{ maxWidth: '200px', maxHeight: '200px', border: selectedImageIndex === index ? '2px solid blue' : 'none' }}
+              onClick={() => handleImageClick(index)}
+            />
+          ))}
 
-      <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={graphicRef}/>
-      <div>
-        {images.map((imageUrl, index) => (
-          <img
-            key={index}
-            src={imageUrl}
-            alt={`Uploaded image ${index}`}
-            style={{ maxWidth: '200px', maxHeight: '200px', border: selectedImageIndex === index ? '2px solid blue' : 'none' }}
-            onClick={() => handleImageClick(index)}
-          />
-        ))}
-      </div>
-      <SketchPicker style={{ height: '200px' }} color={backgroundColor}
-        onChangeComplete={handleChangeComplete} />
-      <ColorLegend colors={hasSelectedColors} />
-      <h1 style={{
-        fontSize: `${graphicRef.current.fontSize}px`,
-        fontFamily: `${graphicRef.current.fontFamily}`,
-        border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`,
-        background: `${graphicRef.current.backgroundColor}`,
+          <SketchPicker style={{ height: '200px' }} color={backgroundColor}
+            onChangeComplete={handleChangeComplete} />
+          <ColorLegend colors={hasSelectedColors} />
+          <h1 style={{
+            fontSize: `${graphicRef.current.fontSize}px`,
+            fontFamily: `${graphicRef.current.fontFamily}`,
+            border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`,
+            background: `${graphicRef.current.backgroundColor}`,
+          }}>
+            Hello World
+          </h1>
+          <Dropdown DropdownMenuType={StyleDropdownMenuType} onStyleChange={handleStyleChange} colorSelection={hasSelectedColors}></Dropdown>
+        </div>}
 
-      }}>
-        Hello World
-      </h1>
-      <Dropdown onStyleChange={handleStyleChange} colorSelection={hasSelectedColors}></Dropdown>
     </div>
-
   </div>
 
 

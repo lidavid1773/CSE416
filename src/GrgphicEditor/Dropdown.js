@@ -20,7 +20,7 @@ export function getBorderDashArray(borderStyle) {
   }
 }
 
-export const DropdownMenuType = {
+export const StyleDropdownMenuType = {
   FONT_SIZE: 'fontSize',
   FONT_FAMILY: 'fontFamily',
   BACKGROUND_COLOR: 'backgroundColor',
@@ -28,23 +28,27 @@ export const DropdownMenuType = {
   BORDER_COLOR: 'borderColor',
   BORDER_WEIGHT: 'weight',
 };
-export const Uploaded={
-  IMAGE:'image',
+export const ModeDropdownMenuType = {
+  EDITING_MODE:"Editing Mode",
 }
-export const InitState={
+export const Uploaded = {
+  IMAGE: 'image',
+}
+export const InitState = {
   borderStyle: 'solid',
   borderColor: '#000000',
-  fontFamily:'Arial',
-  fontSize:12,
-  backgroundColor:"#FFFFFF",
-  weight:1,
+  fontFamily: 'Arial',
+  fontSize: 12,
+  backgroundColor: "#FFFFFF",
+  weight: 1,
+  editingMode:"Editing Mode",
 }
 const fontFamily = ['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Lucida Console'];
 const fontSizes = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96];
-const weightSizes = [1,2,3,4,5,6];
+const weightSizes = [1, 2, 3, 4, 5, 6];
 const borderStyles = ["solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
-
-const Dropdown = ({ onStyleChange, colorSelection }) => {
+const editingMode = ["Map Editing",'Graphic Editing']
+const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection }) => {
   const [selectedStyle, setSelectedStyle] = useState({});
 
   const handleChange = (event, menuType) => {
@@ -80,14 +84,15 @@ const Dropdown = ({ onStyleChange, colorSelection }) => {
           case DropdownMenuType.FONT_FAMILY:
             return createDropdown(menuType, fontFamily);
           case DropdownMenuType.BACKGROUND_COLOR:
-            return createDropdown(menuType, colorSelection );
+            return createDropdown(menuType, colorSelection);
           case DropdownMenuType.BORDER_STYLE:
             return createDropdown(menuType, borderStyles);
           case DropdownMenuType.BORDER_COLOR:
-            return createDropdown(menuType, colorSelection );
+            return createDropdown(menuType, colorSelection);
           case DropdownMenuType.BORDER_WEIGHT:
-            return createDropdown(menuType, weightSizes );
-
+            return createDropdown(menuType, weightSizes);
+          case DropdownMenuType.EDITING_MODE:
+            return createDropdown(menuType, editingMode);
           default:
             return null;
         }

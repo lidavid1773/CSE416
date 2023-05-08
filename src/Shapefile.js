@@ -322,8 +322,8 @@ export default function Shapefile( {onContextMenu} ) {
     {/* <RightClickMenu></RightClickMenu> */}{
       geojson.type !== undefined
     }
-    {/* <ExportButton map={map} mapData={geojson}></ExportButton>
-    <SimplificationButton map={map} mapData={geojson}></SimplificationButton> */}
+    <ExportButton map={map} mapData={geojson}></ExportButton>
+    <SimplificationButton map={map} mapData={geojson}></SimplificationButton>
   </div>);
 }
 

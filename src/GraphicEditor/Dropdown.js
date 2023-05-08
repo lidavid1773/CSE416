@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import shpwrite from 'shp-write';
+import process from 'process';
+const FileSaver = require('file-saver');
+
 export function getBorderDashArray(borderStyle) {
   switch (borderStyle) {
     case 'dashed':
@@ -29,10 +33,11 @@ export const StyleDropdownMenuType = {
   BORDER_WEIGHT: 'weight',
 };
 export const ModeDropdownMenuType = {
-  EDITING_MODE:"Editing Mode",
-  DOWNLOADING_MODE:"DownLoad File",
+  EDITING_MODE: "Editing Mode",
 }
-
+export const DownloadDropdownMenuType = {
+  DOWNLOADING_MODE: "Export as",
+}
 export const Uploaded = {
   IMAGE: 'image',
 }
@@ -43,27 +48,53 @@ export const InitState = {
   fontSize: 12,
   backgroundColor: "#FFFFFF",
   weight: 1,
-  editingMode:ModeDropdownMenuType.EDITING_MODE,
-  downloadingMode:ModeDropdownMenuType.DOWNLOADING_MODE,
+  editingMode: ModeDropdownMenuType.EDITING_MODE,
+  downloadingMode: "GeoJSON",
 }
 const fontFamily = ['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Lucida Console'];
 const fontSizes = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96];
 const weightSizes = [1, 2, 3, 4, 5, 6];
 const borderStyles = ["solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
-const editingMode = ["Map Editing",'Graphic Editing'];
-const downloadingMode = ["Export as GeoJSON","Export as SHP/DBF"];
-const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection }) => {
+const editingMode = ["Map Editing", 'Graphic Editing'];
+const downloadingMode = ["GeoJSON", "SHP/DBF"];
+const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection, dropdownRef,mapRef }) => {
   const [selectedStyle, setSelectedStyle] = useState({});
   const handleChange = (event, menuType) => {
     const value = event.target.value;
-    
     setSelectedStyle(prevState => ({ ...prevState, [menuType]: value }));
     onStyleChange(menuType, value);
   };
+  const handleGeoJSONExport = (geojson) => {
+    const json = JSON.stringify(geojson, null, 2);
+    var fileToSave = new Blob([json], {
+      type: 'application/json'
+    });
+    FileSaver.saveAs(fileToSave, "geojson.json")
+  }
+  // console.log(process) 
+  const handleSHPExport = (geojson) => {
 
+    shpwrite.download(geojson)
+  }
+  const download = () => {
+    // console.log(dropdownRef.current[DownloadDropdownMenuType.DOWNLOADING_MODE] )
+    console.log(mapRef.current)
+    const geojson = mapRef.current.geojson
+    if (dropdownRef.current[DownloadDropdownMenuType.DOWNLOADING_MODE] === "SHP/DBF") {
+      console.log("shp")
+      handleSHPExport(geojson)
+    }
+    else {
+      handleGeoJSONExport(geojson);
+      console.log("geo")
+    }
+  }
   const createDropdown = (menuType, menuList) => (
+
     <div key={menuType}>
+
       <label htmlFor={menuType}>{menuType}: </label>
+
       <select
         className="form-select"
         id={menuType}
@@ -74,8 +105,12 @@ const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection }) => {
           <option key={index} value={option} >
             {option}
           </option>
+
         ))}
       </select>
+      {menuType === DownloadDropdownMenuType.DOWNLOADING_MODE && <button onClick={() => download()}>download</button>}
+
+
     </div>
   );
 

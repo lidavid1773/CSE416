@@ -10,28 +10,27 @@ import { markerIcon } from "./Icon";
 import { SketchPicker } from 'react-color'
 import ColorLegend from './GraphicEditor/ColorLegend';
 import ImageUploader from './GraphicEditor/ImageUploader';
-import Dropdown, { InitState, getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType } from './GraphicEditor/Dropdown';
+import Dropdown, { InitState, getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType, DownloadDropdownMenuType } from './GraphicEditor/Dropdown';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 
 function Map() {
   // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
   const [backgroundColor, setBackgroundColor] = useState('#fff');
-  const mapRef = useRef(null);
   const [style, setStyle] = useState(null);
-  const graphicRef = useRef(InitState);
+  const mapRef = useRef(InitState);
   const [hasSelectedColors, setHasSelectedColors] = useState([]);
   const [images, setImages] = useState([]);
   const initImageIndex = -1;
   const [selectedImageIndex, setSelectedImageIndex] = useState(initImageIndex);
 
   const handleImageClick = (index) => {
-    if (graphicRef.current[Uploaded.IMAGE]) {
-      graphicRef.current[Uploaded.IMAGE] = undefined
+    if (mapRef.current[Uploaded.IMAGE]) {
+      mapRef.current[Uploaded.IMAGE] = undefined
       setSelectedImageIndex(initImageIndex);
     }
     else {
-      graphicRef.current[Uploaded.IMAGE] = images[index];
+      mapRef.current[Uploaded.IMAGE] = images[index];
       setSelectedImageIndex(index);
     }
 
@@ -41,17 +40,15 @@ function Map() {
     setImages((prevImages) => [...prevImages, ...uploadedImages]);
   };
   const handleStyleChange = (menuType, style) => {
-    graphicRef.current[menuType] = style
-
-    console.log(menuType);
-    console.log(graphicRef.current);
+    mapRef.current[menuType] = style
+    console.log(mapRef.current);
     setStyle(style);
   };
 
   const handleChangeComplete = (color) => {
     setBackgroundColor(color.rgb);
     const newColorString = rgbaToString(color.rgb);
-    graphicRef.current.backgroundColor = newColorString;
+    mapRef.current.backgroundColor = newColorString;
 
     setHasSelectedColors((prevColor) => [newColorString, ...prevColor]);
 
@@ -70,7 +67,7 @@ function Map() {
 
   useEffect(() => {
     if (geojson) {
-      if (!mapRef.current) {
+      if (!mapRef.current.map) {
         map = L.map('map', {
           renderer: L.canvas(),
           preferCanvas: true
@@ -78,7 +75,8 @@ function Map() {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
         }).addTo(map);
-        mapRef.current = map;
+        mapRef.current.map = map;
+        mapRef.current.geojson = geojson;
         new SimpleMapScreenshoter().addTo(map)
 
         setStyle(1)
@@ -116,18 +114,18 @@ function Map() {
   const applyNewStyle = (polygon, e) => {
 
     polygon.setStyle({
-      weight: graphicRef.current.weight,
-      fillColor: graphicRef.current.backgroundColor,
-      color: graphicRef.current.borderColor,
-      dashArray: getBorderDashArray(graphicRef.current.borderStyle),
+      weight: mapRef.current.weight,
+      fillColor: mapRef.current.backgroundColor,
+      color: mapRef.current.borderColor,
+      dashArray: getBorderDashArray(mapRef.current.borderStyle),
     })
     addImageMarker(polygon, e);
   }
   const addImageMarker = (polygon, e) => {
 
-    if (graphicRef.current[Uploaded.IMAGE]) {
+    if (mapRef.current[Uploaded.IMAGE]) {
       const icon = L.icon({
-        iconUrl: graphicRef.current[Uploaded.IMAGE],
+        iconUrl: mapRef.current[Uploaded.IMAGE],
         iconSize: [32, 32],
         iconAnchor: [16, 16],
       });
@@ -259,40 +257,43 @@ function Map() {
     return `lng: ${latlng.lng} </br>
     lat: ${latlng.lat} `
   }
-  return <div className="grid-container">
-    <div id="map" style={{ height: '600px' }} />
+  return <div>
+    <Dropdown DropdownMenuType={DownloadDropdownMenuType} onStyleChange={handleStyleChange} dropdownRef={mapRef} mapRef={mapRef}> </Dropdown>
+    <div className="grid-container">
+      <div id="map" style={{ height: '600px' }} />
 
-    <div>
-      <Dropdown DropdownMenuType={ModeDropdownMenuType} onStyleChange={handleStyleChange} ></Dropdown>
-      {graphicRef.current["Editing Mode"] === "Graphic Editing" &&
-        <div>
-          <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={graphicRef} />
-          {images.map((imageUrl, index) => (
-            <img
-              key={index}
-              src={imageUrl}
-              alt={`Uploaded image ${index}`}
-              style={{ maxWidth: '200px', maxHeight: '200px', border: selectedImageIndex === index ? '2px solid blue' : 'none' }}
-              onClick={() => handleImageClick(index)}
-            />
-          ))}
-          <SketchPicker style={{ height: '200px' }} color={backgroundColor}
-            onChangeComplete={handleChangeComplete} />
-          <ColorLegend colors={hasSelectedColors} />
-          <h1 style={{
-            fontSize: `${graphicRef.current.fontSize}px`,
-            fontFamily: `${graphicRef.current.fontFamily}`,
-            border: `${graphicRef.current.weight}px ${graphicRef.current.borderStyle} ${graphicRef.current.borderColor}`,
-            background: `${graphicRef.current.backgroundColor}`,
-          }}>
-            Hello World
-          </h1>
-          <Dropdown DropdownMenuType={StyleDropdownMenuType} onStyleChange={handleStyleChange} colorSelection={hasSelectedColors}></Dropdown>
-        </div>}
+      <div>
+        <Dropdown DropdownMenuType={ModeDropdownMenuType} onStyleChange={handleStyleChange} dropdownRef={mapRef} ></Dropdown>
 
+        {mapRef.current["Editing Mode"] === "Graphic Editing" &&
+          <div>
+            <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={mapRef} />
+            {images.map((imageUrl, index) => (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={`Uploaded image ${index}`}
+                style={{ maxWidth: '200px', maxHeight: '200px', border: selectedImageIndex === index ? '2px solid blue' : 'none' }}
+                onClick={() => handleImageClick(index)}
+              />
+            ))}
+            <SketchPicker style={{ height: '200px' }} color={backgroundColor}
+              onChangeComplete={handleChangeComplete} />
+            <ColorLegend colors={hasSelectedColors} />
+            <h1 style={{
+              fontSize: `${mapRef.current.fontSize}px`,
+              fontFamily: `${mapRef.current.fontFamily}`,
+              border: `${mapRef.current.weight}px ${mapRef.current.borderStyle} ${mapRef.current.borderColor}`,
+              background: `${mapRef.current.backgroundColor}`,
+            }}>
+              Hello World
+            </h1>
+            <Dropdown DropdownMenuType={StyleDropdownMenuType} onStyleChange={handleStyleChange} colorSelection={hasSelectedColors} dropdownRef={mapRef} ></Dropdown>
+          </div>}
+
+      </div>
     </div>
   </div>
-
 
 }
 

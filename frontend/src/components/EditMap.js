@@ -7,44 +7,37 @@ import localgeojson from "../maps/ukraine.json";
 
 
 function Map() {
-  // const [map, setMap] = useState(null);
   const [geojson, setgeojson] = useState(null);
-  const [createdLayers, setCreatedLayers] = useState([]);
+  const actionHistoryRef = useRef([]); 
   const mapRef = useRef(null);
   const drawnItemsRef = useRef(null);
   const editHistory = useRef({});
 
   function undoFunction() {
+    console.log("undo");
     const drawnItems = drawnItemsRef.current;
-
-    if (drawnItems) {
-      drawnItems.eachLayer((layer) => {
-        const layerId = L.stamp(layer);
-        const history = editHistory.current[layerId];
-
-        if (history && history.length > 0) {
-          const lastEdit = history.pop();
-          const latLngs = lastEdit.geometry.coordinates[0].map(([lng, lat]) => L.latLng(lat, lng));
-          layer.setLatLngs(latLngs);
-          layer.redraw();
-        }
-      });
-    }
-  }
-
-  document.addEventListener('keydown', function(event) {
-    // Check if the 'Control' key is pressed
-    if (event.ctrlKey) {
-      // Check if the 'Z' key is pressed
-      if ((event.key === 'z' || event.key === 'Z') ) {
-        // Prevent the default browser behavior for 'Control + Z'
-        event.preventDefault();
-        // Call the undo function
-        undoFunction();
+    const actionHistory = actionHistoryRef.current;
+    if (drawnItems && actionHistory.length > 0) {
+      const lastAction = actionHistory.pop();
+      if (lastAction.type === 'created') {
+        drawnItems.eachLayer((layer) => {
+          const layerId = L.stamp(layer);
+          if (layerId === lastAction.layerId) {
+            drawnItems.removeLayer(layer);
+          }
+        });
+      } else if (lastAction.type === 'edited') {
+        drawnItems.eachLayer((layer) => {
+          const layerId = L.stamp(layer);
+          if (layerId === lastAction.layerId) {
+            const latLngs = lastAction.before.geometry.coordinates[0].map(([lng, lat]) => L.latLng(lat, lng));
+            layer.setLatLngs(latLngs);
+            layer.redraw();
+          }
+        });
       }
     }
-  });
-
+  }
  
   useEffect(() => {
     const fetchData = async () => {
@@ -86,7 +79,7 @@ function Map() {
           // Initialize the layer history
           console.log(layerId);
           editHistory.current[layerId] = [];
-          
+          actionHistoryRef.current.push({ type: 'created', layerId });
         });
 
         map.on('draw:editstart', (e) => {
@@ -100,40 +93,47 @@ function Map() {
             editHistory.current[layerId] = [...(editHistory.current[layerId] || []), layer.toGeoJSON()];
           });
         });
-        
+
         map.on('draw:edited', (e) => {
           console.log('edited');
           const layers = e.layers;
 
           layers.eachLayer((layer) => {
             const layerId = L.stamp(layer);
-            console.log(editHistory.current);
+            const before = editHistory.current[layerId].slice(-1)[0];
+            const after = layer.toGeoJSON();
             // Save the layer state after editing to the history
-            editHistory.current[layerId] = [...(editHistory.current[layerId] || []), layer.toGeoJSON()];
+            editHistory.current[layerId] = [...(editHistory.current[layerId] || []), after];
+            actionHistoryRef.current.push({ type: 'edited', layerId, before, after });
+            console.log(actionHistoryRef.current);  
           });
         });
-
-        // map.on('draw:edited', (e) => {
-        //   console.log('edited');
-        //   const layers = e.layers;
-
-        //   layers.eachLayer((layer) => {
-        //     const layerId = L.stamp(layer);
-        //     console.log(editHistory.current);
-        //     // Save the layer state before editing to the history
-        //     editHistory.current[layerId].push(layer.toGeoJSON());
-        //   });
-        // });
+        
         setgeojson(localgeojson);
-        // Clean up event listeners on component unmount
-        return () => {
+
+        return () => {         
           map.off('draw:created');
-          map.off('draw:edited');
+          map.off('draw:edited');        
         };
-          
       }
     };
     fetchData();
+
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey) {
+        if ((event.key === 'z' || event.key === 'Z')) {
+          event.preventDefault();
+          undoFunction();
+        }
+      }
+    };
+  
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+
   }, []);
 
   useEffect(() => {
@@ -151,8 +151,6 @@ function Map() {
         // polygon.enableEdit();
         map.fitBounds(polygon.getBounds());
         drawnItems.addLayer(polygon);
-        // const layerId = L.stamp(polygon);
-        // editHistory.current[layerId] = [];
       });
     }
   }, [geojson]);

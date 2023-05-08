@@ -1,9 +1,9 @@
 import { useEffect, useContext } from "react";
-import { addButton } from "./addButton";
+import { addButton } from "./AddButton";
 import { simplify } from "@turf/turf";
 import { GlobalGeoJsonContext } from "./App"
 import L, { easyButton } from "leaflet";
-import {countCoordinates} from "./geojsonHooks"
+import { countCoordinates } from "./geojsonHooks"
 export default function SimplificationButton(api) {
   var [map, mapData] = [api.map, api.mapData];
 
@@ -15,14 +15,14 @@ export default function SimplificationButton(api) {
     // var i = 1;
     var options = { tolerance: 50 / 100, highQuality: false };
     var newGeoJson = simplify(geojson, options);
-     setgeojson(newGeoJson)
-     updateMap(map, newGeoJson);
+    setgeojson(newGeoJson)
+    updateMap(map, newGeoJson);
     // for (var i = 10; i < 100; i += 10) {
-      
+
     //   // console.log(i/100)
     //   // console.log(countCoordinates(newGeoJson))
     //   // console.log(newGeoJson)
-      
+
     // }
 
 

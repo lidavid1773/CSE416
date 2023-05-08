@@ -8,9 +8,9 @@ import "leaflet-draw/dist/leaflet.draw-src.css";
 import localgeojson from "./maps/north_america.json";
 import { markerIcon } from "./Icon";
 import { SketchPicker } from 'react-color'
-import ColorLegend from './GrgphicEditor/ColorLegend';
-import ImageUploader from './GrgphicEditor/ImageUploader';
-import Dropdown, { InitState, getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType } from './GrgphicEditor/Dropdown';
+import ColorLegend from './GraphicEditor/ColorLegend';
+import ImageUploader from './GraphicEditor/ImageUploader';
+import Dropdown, { InitState, getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType } from './GraphicEditor/Dropdown';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 
 function Map() {
@@ -276,7 +276,6 @@ function Map() {
               onClick={() => handleImageClick(index)}
             />
           ))}
-
           <SketchPicker style={{ height: '200px' }} color={backgroundColor}
             onChangeComplete={handleChangeComplete} />
           <ColorLegend colors={hasSelectedColors} />

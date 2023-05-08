@@ -3,7 +3,7 @@ import { MapContainer, Marker, useMap, FeatureGroup, useMapEvents } from "react-
 import { useContextMenu } from "react-contexify";
 import L, { marker, polygon } from "leaflet";
 
-import ExportButton from "./exportButton";
+import ExportButton from "./ExportButton";
 import { markerIcon } from "./Icon";
 import SimplificationButton from "./simplificationButton";
 import { GlobalGeoJsonContext } from "./App"

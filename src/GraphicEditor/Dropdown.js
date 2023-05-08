@@ -30,7 +30,9 @@ export const StyleDropdownMenuType = {
 };
 export const ModeDropdownMenuType = {
   EDITING_MODE:"Editing Mode",
+  DOWNLOADING_MODE:"DownLoad File",
 }
+
 export const Uploaded = {
   IMAGE: 'image',
 }
@@ -41,18 +43,20 @@ export const InitState = {
   fontSize: 12,
   backgroundColor: "#FFFFFF",
   weight: 1,
-  editingMode:"Editing Mode",
+  editingMode:ModeDropdownMenuType.EDITING_MODE,
+  downloadingMode:ModeDropdownMenuType.DOWNLOADING_MODE,
 }
 const fontFamily = ['Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia', 'Comic Sans MS', 'Impact', 'Lucida Console'];
 const fontSizes = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96];
 const weightSizes = [1, 2, 3, 4, 5, 6];
 const borderStyles = ["solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
-const editingMode = ["Map Editing",'Graphic Editing']
+const editingMode = ["Map Editing",'Graphic Editing'];
+const downloadingMode = ["Export as GeoJSON","Export as SHP/DBF"];
 const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection }) => {
   const [selectedStyle, setSelectedStyle] = useState({});
-
   const handleChange = (event, menuType) => {
     const value = event.target.value;
+    
     setSelectedStyle(prevState => ({ ...prevState, [menuType]: value }));
     onStyleChange(menuType, value);
   };
@@ -93,6 +97,8 @@ const Dropdown = ({ DropdownMenuType, onStyleChange, colorSelection }) => {
             return createDropdown(menuType, weightSizes);
           case DropdownMenuType.EDITING_MODE:
             return createDropdown(menuType, editingMode);
+          case DropdownMenuType.DOWNLOADING_MODE:
+            return createDropdown(menuType, downloadingMode);
           default:
             return null;
         }

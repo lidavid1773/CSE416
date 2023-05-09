@@ -1,17 +1,20 @@
 import { useSelector } from "react-redux";
 import EditMap from "../components/EditMap";
-import UploadFile from "../components/UploadFile";
-import { FileType } from "../components/UploadFile";
+import UploadFileButtons from "../components/UploadFileButtons";
+import { FileType } from "../components/UploadFileButtons";
+import { useEffect } from "react";
+
 function Home() {
   // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
+
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
     return fileTypes.map(fileType => (
-      <UploadFile key={fileType} fileType={fileType} />
+      <UploadFileButtons key={fileType} fileType={fileType} />
     ));
   }
-  
+
   return (
     <div>
       <div>Home Page</div>

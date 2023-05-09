@@ -6,7 +6,7 @@ import Banner from "./components/Banner";
 import RecoverPassword from "./pages/RecoverPassword";
 import ViewMapItem from "./components/ViewMapItem";
 import Profile from "./pages/Profile";
-
+import { useEffect } from "react";
 function App() {
   return (
     <div>

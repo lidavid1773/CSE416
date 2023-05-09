@@ -1,12 +1,16 @@
 import React, { useRef, useState } from 'react';
+import { useSelector,useDispatch } from "react-redux";
+import { setGeojson } from '../features/geojson.js/geojsonSlice';
 const shapefile = require('shapefile')
 export const FileType = {
     GEOJSON: "GeoJson",
     SHP: "SHP/DBF",
 }
 export default function UploadFile({ fileType }) {
+
     const fileInputRef = useRef(null);
-    const [geojson, setgeojson] = useState([]);
+    const dispatch = useDispatch();
+
     const handleClick = () => {
         fileInputRef.current.click();
     };
@@ -29,8 +33,8 @@ export default function UploadFile({ fileType }) {
                             if (result.done) {
                                 return;
                             }
-                            console.log(result.value)
-                            setgeojson(result.value);
+                            var geojson = result.value;
+                            dispatch(setGeojson(geojson));
                             return source.read().then(log);
                         })
                     ).catch((error) => alert(error.stack));
@@ -42,8 +46,8 @@ export default function UploadFile({ fileType }) {
     const handleGeoJsonFile = (e) => {
         var reader = new FileReader();
         reader.onload = function (event) {
-            var jsonObj = JSON.parse(event.target.result);
-            console.log(jsonObj)
+            var geojson = JSON.parse(event.target.result);
+            dispatch(setGeojson(geojson));
         }
         reader.readAsText(e.target.files[0]);
     }

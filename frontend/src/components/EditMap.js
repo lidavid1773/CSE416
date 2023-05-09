@@ -57,9 +57,7 @@ function Map() {
   }, []);
   useEffect(() => {
     if (geojson) {
-      console.log(geojson);
-      console.log(geojson.type);
-      // drawMap();
+      drawMap();
     }
 
   }, [geojson])

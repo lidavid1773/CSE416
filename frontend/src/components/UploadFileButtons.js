@@ -14,6 +14,13 @@ export default function UploadFile({ fileType }) {
     const handleClick = () => {
         fileInputRef.current.click();
     };
+    const convertToGeojson = (data)=>{
+        let result = {
+            type:"FeatureCollection",
+            features:[data],
+        }
+        return result;
+    }
     const handleShpFile = (e) => {
         var ShpData = null, DbfData = null;
         for (let file of e.currentTarget.files) {
@@ -33,7 +40,7 @@ export default function UploadFile({ fileType }) {
                             if (result.done) {
                                 return;
                             }
-                            var geojson = result.value;
+                            var geojson = convertToGeojson(result.value);
                             dispatch(setGeojson(geojson));
                             return source.read().then(log);
                         })

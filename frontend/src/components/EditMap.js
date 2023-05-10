@@ -53,10 +53,17 @@ function Map() {
   
       if (lastRedo.type === 'created') {
         // Redo(add) the creation of a layer
-        const layer = L.geoJSON(lastRedo.layer);  // create a new instance of layer
+        const layerGroup = L.geoJSON(lastRedo.layer);  // create a new instance of layer group
+        const layer = layerGroup.getLayers()[0];
         const layerId = L.stamp(layer);           // so get a new ID
+        console.log(layerId);
         drawnItems.addLayer(layer);
         undoHistoryRef.current.push({ type: 'created', layerId, layer: layer.toGeoJSON() });
+        for(var history of redoHistory){
+          if(history.type === "edited"){
+            history.layerId = layerId;    // update each layerId in history since old layer got removed, and new layer is created with new ID
+          }
+        }
       } else if (lastRedo.type === 'edited') {
         drawnItems.eachLayer((layer) => {
           const layerId = L.stamp(layer);

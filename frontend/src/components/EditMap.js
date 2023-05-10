@@ -27,6 +27,7 @@ function Map() {
         drawnItems.eachLayer((layer) => {
           const layerId = L.stamp(layer);
           if (layerId === lastAction.layerId) {
+            lastAction.layer = layer.toGeoJSON();
             drawnItems.removeLayer(layer);
           }
         });
@@ -52,12 +53,10 @@ function Map() {
   
       if (lastRedo.type === 'created') {
         // Redo(add) the creation of a layer
-        drawnItems.eachLayer((layer) => {
-          const layerId = L.stamp(layer);
-          if (layerId === lastRedo.layerId) {
-            drawnItems.addLayer(layer);
-          }
-        });
+        const layer = L.geoJSON(lastRedo.layer);  // create a new instance of layer
+        const layerId = L.stamp(layer);           // so get a new ID
+        drawnItems.addLayer(layer);
+        undoHistoryRef.current.push({ type: 'created', layerId, layer: layer.toGeoJSON() });
       } else if (lastRedo.type === 'edited') {
         drawnItems.eachLayer((layer) => {
           const layerId = L.stamp(layer);
@@ -65,10 +64,10 @@ function Map() {
             const latLngs = lastRedo.after.geometry.coordinates[0].map(([lng, lat]) => L.latLng(lat, lng));
             layer.setLatLngs(latLngs);
             layer.redraw();
+            undoHistoryRef.current.push({ type: 'edited', layerId, before: lastRedo.before, after: lastRedo.after });
           }
         });
       }
-      undoHistoryRef.current.push(lastRedo);
     }
   }
  

@@ -3,15 +3,19 @@ import L, { DrawMap, geoJson } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
-import localgeojson from "../maps/ukraine.json";
 import { useSelector } from 'react-redux';
+import localgeojson from "../maps/geojson (17).json";
+import { useDispatch } from 'react-redux';
+import { setGeojson } from '../features/geojson/geojsonSlice';
 function Map() {
-
-
+  const dispatch = useDispatch();
+  // const { geojson } = useSelector((state) => state.geojson);
+  const [tempgeojson,setTempgeojson] = useState(localgeojson)
+  // const [map, setMap] = useState(null);
+  let map;
   const drawMap = () => {
     var drawnItems = new L.FeatureGroup();
-    
-    geojson.features.forEach(function (currentFeature) {
+    tempgeojson.features.forEach(function (currentFeature) {
       if (currentFeature.geometry.type === "MultiPolygon") {
         currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
           currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
@@ -20,12 +24,11 @@ function Map() {
         currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
       }
     });
-    map.fitBounds(L.geoJson(geojson).getBounds());
+    map.fitBounds(L.geoJson(tempgeojson).getBounds());
     map.addLayer(drawnItems);
   }
 
 
-  const { geojson } = useSelector((state) => state.geojson);
   const convertToPolygon = (poly, drawnItems) => {
     var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
     drawnItems.addLayer(polygon);
@@ -39,28 +42,37 @@ function Map() {
     });
   }
 
-  const [map, setMap] = useState(null);
 
   const createMap = () => {
 
-    const map = L.map('map', {
+    map = L.map('map', {
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
-    setMap(map);
+    // setMap(map);
   }
-  useEffect(() => {
-    if (!map) {
-      createMap();
-    }
-  }, []);
-  useEffect(() => {
-    if (geojson) {
-      drawMap();
-    }
+  // useEffect(() => {
+  //   if (!map) {
+  //     createMap();
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   if(localgeojson){
 
-  }, [geojson])
+  //   }
+  //   // if (geojson) {
+  //   //   console.log(geojson)
+  //   //   drawMap();
+  //   // }
+  // }, [geojson])
+  useEffect(() => {
+    if (tempgeojson) {
+        createMap();
+        drawMap();
+        dispatch(setGeojson(tempgeojson));
+    }
+  }, [tempgeojson]);
   return <div id="map" style={{ height: '500px' }} />;
 }
 

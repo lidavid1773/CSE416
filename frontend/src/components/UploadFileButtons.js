@@ -1,6 +1,8 @@
-import React, { useRef, useState } from 'react';
-import { useSelector,useDispatch } from "react-redux";
-import { setGeojson } from '../features/geojson.js/geojsonSlice';
+import React, { useRef, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import { setGeojson } from '../features/geojson/geojsonSlice';
+import localgeojson from "../maps/ukraine.json";
+
 const shapefile = require('shapefile')
 export const FileType = {
     GEOJSON: "GeoJson",
@@ -14,13 +16,14 @@ export default function UploadFile({ fileType }) {
     const handleClick = () => {
         fileInputRef.current.click();
     };
-    const convertToGeojson = (data)=>{
+    const convertToGeojson = (data) => {
         let result = {
-            type:"FeatureCollection",
-            features:[data],
+            type: "FeatureCollection",
+            features: [data],
         }
         return result;
     }
+
     const handleShpFile = (e) => {
         var ShpData = null, DbfData = null;
         for (let file of e.currentTarget.files) {

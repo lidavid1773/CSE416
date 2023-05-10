@@ -6,7 +6,7 @@
 
 .container {
   width: 100%;
-  max-width: 70%;
+  max-width: 95%;
   margin: auto;
   text-align: center;
 }
@@ -211,4 +211,9 @@ li {
 
 .reply-button:hover {
   color: #0346a2;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: 80% 20%;
+  text-align: left;
 }

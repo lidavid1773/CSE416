@@ -24,9 +24,9 @@ export default function GraphicEditor() {
 
     const handleChangeComplete = (color) => {
         setBackgroundColor(color.rgb);
-        const newColorString = rgbaToString(color.rgb);
-        dispatch(setStyle({ type: backgroundColor, newColorString }))
-        setHasSelectedColors((prevColor) => [newColorString, ...prevColor]);
+        const value = rgbaToString(color.rgb);
+        dispatch(setStyle({ type: "backgroundColor", value }))
+        setHasSelectedColors((prevColor) => [value, ...prevColor]);
     };
     const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
 

@@ -10,12 +10,11 @@ import { setGeojson } from '../features/geojson/geojsonSlice';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 import { getBorderDashArray } from './GraphicEditorComponents/Dropdown';
 import { Uploaded } from './GraphicEditorComponents/Dropdown';
+import { initialState } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 function Map() {
   const dispatch = useDispatch();
   const graphicEditor = useSelector((state) => state.graphicEditor);
-
-  const { images, imageIndex } = graphicEditor;
-  const imagesRef = useRef()
+  const graphicEditorRef = useRef({...graphicEditor});
   // const { geojson } = useSelector((state) => state.geojson);
   const [tempgeojson, setTempgeojson] = useState(localgeojson)
   var selectedPolygon;
@@ -51,15 +50,15 @@ function Map() {
   }
   const applyNewStyle = (polygon, e) => {
     polygon.setStyle({
-      weight: graphicEditor.weight,
-      fillColor: graphicEditor.backgroundColor,
-      color: graphicEditor.borderColor,
-      dashArray: getBorderDashArray(graphicEditor.borderStyle),
+      weight: graphicEditorRef.current.weight,
+      fillColor: graphicEditorRef.current.backgroundColor,
+      color: graphicEditorRef.current.borderColor,
+      dashArray: getBorderDashArray(graphicEditorRef.current.borderStyle),
     })
     addImageMarker(polygon, e);
   }
   const addImageMarker = (polygon, e) => {
-    const image = imagesRef.current
+    const image = graphicEditorRef.current["image"]
     if (image) {
       const icon = L.icon({
         iconUrl: image,
@@ -98,8 +97,9 @@ function Map() {
   //   // }
   // }, [geojson])
   useEffect(() => {
-    imagesRef.current =  images[imageIndex];
-  }, [images, imageIndex]);
+    graphicEditorRef.current = {...graphicEditor};
+  }, [graphicEditor]);
+  
   useEffect(() => {
     if (tempgeojson) {
       createMap();

@@ -5,7 +5,7 @@ export const initialState = {
   borderColor: '#000000',
   fontFamily: 'Arial',
   fontSize: 12,
-  backgroundColor: "#FFFFFF",
+  backgroundColor: "rgba(255, 255, 255, 0.5)",
   weight: 1,
   editingMode: ModeDropdownMenuType.EDITING_MODE,
   downloadingMode: "GeoJSON",

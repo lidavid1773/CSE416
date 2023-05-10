@@ -56,10 +56,10 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
   const dispatch = useDispatch();
   const graphicEditor = useSelector(state => state.graphicEditor);
   const [selectedStyle, setSelectedStyle] = useState({});
-  const handleChange = (event, menuType) => {
+  const handleChange = (event, type) => {
     const value = event.target.value;
-    setSelectedStyle(prevState => ({ ...prevState, [menuType]: value }));
-    dispatch(setStyle({type:menuType, value}));
+    setSelectedStyle(prevState => ({ ...prevState, [type]: value }));
+    dispatch(setStyle({type, value}));
   };
   const handleGeoJSONExport = (geojson) => {
     const json = JSON.stringify(geojson, null, 2);

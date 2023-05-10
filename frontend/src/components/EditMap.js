@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import L, { DrawMap, geoJson } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
@@ -7,10 +7,18 @@ import { useSelector } from 'react-redux';
 import localgeojson from "../maps/geojson (17).json";
 import { useDispatch } from 'react-redux';
 import { setGeojson } from '../features/geojson/geojsonSlice';
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
+import { getBorderDashArray } from './GraphicEditorComponents/Dropdown';
+import { Uploaded } from './GraphicEditorComponents/Dropdown';
 function Map() {
   const dispatch = useDispatch();
+  const graphicEditor = useSelector((state) => state.graphicEditor);
+
+  const { images, imageIndex } = graphicEditor;
+  const imagesRef = useRef()
   // const { geojson } = useSelector((state) => state.geojson);
-  const [tempgeojson,setTempgeojson] = useState(localgeojson)
+  const [tempgeojson, setTempgeojson] = useState(localgeojson)
+  var selectedPolygon;
   // const [map, setMap] = useState(null);
   let map;
   const drawMap = () => {
@@ -34,15 +42,37 @@ function Map() {
     drawnItems.addLayer(polygon);
 
     polygon.on('click', function (e) {
-      // if (selectedPolygon)
-      //   selectedPolygon.editing.disable();
-      // selectedPolygon = e.target;
-      // e.target.editing.enable();
-      // applyNewStyle(polygon, e)
+      if (selectedPolygon)
+        selectedPolygon.editing.disable();
+      selectedPolygon = e.target;
+      e.target.editing.enable();
+      applyNewStyle(polygon, e)
     });
   }
-
-
+  const applyNewStyle = (polygon, e) => {
+    polygon.setStyle({
+      weight: graphicEditor.weight,
+      fillColor: graphicEditor.backgroundColor,
+      color: graphicEditor.borderColor,
+      dashArray: getBorderDashArray(graphicEditor.borderStyle),
+    })
+    addImageMarker(polygon, e);
+  }
+  const addImageMarker = (polygon, e) => {
+    const image = imagesRef.current
+    if (image) {
+      const icon = L.icon({
+        iconUrl: image,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+      const marker = L.marker(e.latlng, { icon }).addTo(map);
+      if (!polygon.imageMarkers) {
+        polygon.imageMarkers = []
+      }
+      polygon.imageMarkers.push(marker);
+    }
+  }
   const createMap = () => {
 
     map = L.map('map', {
@@ -50,6 +80,7 @@ function Map() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }).addTo(map);
+    new SimpleMapScreenshoter().addTo(map);
     // setMap(map);
   }
   // useEffect(() => {
@@ -67,10 +98,13 @@ function Map() {
   //   // }
   // }, [geojson])
   useEffect(() => {
+    imagesRef.current =  images[imageIndex];
+  }, [images, imageIndex]);
+  useEffect(() => {
     if (tempgeojson) {
-        createMap();
-        drawMap();
-        dispatch(setGeojson(tempgeojson));
+      createMap();
+      drawMap();
+      dispatch(setGeojson(tempgeojson));
     }
   }, [tempgeojson]);
   return <div id="map" style={{ height: '500px' }} />;

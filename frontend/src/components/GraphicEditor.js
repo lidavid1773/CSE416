@@ -3,9 +3,8 @@ import React from 'react'
 import ImageUploader from "./GraphicEditorComponents/ImageUploader";
 import { SketchPicker } from 'react-color'
 import ColorLegend from './GraphicEditorComponents/ColorLegend';
-import Dropdown, { getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType, DownloadDropdownMenuType } from './GraphicEditorComponents/Dropdown';
-import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
-import { useState, useRef } from 'react';
+import Dropdown, { StyleDropdownMenuType} from './GraphicEditorComponents/Dropdown';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setStyle, setImagesIndex } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 export default function GraphicEditor() {
@@ -14,9 +13,7 @@ export default function GraphicEditor() {
     const dispatch = useDispatch();
     const { fontSize, fontFamily, weight, borderStyle, borderColor, backgroundColor, images, imageIndex } = graphicEditor;
     const [hasSelectedColors, setHasSelectedColors] = useState([]);
-    console.log(imageIndex)
     const handleImageClick = (index) => {
-        
         if (imageIndex === index) {
             dispatch(setImagesIndex(-1))
         }

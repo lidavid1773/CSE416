@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import L, { DrawMap, geoJson } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
@@ -14,7 +14,7 @@ import { initialState } from '../features/GraphicEditorDropdown/graphicEditordro
 function Map() {
   const dispatch = useDispatch();
   const graphicEditor = useSelector((state) => state.graphicEditor);
-  const graphicEditorRef = useRef({...graphicEditor});
+  const graphicEditorRef = useRef({ ...graphicEditor });
   // const { geojson } = useSelector((state) => state.geojson);
   const [tempgeojson, setTempgeojson] = useState(localgeojson)
   var selectedPolygon;
@@ -39,7 +39,6 @@ function Map() {
   const convertToPolygon = (poly, drawnItems) => {
     var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
     drawnItems.addLayer(polygon);
-
     polygon.on('click', function (e) {
       if (selectedPolygon)
         selectedPolygon.editing.disable();
@@ -58,7 +57,9 @@ function Map() {
     addImageMarker(polygon, e);
   }
   const addImageMarker = (polygon, e) => {
-    const image = graphicEditorRef.current["image"]
+    const images = graphicEditorRef.current.images
+    const index = graphicEditorRef.current.imageIndex
+    const image = images[index];
     if (image) {
       const icon = L.icon({
         iconUrl: image,
@@ -97,9 +98,9 @@ function Map() {
   //   // }
   // }, [geojson])
   useEffect(() => {
-    graphicEditorRef.current = {...graphicEditor};
+    graphicEditorRef.current = { ...graphicEditor };
   }, [graphicEditor]);
-  
+
   useEffect(() => {
     if (tempgeojson) {
       createMap();

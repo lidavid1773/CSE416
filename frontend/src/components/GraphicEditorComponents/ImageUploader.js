@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Uploaded } from './Dropdown';
 import { useSelector,useDispatch } from 'react-redux';
-import { setStyle,setImages } from '../../features/GraphicEditorDropdown/graphicEditordropdownSlice';
+import { setStyle,setImages,setImagesIndex } from '../../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex}) => {
   const graphicEditor = useSelector((state) => state.graphicEditor);
   const dispatch = useDispatch();
@@ -15,10 +15,9 @@ const ImageUploader = ({ onImageUpload, onSelectedImageIndex, imageIndex}) => {
 
       reader.onload = (e) => {
         uploadedImages.push(e.target.result);
+
         if (uploadedImages.length === files.length) {
-          onImageUpload(uploadedImages);
-          
-          onSelectedImageIndex(imageIndex + 1);
+          dispatch(setImages(uploadedImages))
         }
       };
 

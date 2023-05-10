@@ -6,36 +6,29 @@ import ColorLegend from './GraphicEditorComponents/ColorLegend';
 import Dropdown, { getBorderDashArray, Uploaded, StyleDropdownMenuType, ModeDropdownMenuType, DownloadDropdownMenuType } from './GraphicEditorComponents/Dropdown';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 import { useState, useRef } from 'react';
-import { useSelector,useDispatch } from 'react-redux';
-import { setStyle } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { setStyle, setImagesIndex } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 export default function GraphicEditor() {
     const [SketchPickerBackgroundColor, setBackgroundColor] = useState('#fff');
     const graphicEditor = useSelector((state) => state.graphicEditor);
     const dispatch = useDispatch();
-    const { fontSize, fontFamily, weight, borderStyle, borderColor, backgroundColor } = graphicEditor;
-
-    const initImageIndex = -1;
-    const [selectedImageIndex, setSelectedImageIndex] = useState(initImageIndex);
+    const { fontSize, fontFamily, weight, borderStyle, borderColor, backgroundColor, images, imageIndex } = graphicEditor;
     const [hasSelectedColors, setHasSelectedColors] = useState([]);
-    const [images, setImages] = useState([]);
+    console.log(imageIndex)
     const handleImageClick = (index) => {
-        if (graphicEditor[Uploaded.IMAGE]) {
-            graphicEditor[Uploaded.IMAGE] = undefined
-            setSelectedImageIndex(initImageIndex);
+        
+        if (imageIndex === index) {
+            dispatch(setImagesIndex(-1))
         }
         else {
-            graphicEditor[Uploaded.IMAGE] = images[index];
-            setSelectedImageIndex(index);
+            dispatch(setImagesIndex(index))
         }
+    };
 
-    };
-    const handleImageUpload = (uploadedImages) => {
-        setImages((prevImages) => [...prevImages, ...uploadedImages]);
-    };
     const handleChangeComplete = (color) => {
         setBackgroundColor(color.rgb);
         const newColorString = rgbaToString(color.rgb);
-        dispatch(setStyle({type:backgroundColor,newColorString}))
+        dispatch(setStyle({ type: backgroundColor, newColorString }))
         setHasSelectedColors((prevColor) => [newColorString, ...prevColor]);
     };
     const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
@@ -43,16 +36,15 @@ export default function GraphicEditor() {
     return (
         <div>
             <div>
-
                 {
                     <div>
-                        <ImageUploader onImageUpload={handleImageUpload} onSelectedImageIndex={setSelectedImageIndex} imageIndex={selectedImageIndex} graphicRef={graphicEditor} />
+                        <ImageUploader />
                         {images.map((imageUrl, index) => (
                             <img
                                 key={index}
                                 src={imageUrl}
                                 alt={`Uploaded image ${index}`}
-                                style={{ maxWidth: '200px', maxHeight: '200px', border: selectedImageIndex === index ? '2px solid blue' : 'none' }}
+                                style={{ maxWidth: '200px', maxHeight: '200px', border: imageIndex === index ? '2px solid blue' : 'none' }}
                                 onClick={() => handleImageClick(index)}
                             />
                         ))}

@@ -48,11 +48,13 @@ function Map() {
     });
   }
   const applyNewStyle = (polygon, e) => {
+    const { weight, backgroundColor, borderColor, borderStyle } = graphicEditorRef.current;
+
     polygon.setStyle({
-      weight: graphicEditorRef.current.weight,
-      fillColor: graphicEditorRef.current.backgroundColor,
-      color: graphicEditorRef.current.borderColor,
-      dashArray: getBorderDashArray(graphicEditorRef.current.borderStyle),
+      weight,
+      fillColor: backgroundColor,
+      color: borderColor,
+      dashArray: getBorderDashArray(borderStyle),
     })
     addImageMarker(polygon, e);
   }

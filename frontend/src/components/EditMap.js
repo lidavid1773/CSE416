@@ -13,6 +13,8 @@ function Map() {
   const mapRef = useRef(null);
   const drawnItemsRef = useRef(null);
   const editHistory = useRef({});
+  const LinesRef = useRef([]);
+  const polygonRef = useRef({});
 
   function undoFunction() {
     console.log("undo");
@@ -78,6 +80,37 @@ function Map() {
     }
   }
  
+  function split(polygon, lines) {
+    console.log(polygon);
+    console.log(lines);
+
+  }
+
+  function addLayerEvent(drawnItems) {
+    drawnItems.eachLayer((layer,e) => {
+      layer.on({
+        mouseover: () => {
+          layer.setStyle({
+            fillOpacity: 0.5,
+            fillColor: "#007eff"
+          });
+        },
+        mouseout: () => {
+          layer.setStyle({
+            fillOpacity: 0.25,
+            color: "#3388ff",
+            fillColor: "#3388ff"
+          });
+        },
+        click: (e) => {
+          if (e.stopPropagation) e.stopPropagation();
+          polygonRef.current = layer.toGeoJSON();
+        },
+
+      });
+    });
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (localgeojson) {
@@ -94,7 +127,7 @@ function Map() {
 
         const drawControl = new L.Control.Draw({
           draw: {
-            polyline: false,
+            polyline: true,
             polygon: true,
             circle: false,
             marker: false,
@@ -112,6 +145,10 @@ function Map() {
           const layer = e.layer;
           const layerId = L.stamp(layer);
 
+          if (layer instanceof L.Polyline) {
+            LinesRef.current.push(layer.toGeoJSON());
+          }
+
           // Add the layer to the feature group
           drawnItems.addLayer(layer);
 
@@ -119,6 +156,9 @@ function Map() {
           console.log(layerId);
           editHistory.current[layerId] = [];
           undoHistoryRef.current.push({ type: 'created', layerId });
+
+          addLayerEvent(drawnItems);
+
         });
 
         map.on('draw:editstart', (e) => {
@@ -167,6 +207,9 @@ function Map() {
           event.preventDefault();
           redoFunction();
         }
+      } else if(event.key === "Enter"){
+        event.preventDefault();
+        split(polygonRef.current,LinesRef.current);
       }
     };
   
@@ -194,10 +237,14 @@ function Map() {
         map.fitBounds(polygon.getBounds());
         drawnItems.addLayer(polygon);
       });
+
+      addLayerEvent(drawnItems);
+
     }
+
   }, [geojson]);
 
   return <div id="map" style={{ height: '500px' }} />;
 }
 
-export default Map;
+export default Map; 

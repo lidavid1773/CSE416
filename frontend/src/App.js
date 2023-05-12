@@ -6,7 +6,8 @@ import Banner from "./components/Banner";
 import RecoverPassword from "./pages/RecoverPassword";
 import ViewMapItem from "./components/ViewMapItem";
 import Profile from "./pages/Profile";
-import { useEffect } from "react";
+import Search from "./pages/Search";
+
 function App() {
   return (
     <div>
@@ -20,6 +21,7 @@ function App() {
             <Route path="/recover-password" element={<RecoverPassword />} />
             <Route path="/viewmap/:mapId" element={<ViewMapItem />}></Route>
             <Route path="/profile/:username" element={<Profile />}></Route>
+            <Route path="/search/:username" element={<Search />}></Route>
           </Routes>
         </div>
       </BrowserRouter>

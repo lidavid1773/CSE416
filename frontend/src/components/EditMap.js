@@ -1,64 +1,115 @@
-import React, { useEffect, useState } from 'react';
-import L from 'leaflet';
+import React, { useEffect, useState, useRef } from 'react';
+import L, { DrawMap, geoJson } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
-import localgeojson from "../maps/ukraine.json";
-
+import { useSelector } from 'react-redux';
+import localgeojson from "../maps/geojson (17).json";
+import { useDispatch } from 'react-redux';
+import { setGeojson } from '../features/geojson/geojsonSlice';
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
+import { getBorderDashArray } from './GraphicEditorComponents/Dropdown';
+import { Uploaded } from './GraphicEditorComponents/Dropdown';
+import { initialState } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 function Map() {
+  const dispatch = useDispatch();
+  const graphicEditor = useSelector((state) => state.graphicEditor);
+  const graphicEditorRef = useRef({ ...graphicEditor });
+  // const { geojson } = useSelector((state) => state.geojson);
+  const [tempgeojson, setTempgeojson] = useState(localgeojson)
+  var selectedPolygon;
   // const [map, setMap] = useState(null);
-  const [geojson, setgeojson] = useState(null);
-  var map;
- 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (localgeojson) {
-        setgeojson(localgeojson);
+  let map;
+  const drawMap = () => {
+    var drawnItems = new L.FeatureGroup();
+    tempgeojson.features.forEach(function (currentFeature) {
+      if (currentFeature.geometry.type === "MultiPolygon") {
+        currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
+          currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
+        })
+      } else {
+        currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
       }
-    };
-    fetchData();
-  }, []);
+    });
+    map.fitBounds(L.geoJson(tempgeojson).getBounds());
+    map.addLayer(drawnItems);
+  }
+
+
+  const convertToPolygon = (poly, drawnItems) => {
+    var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
+    drawnItems.addLayer(polygon);
+    polygon.on('click', function (e) {
+      if (selectedPolygon)
+        selectedPolygon.editing.disable();
+      selectedPolygon = e.target;
+      e.target.editing.enable();
+      applyNewStyle(polygon, e)
+    });
+  }
+  const applyNewStyle = (polygon, e) => {
+    const { weight, backgroundColor, borderColor, borderStyle } = graphicEditorRef.current;
+
+    polygon.setStyle({
+      weight,
+      fillColor: backgroundColor,
+      color: borderColor,
+      dashArray: getBorderDashArray(borderStyle),
+    })
+    addImageMarker(polygon, e);
+  }
+  const addImageMarker = (polygon, e) => {
+    const images = graphicEditorRef.current.images
+    const index = graphicEditorRef.current.imageIndex
+    const image = images[index];
+    if (image) {
+      const icon = L.icon({
+        iconUrl: image,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+      const marker = L.marker(e.latlng, { icon }).addTo(map);
+      if (!polygon.imageMarkers) {
+        polygon.imageMarkers = []
+      }
+      polygon.imageMarkers.push(marker);
+    }
+  }
+  const createMap = () => {
+
+    map = L.map('map', {
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    new SimpleMapScreenshoter().addTo(map);
+    // setMap(map);
+  }
+  // useEffect(() => {
+  //   if (!map) {
+  //     createMap();
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   if(localgeojson){
+
+  //   }
+  //   // if (geojson) {
+  //   //   console.log(geojson)
+  //   //   drawMap();
+  //   // }
+  // }, [geojson])
+  useEffect(() => {
+    graphicEditorRef.current = { ...graphicEditor };
+  }, [graphicEditor]);
 
   useEffect(() => {
-    if (geojson) {
-      map = L.map('map', {
-        // drawControl: true,
-      });
-     
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-      }).addTo(map);
-      // geojsonLayer = L.geoJson(geojson).addTo(map);
-      // geojsonLayer.eachLayer(layer => {
-      //   if (layer instanceof L.Polyline) {
-      //     layer.enableEdit();
-      //   }
-      // });
-      // geojsonLayer = L.geoJson(geojson, { 
-      //                           onEachFeature: function popUp(features, layer) { selectVerticesMode(features, layer); } 
-      //                         }).addTo(map);
-      var drawnItems = new L.FeatureGroup();
-      geojson.features.forEach(function(currentFeature){
-          var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(currentFeature.geometry.coordinates[0])).addTo(map);
-          // polygon.enableEdit();
-          map.fitBounds(polygon.getBounds());
-          drawnItems.addLayer(polygon);
-      });
-      map.addLayer(drawnItems); 
-      var drawControl = new L.Control.Draw({
-        draw: false,
-        edit: {
-            featureGroup: drawnItems
-        }
-      });;
-      map.addControl(drawControl);
-      // const bounds = geojsonLayer.getBounds();
-      // map.fitBounds(bounds);
-      // vertexLayer = L.layerGroup();
-      // map.addLayer(vertexLayer);
+    if (tempgeojson) {
+      createMap();
+      drawMap();
+      dispatch(setGeojson(tempgeojson));
     }
-  }, [geojson]);
-
+  }, [tempgeojson]);
   return <div id="map" style={{ height: '500px' }} />;
 }
 

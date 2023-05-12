@@ -29,7 +29,10 @@ const MapItem = ({ map }) => {
       </div>
       <div>{map.title}</div>
       <button
-        onClick={() => dispatch(deleteMap(map._id))}
+        onClick={(e) => {
+          e.stopPropagation();
+          dispatch(deleteMap(map._id));
+        }}
         className="delete-btn"
       >
         X

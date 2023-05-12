@@ -37,6 +37,18 @@ export const getMaps = createAsyncThunk("maps/getAll", async (_, thunkAPI) => {
   }
 });
 
+export const searchMapsBy = createAsyncThunk(
+  "maps/searchBy",
+  async (username, thunkAPI) => {
+    try {
+      return await api.searchMapsBy(username);
+    } catch (error) {
+      // send error message as payload
+      return thunkAPI.rejectWithValue(getMessage(error));
+    }
+  }
+);
+
 export const deleteMap = createAsyncThunk(
   "maps/delete",
   async (id, thunkAPI) => {
@@ -79,6 +91,14 @@ export const mapSlice = createSlice({
         state.maps = state.maps.filter((map) => map._id !== action.payload.id);
       })
       .addCase(deleteMap.rejected, (state, action) => {
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(searchMapsBy.fulfilled, (state, action) => {
+        state.isSuccess = true;
+        state.maps = action.payload;
+      })
+      .addCase(searchMapsBy.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
       });

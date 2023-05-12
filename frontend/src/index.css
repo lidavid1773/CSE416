@@ -266,3 +266,17 @@ li {
 .comment-button:hover {
   background-color: #007b9a;
 }
+
+.search-bar {
+  padding: 10px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.search-bar:focus {
+  border-color: black;
+}

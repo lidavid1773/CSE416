@@ -2,24 +2,45 @@ import { Link } from "react-router-dom";
 import { SignInIcon, SignOutIcon, UserIcon, ProfileIcon } from "../assets";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, resetState } from "../features/users/userSlice";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Banner() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.user);
+
+  const [searchText, setSearchText] = useState("");
 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(resetState());
   };
 
+  const searchOnSubmit = (e) => {
+    e.preventDefault();
+    setSearchText("");
+    navigate(`/search/${searchText}`);
+  };
+
   return (
     <header className="banner">
-      <div>
+      <div className="app-title">
         <Link to="/" className="mapworkshop">
           MapWorkshop
         </Link>
       </div>
+
+      <form onSubmit={searchOnSubmit}>
+        <input
+          className="search-bar"
+          value={searchText}
+          type="text"
+          placeholder="Search maps..."
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </form>
 
       <ul>
         {user ? (

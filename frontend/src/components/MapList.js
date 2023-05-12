@@ -12,7 +12,7 @@ const MapList = ({ maps }) => {
           ))}
         </div>
       ) : (
-        <h3>You have no maps</h3>
+        <h3>0 Maps</h3>
       )}
     </div>
   );

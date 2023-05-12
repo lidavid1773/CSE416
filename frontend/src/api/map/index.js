@@ -27,6 +27,12 @@ const getMaps = async (token) => {
   return response.data;
 };
 
+const searchMapsBy = async (username) => {
+  const response = await axios.get(`${API_URL}searchMapsBy/${username}`);
+
+  return response.data;
+};
+
 const deleteMap = async (id, token) => {
   const config = {
     headers: {
@@ -39,6 +45,6 @@ const deleteMap = async (id, token) => {
   return response.data;
 };
 
-const api = { getMap, getMaps, deleteMap };
+const api = { getMap, getMaps, searchMapsBy, deleteMap };
 
 export default api;

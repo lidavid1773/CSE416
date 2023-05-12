@@ -3,9 +3,12 @@ import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setGeojson } from '../features/geojson/geojsonSlice';
+import { setGeojson } from "../features/geojson/geojsonSlice";
 import localgeojson from "../maps/geojson (17).json";
-import Dropdown, { DownloadDropdownMenuType, ModeDropdownMenuType } from "../components/GraphicEditorComponents/Dropdown";
+import Dropdown, {
+  DownloadDropdownMenuType,
+  ModeDropdownMenuType,
+} from "../components/GraphicEditorComponents/Dropdown";
 import GraphicEditor from "../components/GraphicEditor";
 function Home() {
   // if user is null, user is a guest.
@@ -15,10 +18,10 @@ function Home() {
 
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
-    return fileTypes.map(fileType => (
+    return fileTypes.map((fileType) => (
       <UploadFileButtons key={fileType} fileType={fileType} />
     ));
-  }
+  };
   return (
     <div>
       <div>Home Page</div>
@@ -32,19 +35,18 @@ function Home() {
           <div>You are browsing as a guest</div>
         </div>
       )}
-      <div >
+      <div>
         {createUploadComponents()}
         <span>
           {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
           {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
+          <button>Make a copy</button>
         </span>
-
       </div>
       <div className="grid-container">
         <EditMap />
-        <GraphicEditor/>
+        <GraphicEditor />
       </div>
-
     </div>
   );
 }

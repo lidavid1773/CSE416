@@ -6,6 +6,7 @@ const initialState = {
   maps: [],
   isError: false,
   isSuccess: false,
+  isLoading: false,
   message: "",
 };
 
@@ -97,10 +98,15 @@ export const mapSlice = createSlice({
       .addCase(searchMapsBy.fulfilled, (state, action) => {
         state.isSuccess = true;
         state.maps = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(searchMapsBy.pending, (state, action) => {
+        state.isLoading = true;
       })
       .addCase(searchMapsBy.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
+        state.isLoading = false;
       });
   },
 });

@@ -41,9 +41,12 @@ const setMap = asyncHandler(async (req, res) => {
 const searchMapsBy = asyncHandler(async (req, res) => {
   const user = await User.findOne({ username: req.params.username });
 
-  if (!user) res.status(200).json([]);
+  if (!user) {
+    res.status(200).json([]);
+    return;
+  }
 
-  const maps = await Map.find({ user: user.id });
+  const maps = await Map.find({ user: user._id });
 
   res.status(200).json(maps);
 });

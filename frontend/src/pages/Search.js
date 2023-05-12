@@ -8,7 +8,9 @@ const Search = () => {
   const dispatch = useDispatch();
 
   const { username } = useParams();
-  const { maps, isError, message } = useSelector((state) => state.maps);
+  const { maps, isError, message, isLoading } = useSelector(
+    (state) => state.maps
+  );
 
   useEffect(() => {
     if (isError) {
@@ -25,7 +27,7 @@ const Search = () => {
   return (
     <div>
       <h1>Search Results</h1>
-      <MapList maps={maps} />
+      {isLoading ? <div>Loading... </div> : <MapList maps={maps} />}
     </div>
   );
 };

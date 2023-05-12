@@ -21,7 +21,7 @@ function Banner() {
   const searchOnSubmit = (e) => {
     e.preventDefault();
     setSearchText("");
-    navigate(`/search/${searchText}`);
+    if (searchText.trim() != "") navigate(`/search/${searchText}`);
   };
 
   return (

@@ -122,6 +122,8 @@ const updatePassword = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
+  // Add a token field for user schema to verify token
+
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 

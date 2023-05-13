@@ -30,12 +30,14 @@ function ForgotPassword() {
       </div>
 
       {isSent ? (
-        <div>
+        <div className="success-message">
           A link to reset your password was successfully sent to your email!
         </div>
       ) : null}
 
-      {invalidEmail ? <div>Email is invalid</div> : null}
+      {invalidEmail ? (
+        <div className="failure-message">Email is invalid</div>
+      ) : null}
 
       <div className="form">
         <form onSubmit={sendLink}>

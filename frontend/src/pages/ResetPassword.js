@@ -38,9 +38,9 @@ const ResetPassword = () => {
       </div>
 
       {isMismatch ? (
-        <div>Passwords do not match</div>
+        <div className="failure-message">Passwords do not match</div>
       ) : isSubmitted ? (
-        <div>Your password has been reset</div>
+        <div className="success-message">Your password has been reset</div>
       ) : null}
 
       <div className="form">

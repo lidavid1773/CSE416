@@ -31,10 +31,27 @@ const logout = () => {
   localStorage.removeItem("user");
 };
 
+// one time reset password link
+const sendLink = async (email) => {
+  const response = await axios.post(`${API_URL}forgot-password`, { email });
+
+  return response.data;
+};
+
+const resetPassword = async (id, token, password) => {
+  const response = await axios.post(`${API_URL}reset-password/${id}/${token}`, {
+    password,
+  });
+
+  return response.data;
+};
+
 const api = {
   register,
   login,
   logout,
+  sendLink,
+  resetPassword,
 };
 
 export default api;

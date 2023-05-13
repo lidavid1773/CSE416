@@ -6,6 +6,7 @@ const initialState = {
   maps: [],
   isError: false,
   isSuccess: false,
+  isLoading: false,
   message: "",
 };
 
@@ -19,8 +20,9 @@ const getMessage = (error) => {
 
 export const getMap = createAsyncThunk("maps/getOne", async (id, thunkAPI) => {
   try {
-    const token = thunkAPI.getState().user.user.token;
-    return await api.getMap(id, token);
+    // const token = thunkAPI.getState().user.user.token;
+    // return await api.getMap(id, token);
+    return await api.getMap(id);
   } catch (error) {
     // send error message as payload
     return thunkAPI.rejectWithValue(getMessage(error));
@@ -36,6 +38,18 @@ export const getMaps = createAsyncThunk("maps/getAll", async (_, thunkAPI) => {
     return thunkAPI.rejectWithValue(getMessage(error));
   }
 });
+
+export const searchMapsBy = createAsyncThunk(
+  "maps/searchBy",
+  async (username, thunkAPI) => {
+    try {
+      return await api.searchMapsBy(username);
+    } catch (error) {
+      // send error message as payload
+      return thunkAPI.rejectWithValue(getMessage(error));
+    }
+  }
+);
 
 export const deleteMap = createAsyncThunk(
   "maps/delete",
@@ -81,6 +95,19 @@ export const mapSlice = createSlice({
       .addCase(deleteMap.rejected, (state, action) => {
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(searchMapsBy.fulfilled, (state, action) => {
+        state.isSuccess = true;
+        state.maps = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(searchMapsBy.pending, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(searchMapsBy.rejected, (state, action) => {
+        state.isError = true;
+        state.message = action.payload;
+        state.isLoading = false;
       });
   },
 });

@@ -28,7 +28,7 @@ const Profile = () => {
     <div>
       <div className="header">
         <h1>Welcome back, {user.username}!</h1>
-        <h1>Maps Owned</h1>
+        <h1>Your Collection</h1>
       </div>
       <MapList maps={maps} />
     </div>

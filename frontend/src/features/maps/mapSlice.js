@@ -20,8 +20,9 @@ const getMessage = (error) => {
 
 export const getMap = createAsyncThunk("maps/getOne", async (id, thunkAPI) => {
   try {
-    const token = thunkAPI.getState().user.user.token;
-    return await api.getMap(id, token);
+    // const token = thunkAPI.getState().user.user.token;
+    // return await api.getMap(id, token);
+    return await api.getMap(id);
   } catch (error) {
     // send error message as payload
     return thunkAPI.rejectWithValue(getMessage(error));

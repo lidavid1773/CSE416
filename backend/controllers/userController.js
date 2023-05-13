@@ -85,11 +85,16 @@ const sendResetLink = asyncHandler(async (req, res) => {
       expiresIn: "15m",
     });
 
+    const baseURL =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/"
+        : process.env.HEROKU_APP_NAME;
+
     const mailOptions = {
       from: process.env.MAPWORKSHOP_EMAIL,
       to: email,
       subject: "MapWorkshop - Password Reset Link",
-      text: `This link will only be available for 15 minutes http://localhost:3000/reset-password/${user._id}/${token}`,
+      text: `This link will only be available for 15 minutes ${baseURL}reset-password/${user._id}/${token}`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

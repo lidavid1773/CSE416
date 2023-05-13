@@ -286,3 +286,15 @@ li {
 .search-bar:focus {
   border-color: black;
 }
+
+.success-message {
+  font-weight: bold;
+  color: lawngreen;
+  margin-bottom: 30px;
+}
+
+.failure-message {
+  font-weight: bold;
+  color: red;
+  margin-bottom: 30px;
+}

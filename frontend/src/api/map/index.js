@@ -4,13 +4,14 @@ const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 const API_URL = `${baseURL}/api/maps/`;
 
 const getMap = async (id, token) => {
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  // const config = {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`,
+  //   },
+  // };
 
-  const response = await axios.get(`${API_URL}getOne/${id}`, config);
+  // const response = await axios.get(`${API_URL}getOne/${id}`, config);
+  const response = await axios.get(`${API_URL}getOne/${id}`);
 
   return response.data;
 };

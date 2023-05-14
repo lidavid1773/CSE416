@@ -11,6 +11,8 @@ export const initialState = {
   downloadingMode: "GeoJSON",
   images: [],
   imageIndex: -1,
+  addTextState:false,
+  addText:"",
 };
 
 export const graphicEditorSlice = createSlice({
@@ -28,8 +30,14 @@ export const graphicEditorSlice = createSlice({
     setImagesIndex: (state, action) => {
       state.imageIndex = action.payload;
     },
+    setAddTextState: (state, action) => {
+      state.addTextState = action.payload;
+    },
+    setAddText: (state, action) => {
+      state.addText = action.payload;
+    },
   },
 });
 
-export const { setStyle, setImages, setImagesIndex } = graphicEditorSlice.actions;
+export const { setStyle, setImages, setImagesIndex,setAddTextState,setAddText } = graphicEditorSlice.actions;
 export default graphicEditorSlice.reducer;

@@ -7,6 +7,7 @@ import Dropdown, { StyleDropdownMenuType} from './GraphicEditorComponents/Dropdo
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setStyle, setImagesIndex } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
+import AddText from './GraphicEditorComponents/AddText';
 export default function GraphicEditor() {
     const [SketchPickerBackgroundColor, setBackgroundColor] = useState('#fff');
     const graphicEditor = useSelector((state) => state.graphicEditor);
@@ -35,6 +36,7 @@ export default function GraphicEditor() {
             <div>
                 {
                     <div>
+                        <AddText></AddText>
                         <ImageUploader />
                         {images.map((imageUrl, index) => (
                             <img

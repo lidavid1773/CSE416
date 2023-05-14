@@ -48,8 +48,8 @@ function Map() {
     });
   }
   const applyNewStyle = (polygon, e) => {
-    const { weight, backgroundColor, borderColor, borderStyle } = graphicEditorRef.current;
-
+    const { weight, backgroundColor, borderColor, borderStyle,addText } = graphicEditorRef.current;
+    console.log(addText)
     polygon.setStyle({
       weight,
       fillColor: backgroundColor,

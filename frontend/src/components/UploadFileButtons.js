@@ -1,0 +1,78 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import { setGeojson } from '../features/geojson/geojsonSlice';
+import localgeojson from "../maps/ukraine.json";
+
+const shapefile = require('shapefile')
+export const FileType = {
+    GEOJSON: "GeoJson",
+    SHP: "SHP/DBF",
+}
+export default function UploadFile({ fileType }) {
+
+    const fileInputRef = useRef(null);
+    const dispatch = useDispatch();
+
+    const handleClick = () => {
+        fileInputRef.current.click();
+    };
+    const convertToGeojson = (data) => {
+        let result = {
+            type: "FeatureCollection",
+            features: [data],
+        }
+        return result;
+    }
+
+    const handleShpFile = (e) => {
+        var ShpData = null, DbfData = null;
+        for (let file of e.currentTarget.files) {
+            let reader = new FileReader();
+            let ext = getExtension(file.name);
+            // eslint-disable-next-line no-loop-func
+            reader.onload = () => {
+                if (ext === "dbf") {
+                    DbfData = reader.result;
+                }
+                else if (ext === "shp") {
+                    ShpData = reader.result;
+                }
+                if (ShpData && DbfData) {
+                    shapefile.open(ShpData, DbfData).then((source) =>
+                        source.read().then(function log(result) {
+                            if (result.done) {
+                                return;
+                            }
+                            var geojson = convertToGeojson(result.value);
+                            dispatch(setGeojson(geojson));
+                            return source.read().then(log);
+                        })
+                    ).catch((error) => alert(error.stack));
+                }
+            }
+            reader.readAsArrayBuffer(file);
+        }
+    }
+    const handleGeoJsonFile = (e) => {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var geojson = JSON.parse(event.target.result);
+            dispatch(setGeojson(geojson));
+        }
+        reader.readAsText(e.target.files[0]);
+    }
+    const handleFile = (e) => {
+        fileType === FileType.SHP ? handleShpFile(e) : handleGeoJsonFile(e);
+    }
+    const getExtension = (filename) => {
+        var parts = filename.split(".");
+        return parts[parts.length - 1];
+    }
+    return (
+        <span>
+            <input onChange={handleFile}
+                type="file" id="file" accept={fileType === FileType.SHP ? ".shp,.dbf" : ".json"} multiple ref={fileInputRef} style={{ display: 'none' }} />
+            <button onClick={handleClick}>{"Upload " + fileType}</button>
+        </span>
+    );
+}

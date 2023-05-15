@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/maps", require("./routes/mapRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/maps", require("./routes/commentRoutes"));
 
 // Serve frontend for deployment
 if (process.env.NODE_ENV === "production") {

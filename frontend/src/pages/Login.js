@@ -78,7 +78,7 @@ function Login() {
           </div>
         </form>
         <div>
-          <Link to="/recover-password">I forgot my password</Link>
+          <Link to="/forgot-password">I forgot my password</Link>
         </div>
       </div>
     </div>

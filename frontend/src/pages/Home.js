@@ -1,55 +1,52 @@
+import EditMap from "../components/EditMap";
+import UploadFileButtons from "../components/UploadFileButtons";
+import { FileType } from "../components/UploadFileButtons";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getMaps, resetState } from "../features/maps/mapSlice";
-import MapItem from "../components/MapItem";
-
+import { setGeojson } from "../features/geojson/geojsonSlice";
+import localgeojson from "../maps/geojson (17).json";
+import Dropdown, {
+  DownloadDropdownMenuType,
+  ModeDropdownMenuType,
+} from "../components/GraphicEditorComponents/Dropdown";
+import GraphicEditor from "../components/GraphicEditor";
 function Home() {
-  const dispatch = useDispatch();
-
   // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
-  const { maps, isError, message } = useSelector((state) => state.maps);
+  const { geojson } = useSelector((state) => state.geojson);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (isError) {
-      console.log(message);
-    }
-
-    if (user) {
-      dispatch(getMaps());
-    }
-
-    return () => {
-      dispatch(resetState());
-    };
-  }, [user, dispatch, isError, message]);
-
+  const createUploadComponents = () => {
+    const fileTypes = Object.values(FileType);
+    return fileTypes.map((fileType) => (
+      <UploadFileButtons key={fileType} fileType={fileType} />
+    ));
+  };
   return (
     <div>
+      <div>Home Page</div>
       {user ? (
         <div>
-          <div className="header">
-            <h1>Welcome back, {user.username}!</h1>
-            <h1>Maps Owned</h1>
-          </div>
-          <div>
-            {maps.length > 0 ? (
-              <div className="maps">
-                {maps.map((map) => (
-                  <MapItem key={map._id} map={map} />
-                ))}
-              </div>
-            ) : (
-              <h3>You have no maps</h3>
-            )}
-          </div>
+          <div>Welcome back, {user.username}!</div>
+          <button>Import map from profile</button>
         </div>
       ) : (
         <div>
-          <div>Home Page</div>
           <div>You are browsing as a guest</div>
         </div>
       )}
+      <div>
+        {createUploadComponents()}
+        <span>
+          {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
+          {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
+          <button>Make a copy</button>
+        </span>
+      </div>
+      <div className="grid-container">
+        <EditMap />
+        <GraphicEditor />
+      </div>
     </div>
   );
 }

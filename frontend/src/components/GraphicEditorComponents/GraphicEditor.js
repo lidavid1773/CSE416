@@ -2,7 +2,6 @@
 import React from 'react'
 import ImageUploader from "./ImageUploader";
 import { SketchPicker } from 'react-color'
-import ColorLegend from './ColorLegend';
 import Dropdown, { StyleDropdownMenuType } from './Dropdown';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';

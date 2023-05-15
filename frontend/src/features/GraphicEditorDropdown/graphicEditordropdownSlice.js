@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ModeDropdownMenuType } from '../../components/GraphicEditorComponents/Dropdown';
+import { polygon } from 'leaflet';
 
 export const initialState = {
   selectedColor: [],
@@ -43,8 +44,25 @@ export const graphicEditorSlice = createSlice({
       state.selectedColor = state.selectedColor.concat(action.payload);
     },
     setPolygons: (state, action) => {
-      
+      const { name } = action.payload;
+    
+      const updatedPolygons = state.polygons.map(polygon => {
+        if (polygon.name === name) {
+          return action.payload; // Update the matching polygon
+        }
+        return polygon; // Keep the original polygon
+      });
+    
+      if (!updatedPolygons.some(polygon => polygon.name === name)) {
+        updatedPolygons.push(action.payload); // Add the new polygon if not found
+      }
+    
+      return {
+        ...state,
+        polygons: updatedPolygons
+      };
     },
+    
   },
 });
 

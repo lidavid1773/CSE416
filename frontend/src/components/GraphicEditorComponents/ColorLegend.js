@@ -1,13 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
+import L, { polygon } from 'leaflet';
 import { useSelector } from 'react-redux';
 
 const ColorLegend = ({ map }) => {
-  const selectedColor = useSelector((state) => state.graphicEditor.selectedColor);
+  const graphicEditor = useSelector((state) => state.graphicEditor);
+  const {polygons} = graphicEditor;
+  console.log(polygons)
   const controlRef = useRef(null);
 
   useEffect(() => {
-    if (selectedColor.length > 0) {
+    if (polygons.length > 0) {
       if (controlRef.current) {
         map.removeControl(controlRef.current);
       }
@@ -21,9 +23,15 @@ const ColorLegend = ({ map }) => {
           const container = L.DomUtil.create('div');
           container.className = 'color-legend';
 
-          selectedColor.forEach((color) => {
-            const icon = L.DomUtil.create('div', 'color-icon');
-            icon.innerHTML = `<span style="background-color: ${color}; width: 40px; height: 20px; display: inline-block; "></span>`;
+          polygons.forEach((polygon) => {
+            const {color,name,text} = polygon
+            const icon = L.DomUtil.create('div');
+            icon.innerHTML = `
+            <div>
+              <span style="background-color: ${color}; width: 60px; height: 20px; display: inline-block; "></span>
+              <span style="display: flex; justify-content: left; align-items: left;">${name} : ${text}</span>
+            </div>
+          `;
             container.appendChild(icon);
           });
 
@@ -35,7 +43,7 @@ const ColorLegend = ({ map }) => {
       controlRef.current = controlInstance;
       map.addControl(controlInstance);
     }
-  }, [map, selectedColor]);
+  }, [polygons]);
 
   return null;
 };

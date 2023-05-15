@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import L, { DrawMap, geoJson, polygon } from 'leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import localgeojson from "../../maps/geojson (17).json";
 import { useDispatch } from 'react-redux';
 import { setGeojson } from '../../features/geojson/geojsonSlice';
+import { setPolygons } from '../../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 import { getBorderDashArray } from './Dropdown';
 import { MARKER_TYPE, addMarker } from './MakerUtils';
@@ -19,54 +20,38 @@ function Map() {
 
   // const { geojson } = useSelector((state) => state.geojson);
   const [tempgeojson, setTempgeojson] = useState(localgeojson)
-  var selectedPolygon;
+
   const [map, setMap] = useState(null);
   const drawMap = () => {
     var drawnItems = new L.FeatureGroup();
-    tempgeojson.features.forEach(function (currentFeature) {
-      if (currentFeature.geometry.type === "MultiPolygon") {
-        currentFeature.geometry.coordinates.forEach(function (currentCoordinate) {
-          currentCoordinate.forEach(poly => convertToPolygon(poly, drawnItems));
-        })
-      } else {
-        currentFeature.geometry.coordinates.forEach(poly => convertToPolygon(poly, drawnItems));
-      }
-    });
+    L.geoJSON(localgeojson, {
+      onEachFeature: onEachFeature
+    }).addTo(map);
+
     map.fitBounds(L.geoJson(tempgeojson).getBounds());
     map.addLayer(drawnItems);
   }
 
 
-  const convertToPolygon = (poly, drawnItems) => {
-    var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
-    drawnItems.addLayer(polygon);
-    polygon.on('click', function (e) {
-      // if (selectedPolygon)
-      //   selectedPolygon.editing.disable();
-      // selectedPolygon = e.target;
-      // e.target.editing.enable();
-      applyNewStyle(polygon, e)
-    });
-  }
-  const applyNewStyle = (polygon, e) => {
+
+  const onEachFeature = (feature, polygon) => {
+    const name = feature.properties.name;
+    polygon.on("click", function (e) {
+      applyNewStyle(polygon, e, name)
+    })
+
+  };
+  const applyNewStyle = (polygon, e, name) => {
     const { weight, backgroundColor, borderColor, borderStyle, addText, images, imageIndex, fontSize, fontFamily, addTextState } = graphicEditorRef.current;
     const image = images[imageIndex];
-    const clickedLayer = e.target; // Get reference to the clicked polygon layer
-
-    // Now you have the reference to the clicked polygon layer
-    // You can perform operations on it or access its properties
-    console.log('Clicked Layer:', clickedLayer);
-    polygon.setStyle({
+    const style = {
       weight,
       fillColor: backgroundColor,
       color: borderColor,
       dashArray: getBorderDashArray(borderStyle),
-    })
-    let option = {
-      polygon,
-      e,
-      map,
     }
+    polygon.setStyle(style);
+    let option = {polygon,e, map}
     let text = addText
     if (image) {
       option.markerType = MARKER_TYPE.IMAGE;
@@ -82,6 +67,8 @@ function Map() {
       }
       addMarker(option);
     }
+    let color = style.fillColor
+    dispatch(setPolygons({name,text,color}));
 
 
   }

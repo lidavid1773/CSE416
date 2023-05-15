@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { ModeDropdownMenuType } from '../../components/GraphicEditorComponents/Dropdown';
+
 export const initialState = {
+  selectedColor: [],
   borderStyle: 'solid',
   borderColor: '#000000',
   fontFamily: 'Arial',
@@ -11,8 +13,9 @@ export const initialState = {
   downloadingMode: "GeoJSON",
   images: [],
   imageIndex: -1,
-  addTextState:false,
-  addText:"",
+  addTextState: false,
+  addText: "",
+  polygons:[],
 };
 
 export const graphicEditorSlice = createSlice({
@@ -25,7 +28,7 @@ export const graphicEditorSlice = createSlice({
     },
     setImages: (state, action) => {
       state.images = [...state.images, ...action.payload];
-      graphicEditorSlice.caseReducers.setImagesIndex(state,{ payload:state.images.length - 1});
+      graphicEditorSlice.caseReducers.setImagesIndex(state, { payload: state.images.length - 1 });
     },
     setImagesIndex: (state, action) => {
       state.imageIndex = action.payload;
@@ -36,8 +39,14 @@ export const graphicEditorSlice = createSlice({
     setAddText: (state, action) => {
       state.addText = action.payload;
     },
+    setSelectedColor: (state, action) => {
+      state.selectedColor = state.selectedColor.concat(action.payload);
+    },
+    setPolygons: (state, action) => {
+      
+    },
   },
 });
 
-export const { setStyle, setImages, setImagesIndex,setAddTextState,setAddText } = graphicEditorSlice.actions;
+export const { setStyle, setImages, setImagesIndex, setAddTextState, setAddText, setSelectedColor,setPolygons} = graphicEditorSlice.actions;
 export default graphicEditorSlice.reducer;

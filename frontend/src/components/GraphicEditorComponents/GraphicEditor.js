@@ -1,19 +1,18 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import React from 'react'
-import ImageUploader from "./GraphicEditorComponents/ImageUploader";
+import ImageUploader from "./ImageUploader";
 import { SketchPicker } from 'react-color'
-import ColorLegend from './GraphicEditorComponents/ColorLegend';
-import Dropdown, { StyleDropdownMenuType} from './GraphicEditorComponents/Dropdown';
+import ColorLegend from './ColorLegend';
+import Dropdown, { StyleDropdownMenuType } from './Dropdown';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setStyle, setImagesIndex } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
-import AddText from './GraphicEditorComponents/AddText';
+import { setStyle, setImagesIndex, setSelectedColor } from '../../features/GraphicEditorDropdown/graphicEditordropdownSlice';
+import AddText from './AddText';
 export default function GraphicEditor() {
     const [SketchPickerBackgroundColor, setBackgroundColor] = useState('#fff');
     const graphicEditor = useSelector((state) => state.graphicEditor);
     const dispatch = useDispatch();
-    const { fontSize, fontFamily, weight, borderStyle, borderColor, backgroundColor, images, imageIndex } = graphicEditor;
-    const [hasSelectedColors, setHasSelectedColors] = useState([]);
+    const { fontSize, fontFamily, weight, borderStyle, borderColor, backgroundColor, images, imageIndex,selectedColor } = graphicEditor;
     const handleImageClick = (index) => {
         if (imageIndex === index) {
             dispatch(setImagesIndex(-1))
@@ -27,7 +26,8 @@ export default function GraphicEditor() {
         setBackgroundColor(color.rgb);
         const value = rgbaToString(color.rgb);
         dispatch(setStyle({ type: "backgroundColor", value }))
-        setHasSelectedColors((prevColor) => [value, ...prevColor]);
+        dispatch(setSelectedColor( value ))
+        // setHasSelectedColors((prevColor) => [value, ...prevColor]);
     };
     const rgbaToString = (rgba) => `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
 
@@ -49,7 +49,6 @@ export default function GraphicEditor() {
                         ))}
                         <SketchPicker style={{ height: '200px' }} color={SketchPickerBackgroundColor}
                             onChangeComplete={handleChangeComplete} />
-                        <ColorLegend colors={hasSelectedColors} />
                         <h1 style={{
                             fontSize: `${fontSize}px`,
                             fontFamily,
@@ -58,7 +57,7 @@ export default function GraphicEditor() {
                         }}>
                             Style output
                         </h1>
-                        <Dropdown DropdownMenuType={StyleDropdownMenuType} colorSelection={hasSelectedColors}  ></Dropdown>
+                        <Dropdown DropdownMenuType={StyleDropdownMenuType} colorSelection={selectedColor }  ></Dropdown>
                     </div>}
 
             </div></div>

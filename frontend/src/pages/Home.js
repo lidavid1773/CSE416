@@ -1,4 +1,4 @@
-import EditMap from "../components/EditMap";
+import EditMap from "../components/GraphicEditorComponents/GraphicEditingMap";
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
 import { useEffect } from "react";
@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setGeojson } from '../features/geojson/geojsonSlice';
 import localgeojson from "../maps/geojson (17).json";
 import Dropdown, { DownloadDropdownMenuType, ModeDropdownMenuType } from "../components/GraphicEditorComponents/Dropdown";
-import GraphicEditor from "../components/GraphicEditor";
+import GraphicEditor from "../components/GraphicEditorComponents/GraphicEditor";
 function Home() {
   // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
@@ -42,7 +42,7 @@ function Home() {
       </div>
       <div className="grid-container">
         <EditMap />
-        <GraphicEditor/>
+        <GraphicEditor />
       </div>
 
     </div>

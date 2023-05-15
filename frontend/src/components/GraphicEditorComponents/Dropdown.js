@@ -52,7 +52,7 @@ const borderStyles = ["solid", "dashed", "dotted", "double", "groove", "ridge", 
 const editingMode = ["Map Editing", 'Graphic Editing'];
 const downloadingMode = ["GeoJSON", "SHP/DBF"];
 const Dropdown = ({ DropdownMenuType, colorSelection }) => {
-  const geojson = useSelector(state => state.geojson);
+  const geojson = useSelector(state => state.geojsonController.geojson);
   const dispatch = useDispatch();
   const graphicEditor = useSelector(state => state.graphicEditor);
   const [selectedStyle, setSelectedStyle] = useState({});
@@ -69,7 +69,7 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
     FileSaver.saveAs(fileToSave, "geojson.json")
   }
   // console.log(process) 
-  const handleSHPExport = (geojson) => {
+  const handleSHPExport = () => {
     download(geojson);
   }
   const fileExport = () => {
@@ -78,7 +78,7 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
     const data = geojson.geojson;
     if (graphicEditor[DownloadDropdownMenuType.DOWNLOADING_MODE] === "SHP/DBF") {
       console.log("shp")
-      handleSHPExport(data)
+      handleSHPExport()
     }
     else {
       handleGeoJSONExport(data);

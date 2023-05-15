@@ -15,23 +15,52 @@ import ColorLegend from './ColorLegend';
 function Map() {
   const dispatch = useDispatch();
   const graphicEditor = useSelector((state) => state.graphicEditor);
+  const geojsonController = useSelector((state) => state.geojsonController);
+  const { geojson } = geojsonController;
   const graphicEditorRef = useRef({ ...graphicEditor });
   const { selectedColor } = graphicEditor;
-
-  // const { geojson } = useSelector((state) => state.geojson);
-  const [tempgeojson, setTempgeojson] = useState(localgeojson)
 
   const [map, setMap] = useState(null);
   const drawMap = () => {
     var drawnItems = new L.FeatureGroup();
-    L.geoJSON(localgeojson, {
-      onEachFeature: onEachFeature
-    }).addTo(map);
+    // let tempgeojson = geojson ? geojson : localgeojson;
+    let tempgeojson = geojson;
+    // console.log(map)
+    if (map && tempgeojson) {
+      L.geoJSON(tempgeojson, {
+        onEachFeature: onEachFeature
+      }).addTo(map);
 
-    map.fitBounds(L.geoJson(tempgeojson).getBounds());
-    map.addLayer(drawnItems);
+      map.fitBounds(L.geoJson(tempgeojson).getBounds());
+      map.addLayer(drawnItems);
+    }
+
   }
 
+
+
+  useEffect(() => {
+    graphicEditorRef.current = { ...graphicEditor };
+  }, [graphicEditor]);
+
+  const createMap = () => {
+    const newMap = L.map('map', {});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    }).addTo(newMap);
+    new SimpleMapScreenshoter().addTo(newMap);
+    setMap(newMap);
+  };
+  useEffect(() => {
+    if (!map) {
+      createMap();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (geojson)
+      drawMap();
+  }, [geojson,map])
 
 
   const onEachFeature = (feature, polygon) => {
@@ -51,7 +80,7 @@ function Map() {
       dashArray: getBorderDashArray(borderStyle),
     }
     polygon.setStyle(style);
-    let option = {polygon,e, map}
+    let option = { polygon, e, map }
     let text = addText
     if (image) {
       option.markerType = MARKER_TYPE.IMAGE;
@@ -68,57 +97,16 @@ function Map() {
       addMarker(option);
     }
     let color = style.fillColor
-    dispatch(setPolygons({name,text,color}));
+    dispatch(setPolygons({ name, text, color }));
 
 
   }
 
 
-  // useEffect(() => {
-  //   if (!map) {
-  //     createMap();
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   if(localgeojson){
-
-  //   }
-  //   // if (geojson) {
-  //   //   console.log(geojson)
-  //   //   drawMap();
-  //   // }
-  // }, [geojson])
-  useEffect(() => {
-    graphicEditorRef.current = { ...graphicEditor };
-  }, [graphicEditor]);
-
-  const createMap = () => {
-    const newMap = L.map('map', {});
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-    }).addTo(newMap);
-    new SimpleMapScreenshoter().addTo(newMap);
-    return newMap;
-  };
-  useEffect(() => {
-    if (tempgeojson) {
-      const newMap = createMap();
-      dispatch(setGeojson(tempgeojson));
-      setMap(newMap);
-    }
-  }, [tempgeojson]);
-  useEffect(() => {
-    if (map)
-      drawMap();
-  }, [map]);
   return <div>
     {map && { selectedColor } && <ColorLegend map={map} />}
     <div id="map" style={{ height: '700px' }} />
   </div>
-
-
-
-
 }
 
 export default Map;

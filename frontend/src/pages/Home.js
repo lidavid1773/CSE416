@@ -1,17 +1,15 @@
 import EditMap from "../components/GraphicEditorComponents/GraphicEditingMap";
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
-import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setGeojson } from '../features/geojson/geojsonSlice';
 import localgeojson from "../maps/geojson (17).json";
 import Dropdown, { DownloadDropdownMenuType, ModeDropdownMenuType } from "../components/GraphicEditorComponents/Dropdown";
 import GraphicEditor from "../components/GraphicEditorComponents/GraphicEditor";
 function Home() {
-  // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
-  const { geojson } = useSelector((state) => state.geojson);
-  const dispatch = useDispatch();
+  const graphicEditor = useSelector((state) => state.graphicEditor);
+  const geojson = useSelector((state) => state.geojsonController.geojson);
 
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
@@ -34,15 +32,18 @@ function Home() {
       )}
       <div >
         {createUploadComponents()}
-        <span>
+        {geojson && <span>
           {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
           {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
-        </span>
+        </span>}
 
       </div>
-      <div className="grid-container">
-        <EditMap />
-        <GraphicEditor />
+      <div>
+        {graphicEditor["Editing Mode"] === "Graphic Editing" && <div className="grid-container">
+          <EditMap />
+          <GraphicEditor />
+        </div>}
+
       </div>
 
     </div>

@@ -25,6 +25,8 @@ export const graphicEditorSlice = createSlice({
   reducers: {
     setStyle: (state, action) => {
       const { type, value } = action.payload;
+      // console.log('action.payload :', action.payload);
+    
       state[type] = value;
     },
     setImages: (state, action) => {

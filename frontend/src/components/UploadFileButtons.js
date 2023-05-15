@@ -26,6 +26,11 @@ export default function UploadFile({ fileType }) {
 
     const handleShpFile = (e) => {
         var ShpData = null, DbfData = null;
+        let length = e.currentTarget.files.length;
+        if(length !== 2){
+            alert("Please provide one SHP and one DBF")
+        }
+        
         for (let file of e.currentTarget.files) {
             let reader = new FileReader();
             let ext = getExtension(file.name);
@@ -62,7 +67,12 @@ export default function UploadFile({ fileType }) {
         reader.readAsText(e.target.files[0]);
     }
     const handleFile = (e) => {
-        fileType === FileType.SHP ? handleShpFile(e) : handleGeoJsonFile(e);
+        try {
+            fileType === FileType.SHP ? handleShpFile(e) : handleGeoJsonFile(e);
+        } catch (error) {
+            // Handle the error here
+            alert("An error occurred:", error);
+        }
     }
     const getExtension = (filename) => {
         var parts = filename.split(".");

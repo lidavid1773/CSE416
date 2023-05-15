@@ -10,7 +10,7 @@ export const store = configureStore({
     user: userReducer,
     maps: mapReducer,
     comments: commentReducer,
-    geojson: geojsonReducer,
+    geojsonController: geojsonReducer,
     graphicEditor:graphicEditordropdownReducer,
 
   }

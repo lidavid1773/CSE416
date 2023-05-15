@@ -5,9 +5,7 @@ import { useSelector } from 'react-redux';
 const ColorLegend = ({ map }) => {
   const graphicEditor = useSelector((state) => state.graphicEditor);
   const {polygons} = graphicEditor;
-  console.log(polygons)
   const controlRef = useRef(null);
-
   useEffect(() => {
     if (polygons.length > 0) {
       if (controlRef.current) {

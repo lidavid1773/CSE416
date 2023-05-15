@@ -9,7 +9,7 @@ const initialState = {
 };
 
 const geojsonSlice = createSlice({
-  name: "geojson",
+  name: "geojsonController",
   initialState,
   reducers: {
     setGeojson: (state, action) => {

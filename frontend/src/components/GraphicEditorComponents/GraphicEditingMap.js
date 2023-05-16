@@ -4,14 +4,13 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw';
 import "leaflet-draw/dist/leaflet.draw-src.css";
 import { useSelector } from 'react-redux';
-import localgeojson from "../../maps/geojson (17).json";
 import { useDispatch } from 'react-redux';
-import { setGeojson } from '../../features/geojson/geojsonSlice';
 import { setPolygons } from '../../features/GraphicEditorDropdown/graphicEditordropdownSlice';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 import { getBorderDashArray } from './Dropdown';
 import { MARKER_TYPE, addMarker } from './MakerUtils';
 import ColorLegend from './ColorLegend';
+
 function Map() {
   const dispatch = useDispatch();
   const graphicEditor = useSelector((state) => state.graphicEditor);
@@ -37,8 +36,6 @@ function Map() {
 
   }
 
-
-
   useEffect(() => {
     graphicEditorRef.current = { ...graphicEditor };
   }, [graphicEditor]);
@@ -60,7 +57,7 @@ function Map() {
   useEffect(() => {
     if (geojson)
       drawMap();
-  }, [geojson,map])
+  }, [geojson, map])
 
 
   const onEachFeature = (feature, polygon) => {
@@ -98,10 +95,7 @@ function Map() {
     }
     let color = style.fillColor
     dispatch(setPolygons({ name, text, color }));
-
-
   }
-
 
   return <div>
     {map && { selectedColor } && <ColorLegend map={map} />}

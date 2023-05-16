@@ -62,6 +62,7 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
     dispatch(setStyle({type, value}));
   };
   const handleGeoJSONExport = (geojson) => {
+    console.log(geojson)
     const json = JSON.stringify(geojson, null, 2);
     var fileToSave = new Blob([json], {
       type: 'application/json'
@@ -70,19 +71,20 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
   }
   // console.log(process) 
   const handleSHPExport = () => {
+    console.log(geojson)
     download(geojson);
   }
   const fileExport = () => {
     // console.log(dropdownRef.current[DownloadDropdownMenuType.DOWNLOADING_MODE] )
 
-    const data = geojson.geojson;
+    const data = geojson;
     if (graphicEditor[DownloadDropdownMenuType.DOWNLOADING_MODE] === "SHP/DBF") {
       console.log("shp")
       handleSHPExport()
     }
     else {
-      handleGeoJSONExport(data);
       console.log("geo")
+      handleGeoJSONExport(data);
     }
   }
   const createDropdown = (menuType, menuList) => (

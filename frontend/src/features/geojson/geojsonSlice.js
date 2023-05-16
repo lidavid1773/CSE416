@@ -2,10 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   geojson: null,
-  regions: [],
-  isError: false,
-  isSuccess: false,
-  message: "",
 };
 
 const geojsonSlice = createSlice({
@@ -13,21 +9,23 @@ const geojsonSlice = createSlice({
   initialState,
   reducers: {
     setGeojson: (state, action) => {
+      //console.log(action.payload)
       state.geojson = action.payload;
     },
-    deleteRegion: (state, action) => {
-      const { regionId } = action.payload;
-      state.regions = state.regions.filter((r) => r.id !== regionId);
+    setCoordinates: (state, action) => {
+      // console.log(action.payload);
+      const {featureIndex, multiIndex, polyIndex, isMulti, newCoords} = action.payload;
+      if (isMulti)
+        state.geojson.features[featureIndex].geometry.coordinates[multiIndex][polyIndex] = newCoords;
+      else 
+        state.geojson.features[featureIndex].geometry.coordinates[polyIndex] = newCoords;
     },
-    mergeRegion: (state, action) => {
-      const { regionId } = action.payload;
-      state.regions = state.regions.map((r) =>
-        r.id === regionId ? { ...r, merged: true } : r
-      );
+    setNewRegion: (state, action) => {
+      //console.log(action.payload)
+      state.geojson.features.push(action.payload.newRegion);
     },
   },
 });
 
-export const { setGeojson, deleteRegion, mergeRegion } = geojsonSlice.actions;
-
+export const { setGeojson, setCoordinates, setNewRegion } = geojsonSlice.actions;
 export default geojsonSlice.reducer;

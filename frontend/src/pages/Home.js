@@ -1,9 +1,9 @@
 import GraphicEditingMap from "../components/GraphicEditorComponents/GraphicEditingMap";
+import GeoEditingMap from "../components/GeoEditingMap";
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
 import { useSelector, useDispatch } from "react-redux";
 import { setGeojson } from "../features/geojson/geojsonSlice";
-import localgeojson from "../maps/geojson (17).json";
 import Dropdown, {
   DownloadDropdownMenuType,
   ModeDropdownMenuType
@@ -41,13 +41,17 @@ function Home() {
             {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
           </span>
         )}
-      </div>
+      </div> 
       <div>
-        {graphicEditor["Editing Mode"] === "Graphic Editing" && (
+        {graphicEditor["Editing Mode"] === "Graphic Editing" ?  
+        (
           <div className="grid-container">
             <GraphicEditingMap />
             <GraphicEditor />
           </div>
+        ) :
+        (
+          <GeoEditingMap />
         )}
       </div>
     </div>

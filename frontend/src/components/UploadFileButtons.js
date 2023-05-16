@@ -18,8 +18,7 @@ export default function UploadFile({ fileType }) {
     };
     const convertToGeojson = (data) => {
         let result = {
-            type: "FeatureCollection",
-            features: [data],
+            data
         }
         return result;
     }
@@ -36,6 +35,10 @@ export default function UploadFile({ fileType }) {
             let ext = getExtension(file.name);
             // eslint-disable-next-line no-loop-func
             reader.onload = () => {
+                var geojson = {
+                    type: "FeatureCollection",
+                    features: []
+                }
                 if (ext === "dbf") {
                     DbfData = reader.result;
                 }
@@ -46,10 +49,10 @@ export default function UploadFile({ fileType }) {
                     shapefile.open(ShpData, DbfData).then((source) =>
                         source.read().then(function log(result) {
                             if (result.done) {
+                                dispatch(setGeojson(geojson));
                                 return;
                             }
-                            var geojson = convertToGeojson(result.value);
-                            dispatch(setGeojson(geojson));
+                            geojson.features.push(result.value);
                             return source.read().then(log);
                         })
                     ).catch((error) => alert(error.stack));

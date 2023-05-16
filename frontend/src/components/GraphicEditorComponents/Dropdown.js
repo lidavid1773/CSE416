@@ -106,7 +106,7 @@ const Dropdown = ({ DropdownMenuType, colorSelection }) => {
 
         ))}
       </select>
-      {menuType === DownloadDropdownMenuType.DOWNLOADING_MODE && <button onClick={() => fileExport()}>download</button>}
+      {menuType === DownloadDropdownMenuType.DOWNLOADING_MODE && <button onClick={() => fileExport()} className="upload-button">Download</button>}
 
 
     </div>

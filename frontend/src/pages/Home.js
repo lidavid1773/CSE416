@@ -17,26 +17,26 @@ function Home() {
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
     return fileTypes.map((fileType) => (
-      <UploadFileButtons key={fileType} fileType={fileType} />
+      <UploadFileButtons key={fileType} fileType={fileType}/>
     ));
   };
   return (
     <div>
-      <div>Home Page</div>
+      <div className="title">Home Page</div>
       {user ? (
         <div>
-          <div>Welcome back, {user.username}!</div>
+          <div className="subtitle">Welcome back, {user.username}!</div>
           <button>Import map from profile</button>
         </div>
       ) : (
         <div>
-          <div>You are browsing as a guest</div>
+          <div className="subtitle">You are browsing as a guest</div>
         </div>
       )}
       <div>
         {createUploadComponents()}
         {geojson && (
-          <span>
+          <span className="dropdown">
             {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
             {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
           </span>

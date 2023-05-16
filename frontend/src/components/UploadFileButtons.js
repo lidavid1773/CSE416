@@ -85,7 +85,7 @@ export default function UploadFile({ fileType }) {
         <span>
             <input onChange={handleFile}
                 type="file" id="file" accept={fileType === FileType.SHP ? ".shp,.dbf" : ".json"} multiple ref={fileInputRef} style={{ display: 'none' }} />
-            <button onClick={handleClick}>{"Upload " + fileType}</button>
+            <button onClick={handleClick} className="upload-button">{"Upload " + fileType}</button>
         </span>
     );
 }

@@ -13,7 +13,7 @@ const geojsonSlice = createSlice({
       state.geojson = action.payload;
     },
     setCoordinates: (state, action) => {
-      // console.log(action.payload);
+      console.log(action.payload);
       const {featureIndex, multiIndex, polyIndex, isMulti, newCoords} = action.payload;
       if (isMulti)
         state.geojson.features[featureIndex].geometry.coordinates[multiIndex][polyIndex] = newCoords;
@@ -24,8 +24,12 @@ const geojsonSlice = createSlice({
       //console.log(action.payload)
       state.geojson.features.push(action.payload.newRegion);
     },
+    setProperties: (state, action) => {
+      //console.log(action.payload)
+      state.geojson.features[action.payload.featureIndex].properties = action.payload.text;
+    },
   },
 });
 
-export const { setGeojson, setCoordinates, setNewRegion } = geojsonSlice.actions;
+export const { setGeojson, setCoordinates, setNewRegion, setProperties } = geojsonSlice.actions;
 export default geojsonSlice.reducer;

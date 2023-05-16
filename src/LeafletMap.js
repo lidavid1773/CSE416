@@ -140,6 +140,12 @@ function Map() {
       });
       //applyNewStyle(polygon, e)
     });
+    polygon.on("pm:edit", function (e) {
+      setCoordinates(e.layer.options.indices, e.layer.toGeoJSON().geometry.coordinates);
+    });
+    polygon.on("pm:remove", function (e) {
+      setCoordinates(e.layer.options.indices, []);
+    });
   }
 
   const mergeRegions = (e) => {
@@ -165,6 +171,7 @@ function Map() {
       mergePolygon1 = e.target;
     }
   }
+
   return <div>
           <div id="map" style={{ height: '600px' }} />
         </div>

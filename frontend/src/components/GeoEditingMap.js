@@ -9,7 +9,6 @@ import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import { setCoordinates, setNewRegion } from '../features/geojson/geojsonSlice';
-// import localgeojson from "../maps/north_america.json";
 
 function GeoEditingMap() {
     const dispatch = useDispatch();
@@ -18,13 +17,37 @@ function GeoEditingMap() {
     const { geojson } = geojsonController;
     const [map, setMap] = useState(null);
     const [first, setFirst] = useState(true);
-    // const [isMerging, setIsMerging] = useState(false);
 
     var drawnItems;
     var isMerging = false;
+    var isSimplifying = false;
     var selectedPolygon = null;
     var mergePolygon1 = null, mergePolygon2 = null;
 
+    // const ViewProperties = (properties, layer) => {
+    //     const container = L.DomUtil.create('div', 'props-container');
+    //     let propsTable = L.DomUtil.create('table', 'div', container);
+    //     const propsRow = propsTable.insertRow();
+    //     propsRow.insertCell().innerHTML = `<button class="add-props-btn">+add properties</button>`;
+    //     propsRow.addEventListener("click",()=>{
+    //         const newRow = propsTable.insertRow(0);
+    //         newRow.insertCell().innerHTML = `<input value="name:"></input>`;
+    //         newRow.insertCell().innerHTML = `<input value="value"></input>`;
+    //     });
+    //     propsTable = L.DomUtil.create('table', 'props-table', container);
+    //     for (const key of Object.keys(properties)) {
+    //         const propsRow = propsTable.insertRow();
+    //         propsRow.insertCell().innerHTML = `<input value="${key}"></input>`;
+    //         propsRow.insertCell().innerHTML = `<input value="${properties[key]}"></input>`;
+    //     }
+        
+    //     L.DomEvent.on(layer, 'click', (event) => {
+    //         L.DomEvent.preventDefault(event);
+    //         layer.bindPopup(container, {
+    //             className: 'popup-content'
+    //         }).openPopup();
+    //     });
+    // };
 
     useEffect(() => {
         if (!map) {
@@ -60,32 +83,40 @@ function GeoEditingMap() {
 
             var mergeOptions = {
                 name: "merge",
-                block: "edit",
+                block: "custom",
                 title: "Merge Regions",
                 className: "leaflet-pm-icon-polyline",
                 onClick: () => {
                     mergePolygon1 = null;
                     mergePolygon2 = null;
                     isMerging = !isMerging;
-                },
-                actions: [
-                ]
+                }
+            }
+            var simplifyOptions = {
+                name: "simplify",
+                block: "custom",
+                title: "Simplify Region",
+                className: "leaflet-pm-icon-cut",
+                onClick: () => {
+                    isSimplifying = !isSimplifying;
+                }
             }
             map.pm.Toolbar.createCustomControl(mergeOptions);
+            map.pm.Toolbar.createCustomControl(simplifyOptions);
+            map.pm.Toolbar.changeActionsOfControl("removalMode", ['cancel']);
 
             map.fitBounds(L.geoJson(geojson).getBounds());
             map.addLayer(drawnItems);
 
             map.on("pm:create", function (e) {
-                drawnItems.addLayer(e.layer);
-                e.layer.on('click', function (e) {
-                    if (selectedPolygon)
-                        selectedPolygon.pm.disable();
-                    selectedPolygon = e.target;
-                    e.target.pm.enable({
-                        allowSelfIntersection: false,
-                    });
-                });
+                e.layer.options.indices = { 
+                    featureIndex: geojson.features.length, 
+                    multiIndex: -1, 
+                    polyIndex: 0, 
+                    isMulti: false
+                };
+                addRegion(e.layer);
+                dispatch(setNewRegion({ newRegion: e.layer.toGeoJSON() }));
             });
             setFirst(false);
         }
@@ -116,7 +147,11 @@ function GeoEditingMap() {
         //console.log(poly)
         var polygon = L.polygon(L.GeoJSON.coordsToLatLngs(poly)).addTo(map);
         polygon.options.indices = { featureIndex, multiIndex, polyIndex, isMulti };
-
+        addRegion(polygon);
+    }
+    
+    //initialize polygon layer with all functionalities
+    const addRegion = (polygon) => {
         drawnItems.addLayer(polygon);
         polygon.on('click', function (e) {
             if (selectedPolygon) {
@@ -124,14 +159,18 @@ function GeoEditingMap() {
                 selectedPolygon.setStyle({fillColor: "#3388ff"});
                 selectedPolygon.pm.disable();
             }
-            if (isMerging) {
+            if (isMerging) 
                 mergeRegions(e);
-            }
+            if (isSimplifying)
+                simplifyRegion(e);
+
             selectedPolygon = e.target;
             selectedPolygon.setStyle({fillColor: "red"});
-            e.target.pm.enable({
-                allowSelfIntersection: false,
-            });
+            e.target.pm.enable();
+            //view properties
+            addPopup(e.target)
+            // e.target.bindPopup('<pre>'+JSON.stringify(geojson.features[e.target.options.indices.featureIndex].properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>')
+            //         .openPopup();
         });
         polygon.on("pm:edit", function (e) {
             dispatch(setCoordinates({ ...e.layer.options.indices, newCoords: e.layer.toGeoJSON().geometry.coordinates[0] }));
@@ -139,6 +178,18 @@ function GeoEditingMap() {
         polygon.on("pm:remove", function (e) {
             dispatch(setCoordinates({ ...e.layer.options.indices, newCoords: [] }));
         });
+    }
+    const addPopup = (layer) => {
+        console.log(geojson.features[layer.options.indices.featureIndex].properties)
+        var content = document.createElement("textarea");
+        content.addEventListener("keyup", function () {
+            geojson.features[layer.options.indices.featureIndex].properties = content.value;
+        });
+        layer.on("popupopen", function () {
+            content.value = JSON.stringify(geojson.features[layer.options.indices.featureIndex].properties);
+            content.focus();
+        });
+        layer.bindPopup(content).openPopup();
     }
 
     const mergeRegions = (e) => {
@@ -153,7 +204,7 @@ function GeoEditingMap() {
             //update on layers
             map.removeLayer(mergePolygon1);
             map.removeLayer(mergePolygon2);
-            addFeature(union, geojson.features.length, drawnItems);
+            addFeature(union, geojson.features.length);
             //update geojson object
             dispatch(setNewRegion({ newRegion: union }));
             dispatch(setCoordinates({ ...mergePolygon1.options.indices, newCoords: [] }));
@@ -164,6 +215,16 @@ function GeoEditingMap() {
         } else {
             mergePolygon1 = e.target;
         }
+    }
+
+    const simplifyRegion = (e) => {
+        var linearRing = [];
+        linearRing.push(getCoordinates(e.target.options.indices));
+        var simplified = turf.simplify(turf.polygon(linearRing), {tolerance: 0.01});
+
+        map.removeLayer(e.target);
+        addFeature(simplified, e.target.options.indices.featureIndex);
+        dispatch(setCoordinates({ ...e.target.options.indices, newCoords: simplified.geometry.coordinates[0] }));
     }
 
     return <div>

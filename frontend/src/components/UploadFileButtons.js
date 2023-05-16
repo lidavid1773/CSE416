@@ -18,19 +18,27 @@ export default function UploadFile({ fileType }) {
     };
     const convertToGeojson = (data) => {
         let result = {
-            type: "FeatureCollection",
-            features: [data],
+            data
         }
         return result;
     }
 
     const handleShpFile = (e) => {
         var ShpData = null, DbfData = null;
+        let length = e.currentTarget.files.length;
+        if(length !== 2){
+            alert("Please provide one SHP and one DBF")
+        }
+        
         for (let file of e.currentTarget.files) {
             let reader = new FileReader();
             let ext = getExtension(file.name);
             // eslint-disable-next-line no-loop-func
             reader.onload = () => {
+                var geojson = {
+                    type: "FeatureCollection",
+                    features: []
+                }
                 if (ext === "dbf") {
                     DbfData = reader.result;
                 }
@@ -41,10 +49,10 @@ export default function UploadFile({ fileType }) {
                     shapefile.open(ShpData, DbfData).then((source) =>
                         source.read().then(function log(result) {
                             if (result.done) {
+                                dispatch(setGeojson(geojson));
                                 return;
                             }
-                            var geojson = convertToGeojson(result.value);
-                            dispatch(setGeojson(geojson));
+                            geojson.features.push(result.value);
                             return source.read().then(log);
                         })
                     ).catch((error) => alert(error.stack));
@@ -62,7 +70,12 @@ export default function UploadFile({ fileType }) {
         reader.readAsText(e.target.files[0]);
     }
     const handleFile = (e) => {
-        fileType === FileType.SHP ? handleShpFile(e) : handleGeoJsonFile(e);
+        try {
+            fileType === FileType.SHP ? handleShpFile(e) : handleGeoJsonFile(e);
+        } catch (error) {
+            // Handle the error here
+            alert("An error occurred:", error);
+        }
     }
     const getExtension = (filename) => {
         var parts = filename.split(".");

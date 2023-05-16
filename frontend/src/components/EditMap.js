@@ -11,6 +11,7 @@ import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter'
 import { getBorderDashArray } from './GraphicEditorComponents/Dropdown';
 import { Uploaded } from './GraphicEditorComponents/Dropdown';
 import { initialState } from '../features/GraphicEditorDropdown/graphicEditordropdownSlice';
+
 function Map() {
   const dispatch = useDispatch();
   const graphicEditor = useSelector((state) => state.graphicEditor);

@@ -33,7 +33,7 @@ const setMap = asyncHandler(async (req, res) => {
     throw new Error("Please add a title field");
   }
 
-  const map = await Map.create({ user: req.user.id, title: req.body.title });
+  const map = await Map.create({ user: req.user.id, geodata: req.body.geodata, title: req.body.title });
   res.status(200).json(map);
 });
 
@@ -74,7 +74,7 @@ const updateMap = asyncHandler(async (req, res) => {
     throw new Error("User not authorized");
   }
 
-  const updatedMap = await Map.findByIdAndUpdate(req.params.mapId, req.body, {
+  const updatedMap = await Map.findByIdAndUpdate(req.params.mapId, req.body.geodata, {
     new: true,
   });
 
@@ -115,5 +115,5 @@ module.exports = {
   searchMapsBy,
   setMap,
   updateMap,
-  deleteMap,
+  deleteMap
 };

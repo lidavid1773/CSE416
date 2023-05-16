@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/map";
+import { map } from "leaflet";
 
 const initialState = {
   map: null,
@@ -44,6 +45,33 @@ export const searchMapsBy = createAsyncThunk(
   async (username, thunkAPI) => {
     try {
       return await api.searchMapsBy(username);
+    } catch (error) {
+      // send error message as payload
+      return thunkAPI.rejectWithValue(getMessage(error));
+    }
+  }
+);
+
+export const setMap = createAsyncThunk(
+  "maps/setMap",
+  async (mapData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().user.user.token;
+      return await api.setMap(mapData, token);
+    } catch (error) {
+      // send error message as payload
+      return thunkAPI.rejectWithValue(getMessage(error));
+    }
+  }
+);
+
+export const updateMap = createAsyncThunk(
+  "maps/updateMap", 
+  async ({ mapData, id }, thunkAPI) => {
+    try {
+      console.log(id);
+      const token = thunkAPI.getState().user.user.token;
+      return await api.updateMap(mapData, id, token);
     } catch (error) {
       // send error message as payload
       return thunkAPI.rejectWithValue(getMessage(error));

@@ -1,20 +1,32 @@
 import EditMap from "../components/EditMap";
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
-import { useEffect } from "react";
+//import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setGeojson } from "../features/geojson/geojsonSlice";
-import localgeojson from "../maps/geojson (17).json";
+import { setMap } from "../features/maps/mapSlice";
+//import localgeojson from "../maps/geojson (17).json";
 import Dropdown, {
   DownloadDropdownMenuType,
   ModeDropdownMenuType,
 } from "../components/GraphicEditorComponents/Dropdown";
 import GraphicEditor from "../components/GraphicEditor";
+
 function Home() {
   // if user is null, user is a guest.
   const { user } = useSelector((state) => state.user);
   const { geojson } = useSelector((state) => state.geojson);
   const dispatch = useDispatch();
+  
+
+  const createhandle = () => {
+    let title = prompt("Please enter title for the map:");
+    if (title != null && title !== "") {
+      dispatch(setMap({ title: title, geodata: geojson }));
+      setGeojson(geojson);
+      console.log("created");
+    }
+  }
 
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
@@ -29,6 +41,7 @@ function Home() {
         <div>
           <div>Welcome back, {user.username}!</div>
           <button>Import map from profile</button>
+          <button onClick={createhandle} >Save a Map</button>
         </div>
       ) : (
         <div>

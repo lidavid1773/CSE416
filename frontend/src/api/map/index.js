@@ -28,6 +28,29 @@ const getMaps = async (token) => {
   return response.data;
 };
 
+const setMap = async(mapData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.post(API_URL, mapData, config);
+
+  return response.data;
+}
+const updateMap = async(mapData, id, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.put(`${API_URL}${id}`, mapData, config);
+
+  return response.data;
+}
+
 const searchMapsBy = async (username) => {
   const response = await axios.get(`${API_URL}searchMapsBy/${username}`);
 
@@ -46,6 +69,6 @@ const deleteMap = async (id, token) => {
   return response.data;
 };
 
-const api = { getMap, getMaps, searchMapsBy, deleteMap };
+const api = { getMap, getMaps, searchMapsBy, deleteMap, setMap, updateMap };
 
 export default api;

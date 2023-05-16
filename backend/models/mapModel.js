@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const mapSchema = mongoose.Schema(
   {
@@ -6,6 +7,10 @@ const mapSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    geodata: {
+      type: Schema.Types.Mixed,
+      required: true
     },
     title: {
       type: String,

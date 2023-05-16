@@ -8,7 +8,7 @@ import Dropdown, {
   DownloadDropdownMenuType,
   ModeDropdownMenuType
 } from "../components/GraphicEditorComponents/Dropdown";
-import GraphicEditor from "../components/GraphicEditor";
+import GraphicEditor from "../components/GraphicEditorComponents/GraphicEditor";
 function Home() {
   const { user } = useSelector((state) => state.user);
   const graphicEditor = useSelector((state) => state.graphicEditor);

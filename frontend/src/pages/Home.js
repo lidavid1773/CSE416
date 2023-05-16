@@ -2,10 +2,13 @@ import GraphicEditingMap from "../components/GraphicEditorComponents/GraphicEdit
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
 import { useSelector, useDispatch } from "react-redux";
-import { setGeojson } from '../features/geojson/geojsonSlice';
+import { setGeojson } from "../features/geojson/geojsonSlice";
 import localgeojson from "../maps/geojson (17).json";
-import Dropdown, { DownloadDropdownMenuType, ModeDropdownMenuType } from "../components/GraphicEditorComponents/Dropdown";
-import GraphicEditor from "../components/GraphicEditorComponents/GraphicEditor";
+import Dropdown, {
+  DownloadDropdownMenuType,
+  ModeDropdownMenuType
+} from "../components/GraphicEditorComponents/Dropdown";
+import GraphicEditor from "../components/GraphicEditor";
 function Home() {
   const { user } = useSelector((state) => state.user);
   const graphicEditor = useSelector((state) => state.graphicEditor);
@@ -13,10 +16,10 @@ function Home() {
 
   const createUploadComponents = () => {
     const fileTypes = Object.values(FileType);
-    return fileTypes.map(fileType => (
+    return fileTypes.map((fileType) => (
       <UploadFileButtons key={fileType} fileType={fileType} />
     ));
-  }
+  };
   return (
     <div>
       <div>Home Page</div>
@@ -30,22 +33,23 @@ function Home() {
           <div>You are browsing as a guest</div>
         </div>
       )}
-      <div >
+      <div>
         {createUploadComponents()}
-        {geojson && <span>
-          {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
-          {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
-        </span>}
-
+        {geojson && (
+          <span>
+            {<Dropdown DropdownMenuType={DownloadDropdownMenuType} />}
+            {<Dropdown DropdownMenuType={ModeDropdownMenuType} />}
+          </span>
+        )}
       </div>
       <div>
-        {graphicEditor["Editing Mode"] === "Graphic Editing" && <div className="grid-container">
-          <GraphicEditingMap />
-          <GraphicEditor />
-        </div>}
-
+        {graphicEditor["Editing Mode"] === "Graphic Editing" && (
+          <div className="grid-container">
+            <GraphicEditingMap />
+            <GraphicEditor />
+          </div>
+        )}
       </div>
-
     </div>
   );
 }

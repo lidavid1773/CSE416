@@ -1,5 +1,5 @@
 import CommentList from "./CommentList";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { getMap, resetState } from "../features/maps/mapSlice";
@@ -27,16 +27,16 @@ const ViewMapItem = () => {
 
   return (
     <div>
-      <button>View Map</button>
-      <button>Make a Copy</button>
-      <button>Export Map</button>
-      <h3>Map Item Details</h3>
-      <div>{`Owned by: ${map ? map.user.username : "loading..."}`}</div>
-      <div>{`Title: ${map ? map.title : "loading..."}`}</div>
-      <div>
-        {`Created at: ${
-          map ? new Date(map.createdAt).toLocaleString("en-US") : "loading..."
-        }`}
+      <div className="map-item">
+        <h3>Map Details</h3>
+        <div>{`Owned by: ${map ? map.user.username : "loading..."}`}</div>
+        <div>{`Title: ${map ? map.title : "loading..."}`}</div>
+        <div>
+          {`Created at: ${
+            map ? new Date(map.createdAt).toLocaleString("en-US") : "loading..."
+          }`}
+        </div>
+        <Link style={{ color: "#065fd4" }}>View Map</Link>
       </div>
       <div>
         <CommentList />

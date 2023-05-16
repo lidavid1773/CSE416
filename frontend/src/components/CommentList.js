@@ -34,19 +34,26 @@ const CommentList = () => {
   };
 
   return (
-    <div>
-      <p>Comment Section</p>
-      <p>{comments.length} comments</p>
+    <div className="comment-section">
+      <h3>Comment Section ({comments.length} comments)</h3>
 
-      <input
-        type="text"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a comment..."
-      />
-      <button onClick={() => leaveComment()}>Comment</button>
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="comment-input-container"
+      >
+        <input
+          className="comment-input-box"
+          type="text"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Add a comment..."
+        />
+        <button className="comment-button" onClick={() => leaveComment()}>
+          Comment
+        </button>
+      </form>
 
-      <div className="comment-section">
+      <div>
         {comments.map((comment) => {
           return (
             <div key={comment._id}>

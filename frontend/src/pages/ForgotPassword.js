@@ -1,14 +1,26 @@
 import { useState } from "react";
+import api from "../api/user";
 
-function RecoverPassword() {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [isSent, setIsSent] = useState(false);
+  const [invalidEmail, setInvalidEmail] = useState(false);
 
   const onChange = (e) => {
     setEmail(e.target.value);
   };
 
-  const onSubmit = (e) => {
+  const sendLink = async (e) => {
     e.preventDefault();
+    try {
+      await api.sendLink(email);
+      setIsSent(true);
+      setInvalidEmail(false);
+    } catch (error) {
+      setIsSent(false);
+      setInvalidEmail(true);
+    }
+    setEmail("");
   };
 
   return (
@@ -17,8 +29,18 @@ function RecoverPassword() {
         <h2>Forgot Password</h2>
       </div>
 
+      {isSent ? (
+        <div className="success-message">
+          A link to reset your password was successfully sent to your email!
+        </div>
+      ) : null}
+
+      {invalidEmail ? (
+        <div className="failure-message">Email is invalid</div>
+      ) : null}
+
       <div className="form">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={sendLink}>
           <div className="form-group">
             <input
               type="email"
@@ -41,4 +63,4 @@ function RecoverPassword() {
   );
 }
 
-export default RecoverPassword;
+export default ForgotPassword;

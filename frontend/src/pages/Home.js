@@ -1,4 +1,4 @@
-import EditMap from "../components/GraphicEditorComponents/GraphicEditingMap";
+import GraphicEditingMap from "../components/GraphicEditorComponents/GraphicEditingMap";
 import UploadFileButtons from "../components/UploadFileButtons";
 import { FileType } from "../components/UploadFileButtons";
 import { useSelector, useDispatch } from "react-redux";
@@ -40,7 +40,7 @@ function Home() {
       </div>
       <div>
         {graphicEditor["Editing Mode"] === "Graphic Editing" && <div className="grid-container">
-          <EditMap />
+          <GraphicEditingMap />
           <GraphicEditor />
         </div>}
 

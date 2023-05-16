@@ -8,12 +8,12 @@ import * as turf from '@turf/turf';
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import { setCoordinates, setNewRegion } from '../features/geojson/geojsonSlice';
+import { setCoordinates, setNewRegion, setProperties } from '../features/geojson/geojsonSlice';
 
 function GeoEditingMap() {
     const dispatch = useDispatch();
     const mapRef = useRef();
-    const geojsonController = useSelector((state) => state.geojsonController);
+    const geojsonController = useSelector(state => state.geojsonController);
     const { geojson } = geojsonController;
     const [map, setMap] = useState(null);
     const [first, setFirst] = useState(true);
@@ -62,7 +62,7 @@ function GeoEditingMap() {
     }, []);
 
     useEffect(() => {
-        if (geojson && first) {
+        if (map && geojson && first) {
             console.log(geojson)
             drawnItems = new L.FeatureGroup();
             geojson.features.forEach((currentFeature, featureIndex) => {
@@ -180,10 +180,10 @@ function GeoEditingMap() {
         });
     }
     const addPopup = (layer) => {
-        console.log(geojson.features[layer.options.indices.featureIndex].properties)
+        //console.log(geojson.features[layer.options.indices.featureIndex].properties)
         var content = document.createElement("textarea");
         content.addEventListener("keyup", function () {
-            geojson.features[layer.options.indices.featureIndex].properties = content.value;
+            dispatch(setProperties({ featureIndex: layer.options.indices.featureIndex, text: content.value }));
         });
         layer.on("popupopen", function () {
             content.value = JSON.stringify(geojson.features[layer.options.indices.featureIndex].properties);
@@ -221,7 +221,7 @@ function GeoEditingMap() {
         var linearRing = [];
         linearRing.push(getCoordinates(e.target.options.indices));
         var simplified = turf.simplify(turf.polygon(linearRing), {tolerance: 0.01});
-
+        console.log(simplified)
         map.removeLayer(e.target);
         addFeature(simplified, e.target.options.indices.featureIndex);
         dispatch(setCoordinates({ ...e.target.options.indices, newCoords: simplified.geometry.coordinates[0] }));
